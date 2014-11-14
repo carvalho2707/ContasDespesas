@@ -1,0 +1,56 @@
+<ui:composition template="/mainPage.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">   
+    <ui:define name="link">Home</ui:define>
+    <ui:define name="content">
+        <div id="page-wrap" style="padding-bottom: 30px;">
+            <div id="inside">                
+                <div id="ct100_updateMain">
+                    <div class="idboxes homepage">
+                        <div class="container">
+                            <div class="row" style="position:relative; ">
+                                <div class="span4 offset1 ">
+                                    <a href="totalYearByPerson.xhtml">
+                                        <div class="homebox reportPie">
+                                            <h3>
+                                                #{bundle.ComparePersonByMonth}
+                                                <span class="updates"></span>
+                                            </h3>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="span4 ">
+                                    <a href="lineTotalMonth.xhtml">
+                                        <div class="homebox categoriesReport">
+                                            <h3>
+                                                #{bundle.TotalByCategories}
+                                                <span class="updates"></span>
+                                            </h3>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="span4 ">
+                                    <a href="totalYearByCategory.xhtml">
+                                        <div class="homebox reportPie2">
+                                            <h3>
+                                                #{bundle.CompareCategoryByYear}
+                                                <span class="updates"></span>
+                                            </h3>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row" style="position:relative; padding-top: 30px;">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>            
+    </ui:define>   
+</ui:composition>

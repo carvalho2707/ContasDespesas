@@ -1,0 +1,156 @@
+<ui:composition template="/mainPage.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <ui:define name="resource">#{bundle.CategoryManagement}</ui:define>
+    <ui:define name="filter">
+        <div>
+            <h:form id="CategoryFilterForm">
+                <p:panel id="filter" header="Pesquisar" styleClass="dataListDiv">
+                    <h:panelGrid columns="10">
+                        <p:outputLabel value="#{bundle.Category}:" for="name" />
+                        <p:spacer width="5" height="10" />
+                        <p:inputText id="name" value="#{categoryController.name}" title="#{bundle.Category}"/>
+                        <p:spacer width="10" height="10" />                          
+                        <p:commandButton update=":CategoryListForm:tabela :growl, :CategoryListForm:display2, :CategoryListForm:display3 " actionListener="#{categoryController.filteredItems}" id="search" icon="ui-icon-search"  partialSubmit="false" title="Pesquisar" style="margin-top:-10px;"/>
+                        <p:commandButton id="clear" icon="ui-icon-closethick" title="Limpar Filtro" update="filter :CategoryListForm:tabela, :CategoryListForm:display2, :CategoryListForm:display3 " actionListener="#{categoryController.clear}" style="margin-top:-10px;">
+                            <p:resetInput target="filter" />
+                        </p:commandButton>
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+            <div id="page-wrap" style="padding-bottom: 30px;">
+                <div id="inside">
+                    <div id="ct100_updateMain">
+                        <div class="idboxes">
+                            <div class="container">
+                                <div class="row" style="position:relative; ">
+                                    <h:form id="CategoryListForm" styleClass="listForm">
+                                        <br>
+                                            <span style="font-size: 12pt; font-weight: bold; color: red">
+                                                #{bundle.Category}
+                                            </span>
+                                        </br>
+                                        <p:panel id="tabela" styleClass="dataListDiv">
+                                            <p:commandButton style="margin-bottom:10px;" id="createButton" icon="ui-icon-plus"    value="#{bundle.Create}" actionListener="#{categoryController.prepareCreate}" update=":CategoryCreateForm" oncomplete="PF('CategoryCreateDialog').show()"/>
+                                            <p:dataTable id="datalist" value="#{categoryController.items}" var="item"
+                                                         selectionMode="single" selection="#{categoryController.selected}"
+                                                         paginator="true" rowKey="#{item.ID}" rows="10"
+                                                         paginatorPosition="bottom" styleClass="datalist">
+                                                <p:ajax event="rowSelect" listener="#{categoryController.populateCollections()}"   update=" :CategoryListForm:display3 :CategoryListForm:display2 "/>
+                                                <p:column sortBy="#{item.name}">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{bundle.Name}"/>
+                                                    </f:facet>
+                                                    <h:outputText value="#{item.name}"/>
+                                                </p:column>
+                                                <p:column sortBy="#{item.description}">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{bundle.Description}"/>
+                                                    </f:facet>
+                                                    <h:outputText value="#{item.description}"/>
+                                                </p:column>
+                                                <p:column sortBy="#{item.total}">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{bundle.TotalSpent}"/>
+                                                    </f:facet>
+                                                    <h:outputText value="#{item.total} €"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panel>
+                                        <h:panelGroup id="display2" class="row">
+                                            <p:panel id="display" styleClass="genericPanel" rendered="#{!empty categoryController.selected}">
+                                                <div class ="row" id="detailedProfile">
+                                                    <div class="span12">
+                                                        <div class="modulewrap">
+                                                            <div class="moduletittle">
+                                                                <h4>
+                                                                    #{bundle.Categoryprofile}
+                                                                </h4>
+                                                            </div>
+                                                            <div class="modulecontent gpslist" style="padding: 25px">
+                                                                <p:panel style="border: none !important;">
+                                                                    <p:panelGrid id="panelCategory" styleClass="perfil" rendered="#{!empty categoryController.selected}">
+                                                                        <f:facet name ="header">
+                                                                        </f:facet>
+                                                                        <p:row>
+                                                                            <p:column colspan="2">
+                                                                                <h:outputText value="#{bundle.Category}" styleClass="bold"/>
+                                                                            </p:column>                                                                          
+                                                                            <p:column>
+                                                                                <h:outputText value="#{bundle.Description}" styleClass="bold"/>
+                                                                            </p:column> 
+                                                                            <p:column>
+                                                                                <h:outputText value="#{bundle.TotalSpent}" styleClass="bold"/>
+                                                                            </p:column> 
+                                                                            <p:column>
+                                                                                <h:outputText value="Acoes" styleClass="bold"/>
+                                                                            </p:column> 
+                                                                        </p:row>
+                                                                        <p:row>
+                                                                            <p:column colspan="2">
+                                                                                <h:outputText value="#{categoryController.selected.name}"/>
+                                                                                <br/>
+                                                                            </p:column>
+                                                                            <p:column >
+                                                                                <h:outputText value="#{categoryController.selected.description}"/>
+                                                                                <br/>
+                                                                            </p:column>                                                                           
+                                                                            <p:column >
+                                                                                <h:outputText value="#{categoryController.selected.total} €"/>
+                                                                            </p:column>
+                                                                            <p:column>
+                                                                                <br>
+                                                                                    <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":CategoryEditForm" oncomplete="PF('CategoryEditDialog').show()" disabled="#{empty categoryController.selected}"/>
+                                                                                </br>
+                                                                                <br>
+                                                                                    <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" update=":CategoryRemoveForm" oncomplete="PF('CategoryRemoveDialog').show()" disabled="#{empty categoryController.selected}"/>
+                                                                                </br>
+                                                                            </p:column>
+                                                                        </p:row>
+                                                                    </p:panelGrid>
+                                                                </p:panel>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </p:panel>
+                                        </h:panelGroup>
+                                        <h:panelGroup id="display3" class="row">
+                                            <p:panel id="display4" styleClass="genericPanel" rendered="#{!empty categoryController.selected}">
+                                                <div class ="row" id="detailedProfile">
+                                                    <div class="span12">
+                                                        <div class="modulewrap">
+                                                            <div class="moduletittle">
+                                                                <h4>
+                                                                    #{bundle.EvoluTionByYear}
+                                                                </h4>
+                                                            </div>
+                                                            <h:form id="CategoryListForm" styleClass="listForm">
+                                                                <p:panel id="tabela5" styleClass="dataListDiv">
+                                                                    <p:lineChart id="linear" value="#{categoryController.lineTotalYearModel}" legendPosition="e"  
+                                                                                 title="#{bundle.TotalByCategoryChart}" style="height:300px" yaxisLabel="#{bundle.LabelYaxisEuro}"/>
+                                                                </p:panel> 
+                                                            </h:form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </p:panel>
+                                        </h:panelGroup>
+                                    </h:form>
+                                    <ui:include src="Create.xhtml"/>
+                                    <ui:include src="Edit.xhtml"/>
+                                    <ui:include src="Remove.xhtml"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

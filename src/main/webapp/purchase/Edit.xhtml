@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition>
+        <p:dialog id="PurchaseEditDlg" widgetVar="PurchaseEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.PurchaseEdit}">
+            <h:form id="PurchaseEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{purchaseController.selected != null}"> 
+                        <p:outputLabel value="#{bundle.Name}:" for="name" />
+                        <p:inputText id="name" value="#{purchaseController.selected.itemName}" title="#{bundle.Name}" required="true" requiredMessage="#{bundle.The} '#{bundle.Name}' #{bundle.FieldIsRequired}"/>
+                        <p:outputLabel value="#{bundle.Price}:" for="price" />
+                        <p:inputText id="price" value="#{purchaseController.selected.price}" title="#{bundle.Price}" required="true" requiredMessage="#{bundle.The} '#{bundle.Price}' #{bundle.FieldIsRequired}"/>
+                        <p:outputLabel value="#{bundle.Price}:" for="price" />
+                        <p:outputLabel value="#{bundle.DateOfPurchase}:" for="dateOfPurchase" />
+                        <p:calendar  id="dateOfPurchase" pattern="dd/MM/yyyy" value="#{purchaseController.selected.dateOfPurchase}" title="#{bundle.DateOfPurchase}" required="true" requiredMessage="#{bundle.The} '#{bundle.DateOfPurchase}' #{bundle.FieldIsRequired}" showOn="button"/>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{purchaseController.update}" value="#{bundle.Save}" update="display,:PurchaseListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PurchaserEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="PurchaseEditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+    </ui:composition>
+</html>

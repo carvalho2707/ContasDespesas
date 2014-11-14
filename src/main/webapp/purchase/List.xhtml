@@ -1,0 +1,146 @@
+<ui:composition template="/mainPage.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn='http://java.sun.com/jsp/jstl/functions'>  
+    <ui:define name="resource">#{bundle.PurchaseManagement}</ui:define>
+    <ui:define name="filter">
+        <h:form id="PurchaseFilterForm">
+            <p:panel id="filter" styleClass="dataListDiv">
+                <h:panelGrid columns="10">
+                    <p:outputLabel value="#{bundle.Purchase}:" for="name" />
+                    <p:inputText id="name" value="#{purchaseController.name}" title="#{bundle.Person}"/>
+                    <p:outputLabel value="#{bundle.Category}:" for="category" />
+                    <p:inputText id="category" value="#{purchaseController.category}" title="#{bundle.Category}"/>
+                    <p:outputLabel value="#{bundle.Person}:" for="person" />
+                    <p:inputText id="person" value="#{purchaseController.person}" title="#{bundle.Person}"/>
+                    <p:commandButton update=":PurchaseListForm:tabela" actionListener="#{purchaseController.filteredItems}" id="search" icon="ui-icon-search"  partialSubmit="false" title="Pesquisar" style="margin-top:-10px;"/>
+                    <p:commandButton id="clear" icon="ui-icon-closethick" title="Limpar Filtro" update="filter :PurchaseListForm:tabela" actionListener="#{purchaseController.clear}" style="margin-top:-10px;">
+                        <p:resetInput target="filter" />  
+                    </p:commandButton>
+                </h:panelGrid> 
+            </p:panel>
+        </h:form>
+        <div id="ct100_updateMain">
+            <div class="idboxes">
+                <div class="container">
+                    <div class="row" style="position:relative; ">
+                        <div class="span12">                                    
+                            <h:form id="PurchaseListForm" styleClass="listForm">
+                                <p:panel id="tabela" styleClass="dataListDiv">
+                                    <p:commandButton style="margin-bottom:10px;" id="createButton" icon="ui-icon-plus"  value="#{bundle.Create}" actionListener="#{purchaseController.prepareCreate}" update=":PurchaseCreateForm" oncomplete="PF('PurchaseCreateDialog').show()"/>
+                                    <p:dataTable id="datalist" value="#{purchaseController.items}" var="item" selectionMode="single" 
+                                                 selection="#{purchaseController.selected}" paginator="true" rowKey="#{item.ID}" 
+                                                 rows="10" paginatorPosition="bottom" styleClass="datalist">
+                                        <p:ajax event="rowSelect"   update=":PurchaseListForm:display2"/>                                      
+                                        <p:column sortBy="#{item.itemName}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.ItemName}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.itemName}"/>
+                                        </p:column>
+                                        <p:column sortBy="#{item.price}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.Price}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.price}"/>
+                                        </p:column>
+                                        <p:column sortBy="#{item.category.name}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.CategoryName}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.category.name}"/>
+                                        </p:column>
+                                        <p:column sortBy="#{item.person.name}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.PersonName}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.person.name}"/>
+                                        </p:column>
+                                        <p:column sortBy="#{item.dateOfPurchase}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.CreatedDate}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.dateOfPurchase}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:panel> 
+                                <h:panelGroup id="display2" class="row">
+                                    <p:panel id="display" styleClass="genericPanel" rendered="#{!empty purchaseController.selected}">
+                                        <div class ="row" id="detailedProfile">
+                                            <div class="span12">
+                                                <div class="modulewrap">
+                                                    <div class="moduletittle">
+                                                        <h4>
+                                                            #{bundle.PurchaseProfile}
+                                                        </h4>
+                                                    </div>
+                                                    <div class="modulecontent gpslist" style="padding: 25px">
+                                                        <p:panel style="border: none !important;">
+                                                            <p:panelGrid id="panelPurchase" styleClass="perfil" rendered="#{!empty purchaseController.selected}">
+                                                                <f:facet name ="header">
+                                                                </f:facet>
+                                                                <p:row>
+                                                                    <p:column colspan="">
+                                                                        <h:outputText value="#{bundle.Purchase}" styleClass="bold"/>
+                                                                    </p:column>
+                                                                    <p:column >
+                                                                        <h:outputText value="#{bundle.DateOfPurchase}" styleClass="bold"/>
+                                                                    </p:column>
+                                                                    <p:column colspan="">
+                                                                        <h:outputText value="#{bundle.PersonName} and #{bundle.CategoryName} " styleClass="bold"/>
+                                                                    </p:column> 
+                                                                </p:row>
+                                                                <p:row>
+                                                                    <p:column style="width: 250px;">
+                                                                        <h:outputText value="#{purchaseController.selected.itemName}"/>
+                                                                        <br/>
+                                                                        <br/>
+                                                                        <h:outputText value="#{purchaseController.selected.price}"/>
+                                                                    </p:column>
+                                                                    <p:column style="width: 250px;">
+                                                                        <h:outputText value="#{purchaseController.selected.dateOfPurchase}" title="#{bundle.ViewSponsorTitle_createdDate}">
+                                                                            <f:convertDateTime pattern="MM/dd/yyyy" />
+                                                                        </h:outputText>
+                                                                    </p:column>
+                                                                    <p:column>
+                                                                        <h:outputText value="#{purchaseController.selected.person.name}" title="#{bundle.ViewSponsorTitle_createdBy}"/>
+                                                                        <br/>
+                                                                        <br/>
+                                                                        <h:outputText value="#{purchaseController.selected.category.name}" title="#{bundle.ViewSponsorTitle_updatedDate}"/>
+                                                                    </p:column>
+                                                                    <p:column>
+                                                                        <p:graphicImage name="img/generic_photo.png" height="150" width="100" style="padding:1px; border:1px solid #909090; border-radius: 3px;"/>
+                                                                    </p:column>                                                                           
+                                                                    <p:column>                                                                                 
+                                                                        <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":PurchaseEditForm" oncomplete="PF('PurchaseEditDialog').show()" disabled="#{empty purchaseController.selected}"/>
+                                                                        <br/>
+                                                                        <br/>
+                                                                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" update=":PurchaseRemoveForm" oncomplete="PF('PurchaseRemoveDialog').show()" disabled="#{empty purchaseController.selected}"/>                                                                                 
+                                                                    </p:column>
+                                                                </p:row>
+                                                            </p:panelGrid>
+                                                        </p:panel>
+                                                    </div>
+                                                </div>    
+                                            </div>
+                                        </div>
+                                    </p:panel>
+                                </h:panelGroup>
+                            </h:form>
+                            <ui:include src="Create.xhtml"/>
+                            <ui:include src="Edit.xhtml"/>
+                            <ui:include src="View.xhtml"/>
+                            <ui:include src="Remove.xhtml"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define> 
+</ui:composition>
