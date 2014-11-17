@@ -41,28 +41,28 @@ public class PurchaseController implements Serializable {
     private List<PurchaseDto> items = null;
     private PurchaseDto selected;
     private String name = "";
-    private String category = "";
-    private String person = "";
+    private String category ;
+    private String person;
     private Boolean entry = false;
 
     public PurchaseController() {
 
     }
 
-    public Boolean getEntry() {
-        return entry;
+    public CategoryClientFacade getFacadeCategory() {
+        return facadeCategory;
     }
 
-    public void setEntry(Boolean entry) {
-        this.entry = entry;
+    public void setFacadeCategory(CategoryClientFacade facadeCategory) {
+        this.facadeCategory = facadeCategory;
     }
 
-    public String getName() {
-        return name;
+    public PersonClientFacade getFacadePerson() {
+        return facadePerson;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFacadePerson(PersonClientFacade facadePerson) {
+        this.facadePerson = facadePerson;
     }
 
     public String getCategory() {
@@ -79,6 +79,22 @@ public class PurchaseController implements Serializable {
 
     public void setPerson(String person) {
         this.person = person;
+    }
+    
+    public Boolean getEntry() {
+        return entry;
+    }
+
+    public void setEntry(Boolean entry) {
+        this.entry = entry;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -103,7 +119,9 @@ public class PurchaseController implements Serializable {
 
     public void filteredItems() {
         if (!name.isEmpty() || !person.isEmpty() || !category.isEmpty()) {
-            items = getFacade().findByName(name, person, category);
+            //int categoryID = facadeCategory.findIDByName(category);
+            //int personID = facadePerson.findIDByName(person);
+            items = getFacade().findByName(name, 0, 0);
         } else {
             items = getFacade().findAll();
         }

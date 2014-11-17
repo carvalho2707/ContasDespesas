@@ -194,8 +194,7 @@ public class CategoryClientFacade {
                     .prepareStatement("SELECT * FROM Category WHERE Name LIKE ?");
             query.setString(1, "%" + nameEnclosed + "%");
             ResultSet res = query.executeQuery();
-            String nome = res.getString("Name");
-            String descri = res.getString("Descricao");
+            identificador = res.getInt("ID");
             System.out.println("RESULTADO ->    " + identificador);
             conn.close();
         } catch (Exception e) {

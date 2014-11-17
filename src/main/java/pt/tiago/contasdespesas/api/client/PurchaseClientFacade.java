@@ -58,12 +58,12 @@ public class PurchaseClientFacade {
         return null;
     }
 
-    public List<PurchaseDto> findByName(String name, String person, String category) {
+    public List<PurchaseDto> findByName(String name, Integer person, Integer category) {
         List<PurchaseDto> lista = new ArrayList<PurchaseDto>();
         PreparedStatement query = null;
         try {
             createConenctionMySql();
-            if (!name.isEmpty() && category.isEmpty()) {
+            if (!name.isEmpty()) {
                 query = conn.prepareStatement("SELECT * FROM Purchase WHERE Name LIKE ?");
                 query.setString(1, "%" + name + "%");
             } 

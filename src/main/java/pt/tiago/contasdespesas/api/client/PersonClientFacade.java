@@ -170,5 +170,24 @@ public class PersonClientFacade {
             e.printStackTrace();
         }
     }
+    
+    public int findIDByName(String name) {
+        Integer identificador = 0;
+        try {
+            System.out.println("NAME A PEDIR ->    " + name);
+            Statement st = createConenctionMySql();
+            String nameEnclosed = name.replaceAll("\\s+", "%20");
+            PreparedStatement query = conn
+                    .prepareStatement("SELECT * FROM Person WHERE Name LIKE ?");
+            query.setString(1, "%" + nameEnclosed + "%");
+            ResultSet res = query.executeQuery();
+            identificador = res.getInt("ID");
+            System.out.println("RESULTADO ->    " + identificador);
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return identificador;
+    }
 
 }
