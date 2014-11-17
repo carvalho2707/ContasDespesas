@@ -41,8 +41,8 @@ public class PurchaseController implements Serializable {
     private List<PurchaseDto> items = null;
     private PurchaseDto selected;
     private String name = "";
-    private String category ;
-    private String person;
+    private String category = "";
+    private String person = "";
     private Boolean entry = false;
 
     public PurchaseController() {
@@ -80,7 +80,7 @@ public class PurchaseController implements Serializable {
     public void setPerson(String person) {
         this.person = person;
     }
-    
+
     public Boolean getEntry() {
         return entry;
     }

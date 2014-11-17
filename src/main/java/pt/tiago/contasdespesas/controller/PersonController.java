@@ -6,15 +6,19 @@
 package pt.tiago.contasdespesas.controller;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJBException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.primefaces.model.chart.Axis;
+import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.CartesianChartModel;
+import org.primefaces.model.chart.ChartSeries;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -38,11 +42,40 @@ public class PersonController implements Serializable {
     private PersonDto selected;
     private String name = "";
     private String surname = "";
+    private CartesianChartModel lineTotalYearModel;
     private Boolean entry = false;
 
     public PersonController() {
 
     }
+    public CartesianChartModel getLineTotalYearModel() {
+        if (lineTotalYearModel == null) {
+            createLineTotalMonthModel();
+        }
+        return lineTotalYearModel;
+    }
+
+    public void setLineTotalYearModel(CartesianChartModel lineTotalYearModel) {
+        this.lineTotalYearModel = lineTotalYearModel;
+    }
+
+    private void createLineTotalMonthModel() {
+        lineTotalYearModel = new CartesianChartModel();
+        ChartSeries chartSeries = new ChartSeries();
+        chartSeries.setLabel(selected.getName());
+        List<Integer> anos = ejbFacade.findYears();
+        Axis yAxis = lineTotalYearModel.getAxis(AxisType.Y);
+        int idPessoa = selected.getID();
+        double max = 20;
+        Collections.sort(anos);
+        for (Integer ano : anos) {
+            double valor = ejbFacade.findPersonTotalByYear(ano, idPessoa);
+            chartSeries.set(ano.toString(), valor);
+        }
+        lineTotalYearModel.addSeries(chartSeries);
+        yAxis.setMax(max);
+    }
+    
 
     public Boolean getEntry() {
         return entry;
@@ -107,6 +140,10 @@ public class PersonController implements Serializable {
 
     public void setItems(List<PersonDto> items) {
         this.items = items;
+    }
+    
+    public void populateCollections() {
+        lineTotalYearModel = null;
     }
 
     public PersonClientFacade getFacade() {

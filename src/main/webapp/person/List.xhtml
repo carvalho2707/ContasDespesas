@@ -8,100 +8,130 @@
                 xmlns:fn='http://java.sun.com/jsp/jstl/functions'>  
     <ui:define name="resource">#{bundle.PersonManagement}</ui:define>
     <ui:define name="filter">
-        <h:form id="PersonFilterForm">
-            <p:panel id="filter" styleClass="dataListDiv">
-                <h:panelGrid columns="10">
-                    <p:outputLabel value="#{bundle.Person}:" for="name" />
-                    <p:spacer width="5" height="10" />
-                    <p:inputText id="name" value="#{personController.name}" title="#{bundle.Person}"/>
-                    <p:spacer width="10" height="10" />
-                    <p:outputLabel value="#{bundle.Surname}:" for="type" />
-                    <p:spacer width="5" height="10" />
-                    <p:inputText id="type" value="#{personController.surname}" title="#{bundle.Surname}"/>
-                    <p:spacer width="10" height="10" />                            
-                    <p:commandButton update=":PersonListForm:tabela" actionListener="#{personController.filteredItems}" id="search" icon="ui-icon-search"  partialSubmit="false" title="Pesquisar" style="margin-top:-10px;"/>
-                    <p:commandButton id="clear" icon="ui-icon-closethick" title="Limpar Filtro" update="filter :PersonListForm:tabela" actionListener="#{personController.clear}" style="margin-top:-10px;">
-                        <p:resetInput target="filter" />  
-                    </p:commandButton>
-                </h:panelGrid> 
-            </p:panel>
-        </h:form>
-        <div id="ct100_updateMain">
-            <div class="idboxes">
-                <div class="container">
-                    <div class="row" style="position:relative; ">
-                        <div class="span12">                                    
-                            <h:form id="PersonListForm" styleClass="listForm">
-                                <p:panel id="tabela" styleClass="dataListDiv">
-                                    <p:commandButton style="margin-bottom:10px;" id="createButton" icon="ui-icon-plus"  value="#{bundle.Create}" actionListener="#{personController.prepareCreate}" update=":PersonCreateForm" oncomplete="PF('PersonCreateDialog').show()"/>
-                                    <p:dataTable id="datalist" value="#{personController.items}" var="item" selectionMode="single" 
-                                                 selection="#{personController.selected}" paginator="true" rowKey="#{item.ID}" 
-                                                 rows="10" paginatorPosition="bottom" styleClass="datalist">
-                                        <p:ajax event="rowSelect"   update=":PersonListForm:display2"/>                                                
-                                        <p:column sortBy="#{item.name}">
-                                            <f:facet name="header">
-                                                <h:outputText value="#{bundle.Person}"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.name}"/>
-                                        </p:column>
-                                        <p:column sortBy="#{item.surname}">
-                                            <f:facet name="header">
-                                                <h:outputText value="#{bundle.Surname}"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.surname}"/>
-                                        </p:column>
-                                    </p:dataTable>
-                                </p:panel> 
-                                <h:panelGroup id="display2" class="row">
-                                    <p:panel id="display" styleClass="genericPanel" rendered="#{!empty personController.selected}">
-                                        <div class ="row" id="detailedProfile">
-                                            <div class="span12">
-                                                <div class="modulewrap">
-                                                    <div class="moduletittle">
-                                                        <h4>
-                                                            #{bundle.PersonProfile}
-                                                        </h4>
+        <div>
+            <h:form id="PersonFilterForm">
+                <p:panel id="filter" header="Pesquisar" styleClass="dataListDiv">
+                    <h:panelGrid columns="10">
+                        <p:outputLabel value="#{bundle.Person}:" for="name" />
+                        <p:spacer width="5" height="10" />
+                        <p:inputText id="name" value="#{personController.name}" title="#{bundle.Person}"/>
+                        <p:spacer width="10" height="10" />
+                        <p:outputLabel value="#{bundle.Surname}:" for="type" />
+                        <p:spacer width="5" height="10" />
+                        <p:inputText id="type" value="#{personController.surname}" title="#{bundle.Surname}"/>
+                        <p:spacer width="10" height="10" />                                      
+                        <p:commandButton update=":PersonListForm:tabela :growl, :PersonListForm:display2, :PersonListForm:display3 " actionListener="#{personController.filteredItems}" id="search" icon="ui-icon-search"  partialSubmit="false" title="Pesquisar" style="margin-top:-10px;"/>
+                        <p:commandButton id="clear" icon="ui-icon-closethick" title="Limpar Filtro" update="filter :PersonListForm:tabela, :PersonListForm:display2, :PersonListForm:display3 " actionListener="#{personController.clear}" style="margin-top:-10px;">
+                            <p:resetInput target="filter" />
+                        </p:commandButton>
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+            <div id="page-wrap" style="padding-bottom: 30px;">
+                <div id="inside">
+                    <div id="ct100_updateMain">
+                        <div class="idboxes">
+                            <div class="container">
+                                <div class="row" style="position:relative; ">
+                                    <h:form id="PersonListForm" styleClass="listForm">
+                                        <br>
+                                            <span style="font-size: 12pt; font-weight: bold; color: red">
+                                                #{bundle.Person}
+                                            </span>
+                                        </br>
+                                        <p:panel id="tabela" styleClass="dataListDiv">
+                                            <p:commandButton style="margin-bottom:10px;" id="createButton" icon="ui-icon-plus"    value="#{bundle.Create}" actionListener="#{personController.prepareCreate}" update=":PersonCreateForm" oncomplete="PF('PersonCreateDialog').show()"/>
+                                            <p:dataTable id="datalist" value="#{personController.items}" var="item"
+                                                         selectionMode="single" selection="#{personController.selected}"
+                                                         paginator="true" rowKey="#{item.ID}" rows="10"
+                                                         paginatorPosition="bottom" styleClass="datalist">
+                                                <p:ajax event="rowSelect" listener="#{personController.populateCollections()}"   update=" :PersonListForm:display3 :PersonListForm:display2 "/>
+                                                <p:column sortBy="#{item.name}">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{bundle.Person}"/>
+                                                    </f:facet>
+                                                    <h:outputText value="#{item.name}"/>
+                                                </p:column>
+                                                <p:column sortBy="#{item.surname}">
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{bundle.Surname}"/>
+                                                    </f:facet>
+                                                    <h:outputText value="#{item.surname}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panel>
+                                        <h:panelGroup id="display2" class="row">
+                                            <p:panel id="display" styleClass="genericPanel" rendered="#{!empty personController.selected}">
+                                                <div class ="row" id="detailedProfile">
+                                                    <div class="span12">
+                                                        <div class="modulewrap">
+                                                            <div class="moduletittle">
+                                                                <h4>
+                                                                    #{bundle.PersonProfile}
+                                                                </h4>
+                                                            </div>
+                                                            <div class="modulecontent gpslist" style="padding: 25px">
+                                                                <p:panel style="border: none !important;">
+                                                                    <p:panelGrid id="panelPerson" styleClass="perfil" rendered="#{!empty personController.selected}">
+                                                                        <f:facet name ="header">
+                                                                        </f:facet>
+                                                                        <p:row>
+                                                                            <p:column colspan="2">
+                                                                                <h:outputText value="#{bundle.Person}" styleClass="bold"/>
+                                                                            </p:column>                                                                          
+                                                                        </p:row>
+                                                                        <p:row>
+                                                                            <p:column style="width: 250px;">
+                                                                                <h:outputText value="#{personController.selected.name}"/>
+                                                                                <br/>
+                                                                                <br/>
+                                                                                <h:outputText value="#{personController.selected.surname}"/>
+                                                                            </p:column>
+                                                                            <p:column>
+                                                                                <p:graphicImage name="img/generic_photo.png" height="150" width="100" style="padding:1px; border:1px solid #909090; border-radius: 3px;"/>
+                                                                            </p:column>                                                                           
+                                                                            <p:column>                                                                                 
+                                                                                <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":PersonEditForm" oncomplete="PF('PersonEditDialog').show()" disabled="#{empty personController.selected}"/>
+                                                                                <br/>
+                                                                                <br/>
+                                                                                <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" update=":PersonRemoveForm" oncomplete="PF('PersonRemoveDialog').show()" disabled="#{empty personController.selected}"/>                                                                                 
+                                                                            </p:column>
+                                                                        </p:row>
+                                                                    </p:panelGrid>
+                                                                </p:panel>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="modulecontent gpslist" style="padding: 25px">
-                                                        <p:panel style="border: none !important;">
-                                                            <p:panelGrid id="panelPerson" styleClass="perfil" rendered="#{!empty personController.selected}">
-                                                                <f:facet name ="header">
-                                                                </f:facet>
-                                                                <p:row>
-                                                                    <p:column colspan="2">
-                                                                        <h:outputText value="#{bundle.Person}" styleClass="bold"/>
-                                                                    </p:column>                                                                          
-                                                                </p:row>
-                                                                <p:row>
-                                                                    <p:column style="width: 250px;">
-                                                                        <h:outputText value="#{personController.selected.name}"/>
-                                                                        <br/>
-                                                                        <br/>
-                                                                        <h:outputText value="#{personController.selected.surname}"/>
-                                                                    </p:column>
-                                                                    <p:column>
-                                                                        <p:graphicImage name="img/generic_photo.png" height="150" width="100" style="padding:1px; border:1px solid #909090; border-radius: 3px;"/>
-                                                                    </p:column>                                                                           
-                                                                    <p:column>                                                                                 
-                                                                        <p:commandButton id="editButton"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":PersonEditForm" oncomplete="PF('PersonEditDialog').show()" disabled="#{empty personController.selected}"/>
-                                                                        <br/>
-                                                                        <br/>
-                                                                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="#{bundle.Delete}" update=":PersonRemoveForm" oncomplete="PF('PersonRemoveDialog').show()" disabled="#{empty personController.selected}"/>                                                                                 
-                                                                    </p:column>
-                                                                </p:row>
-                                                            </p:panelGrid>
-                                                        </p:panel>
+                                                </div>
+                                            </p:panel>
+                                        </h:panelGroup>
+                                        <h:panelGroup id="display3" class="row">
+                                            <p:panel id="display4" styleClass="genericPanel" rendered="#{!empty personController.selected}">
+                                                <div class ="row" id="detailedProfile">
+                                                    <div class="span12">
+                                                        <div class="modulewrap">
+                                                            <div class="moduletittle">
+                                                                <h4>
+                                                                    #{bundle.EvoluTionByYear}
+                                                                </h4>
+                                                            </div>
+                                                            <h:form id="PersonListForm" styleClass="listForm">
+                                                                <p:panel id="tabela5" styleClass="dataListDiv">
+                                                                    <p:lineChart id="linear" value="#{personController.lineTotalYearModel}" legendPosition="e"  
+                                                                                 title="#{bundle.TotalByPerson}" style="height:300px" yaxisLabel="#{bundle.LabelYaxisEuro}"/>
+                                                                </p:panel> 
+                                                            </h:form>
+                                                        </div>
                                                     </div>
-                                                </div>    
-                                            </div>
-                                        </div>
-                                    </p:panel>
-                                </h:panelGroup>
-                            </h:form>
-                            <ui:include src="Create.xhtml"/>
-                            <ui:include src="Edit.xhtml"/>
-                            <ui:include src="View.xhtml"/>
-                            <ui:include src="Remove.xhtml"/>
+                                                </div>
+                                            </p:panel>
+                                        </h:panelGroup>
+                                    </h:form>
+                                    <ui:include src="Create.xhtml"/>
+                                    <ui:include src="Edit.xhtml"/>
+                                    <ui:include src="Remove.xhtml"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

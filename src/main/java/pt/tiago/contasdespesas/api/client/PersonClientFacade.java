@@ -189,5 +189,39 @@ public class PersonClientFacade {
         }
         return identificador;
     }
+    public ArrayList<Integer> findYears() {
+        ArrayList<Integer> lista = new ArrayList<Integer>();
+        try {
+            Statement st = createConenctionMySql();
+            ResultSet res = st.executeQuery("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
+            while (res.next()) {
+                int valor = res.getInt("ano");
+                lista.add(valor);
+            }
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+    
+    public double findPersonTotalByYear(int ano, int pessoa) {
+        double total = 0.0;
+        try {
+            Statement st = createConenctionMySql();
+            ResultSet res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE PersonID = " + pessoa + " AND Year(DateOfPurchase) = " + ano);
+            while (res.next()) {
+                total = res.getDouble("Sumatorio");
+
+            }
+            conn.close();
+        } catch (Exception e) {
+            total = 0.0;
+            e.printStackTrace();
+
+        }
+        return total;
+    }
+    
 
 }
