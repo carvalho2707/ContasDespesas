@@ -1,5 +1,5 @@
-Pensar se deve por grafico de despesas por ano em vez de so mes em cada ecra
-Por no ecra pessoas o gasto por mes do presente ano
-Por vistas a actualizar quando se sai de uma
-
-teste comid
+Procurar categoria da erro no mysql
+Procurar pessoa da erro no mysql
+Procurar apelido da pessoa nao da resultados
+Procurar compra da erro no mysql
+Ver vistas que ao procura e clear nao limpam o ecra todo
