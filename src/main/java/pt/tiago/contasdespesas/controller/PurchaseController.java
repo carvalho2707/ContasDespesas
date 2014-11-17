@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJBException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -18,6 +17,8 @@ import javax.faces.convert.FacesConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import pt.tiago.contasdespesas.api.client.CategoryClientFacade;
+import pt.tiago.contasdespesas.api.client.PersonClientFacade;
 import pt.tiago.contasdespesas.api.client.PurchaseClientFacade;
 import pt.tiago.contasdespesas.dto.PurchaseDto;
 import pt.tiago.contasdespesas.util.JsfUtil;
@@ -32,7 +33,11 @@ import pt.tiago.contasdespesas.util.JsfUtil.PersistAction;
 public class PurchaseController implements Serializable {
 
     @Autowired
-    private pt.tiago.contasdespesas.api.client.PurchaseClientFacade ejbFacade;
+    private PurchaseClientFacade ejbFacade;
+    @Autowired
+    private CategoryClientFacade facadeCategory;
+    @Autowired
+    private PersonClientFacade facadePerson;
     private List<PurchaseDto> items = null;
     private PurchaseDto selected;
     private String name = "";

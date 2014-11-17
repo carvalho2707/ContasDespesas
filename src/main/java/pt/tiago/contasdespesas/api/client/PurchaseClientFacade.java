@@ -60,9 +60,14 @@ public class PurchaseClientFacade {
 
     public List<PurchaseDto> findByName(String name, String person, String category) {
         List<PurchaseDto> lista = new ArrayList<PurchaseDto>();
+        PreparedStatement query = null;
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT * FROM Purchase where Name LIKE '%'" + name + "'%'");
+            createConenctionMySql();
+            if (!name.isEmpty() && category.isEmpty()) {
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE Name LIKE ?");
+                query.setString(1, "%" + name + "%");
+            } 
+            ResultSet res = query.executeQuery();
             while (res.next()) {
                 purchaseDto = new PurchaseDto();
                 int id = res.getInt("ID");
@@ -78,7 +83,6 @@ public class PurchaseClientFacade {
                 purchaseDto.setCategoryID(categoryID);
                 purchaseDto.setPrice(price);
                 lista.add(purchaseDto);
-                System.out.println(id + "\t" + nome + "\t" + data.toString() + "\t" + personID + "\t" + categoryID + "\t" + price + "\t");
             }
             conn.close();
         } catch (Exception e) {
@@ -108,7 +112,6 @@ public class PurchaseClientFacade {
                 purchaseDto.setCategoryID(categoryID);
                 purchaseDto.setPrice(price);
                 lista.add(purchaseDto);
-                System.out.println(id + "\t" + nome + "\t" + data.toString() + "\t" + personID + "\t" + categoryID + "\t" + price + "\t");
             }
             if (!lista.isEmpty()) {
                 for (PurchaseDto purchase : lista) {
@@ -164,7 +167,6 @@ public class PurchaseClientFacade {
                 purchaseDto.setPersonID(personID);
                 purchaseDto.setCategoryID(categoryID);
                 purchaseDto.setPrice(price);
-                System.out.println(identificador + "\t" + nome + "\t" + data.toString() + "\t" + personID + "\t" + categoryID + "\t" + price + "\t");
             }
             conn.close();
         } catch (Exception e) {
@@ -179,7 +181,6 @@ public class PurchaseClientFacade {
             String query = "INSERT INTO Purchase (ItemName,DateOfPurchase,PersonID,CategoryID,Price) VALUES (" + "'" + dto.getItemName() + "'" + "," + "'" + dto.getDateOfPurchase() + "'" + "," + dto.getPersonID() + "," + dto.getPersonID() + "," + dto.getCategoryID() + "," + dto.getPrice() + ")";
             System.out.println("Query to execute = " + query);
             int output = st.executeUpdate(query);
-            System.out.println("Result query create Purchase = " + output);
             conn.close();
         } catch (Exception e) {
             System.err.println("Execpcao no create Purchase");
@@ -213,7 +214,6 @@ public class PurchaseClientFacade {
             query.setDouble(5, dto.getPrice());
             query.setInt(6, dto.getID());
             int output = query.executeUpdate();
-            System.out.println("Result query edit Purchase = " + output);
             conn.close();
         } catch (Exception e) {
             System.err.println("Execpcao no edit Purchase");
@@ -226,8 +226,8 @@ public class PurchaseClientFacade {
         try {
             Statement st = createConenctionMySql();
             ResultSet res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE CategoryID = " + id + " AND Year(DateOfPurchase) = " + ano);
-            while(res.next()){
-                 total = res.getDouble("Sumatorio");
+            while (res.next()) {
+                total = res.getDouble("Sumatorio");
             }
             conn.close();
         } catch (Exception e) {
