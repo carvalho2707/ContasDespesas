@@ -93,7 +93,7 @@
                                                                         <h:outputText value="#{bundle.DateOfPurchase}" styleClass="bold"/>
                                                                     </p:column>
                                                                     <p:column colspan="">
-                                                                        <h:outputText value="#{bundle.PersonName} and #{bundle.CategoryName} " styleClass="bold"/>
+                                                                        <h:outputText value="#{bundle.PersonName} / #{bundle.CategoryName} " styleClass="bold"/>
                                                                     </p:column> 
                                                                 </p:row>
                                                                 <p:row>
@@ -104,15 +104,15 @@
                                                                         <h:outputText value="#{purchaseController.selected.price}"/>
                                                                     </p:column>
                                                                     <p:column style="width: 250px;">
-                                                                        <h:outputText value="#{purchaseController.selected.dateOfPurchase}" title="#{bundle.ViewSponsorTitle_createdDate}">
+                                                                        <h:outputText value="#{purchaseController.selected.dateOfPurchase}" >
                                                                             <f:convertDateTime pattern="MM/dd/yyyy" />
                                                                         </h:outputText>
                                                                     </p:column>
                                                                     <p:column>
-                                                                        <h:outputText value="#{purchaseController.selected.person.name}" title="#{bundle.ViewSponsorTitle_createdBy}"/>
+                                                                        <h:outputText value="#{purchaseController.selected.person.name}" />
                                                                         <br/>
                                                                         <br/>
-                                                                        <h:outputText value="#{purchaseController.selected.category.name}" title="#{bundle.ViewSponsorTitle_updatedDate}"/>
+                                                                        <h:outputText value="#{purchaseController.selected.category.name}" />
                                                                     </p:column>
                                                                     <p:column>
                                                                         <p:graphicImage name="img/generic_photo.png" height="150" width="100" style="padding:1px; border:1px solid #909090; border-radius: 3px;"/>
