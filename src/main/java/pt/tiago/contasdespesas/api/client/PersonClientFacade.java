@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.Stateless;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.PersonDto;
 
@@ -39,16 +38,12 @@ public class PersonClientFacade {
                     userName, password);
             return conn.createStatement();
         } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
@@ -56,9 +51,21 @@ public class PersonClientFacade {
 
     public List<PersonDto> findByName(String name, String surname) {
         List<PersonDto> lista = new ArrayList<PersonDto>();
+        PreparedStatement query = null;
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT * FROM Person where Name LIKE '%'" + name + "'%'");
+            createConenctionMySql();
+            if (!name.isEmpty() && surname.isEmpty()) {
+                query = conn.prepareStatement("SELECT * FROM Person WHERE Name LIKE ?");
+                query.setString(1, "%" + name + "%");
+            } else if (name.isEmpty() && !surname.isEmpty()) {
+                query = conn.prepareStatement("SELECT * FROM Person WHERE Surname LIKE ?");
+                query.setString(2, "%" + surname + "%");
+            } else if (!name.isEmpty() && !surname.isEmpty()) {
+                query = conn.prepareStatement("SELECT * FROM Person WHERE Name LIKE ? AND Surname LIKE ?");
+                query.setString(1, "%" + name + "%");
+                query.setString(2, "%" + surname + "%");
+            }
+            ResultSet res = query.executeQuery();
             while (res.next()) {
                 personDto = new PersonDto();
                 int id = res.getInt("ID");
@@ -68,13 +75,11 @@ public class PersonClientFacade {
                 personDto.setName(nome);
                 personDto.setSurname(surnameQ);
                 lista.add(personDto);
-                System.out.println(id + "\t" + nome + "\t" + surnameQ + "\t");
             }
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return lista;
     }
 
@@ -92,7 +97,6 @@ public class PersonClientFacade {
                 personDto.setName(name);
                 personDto.setSurname(surname);
                 lista.add(personDto);
-                System.out.println(id + "\t" + name + "\t" + surname + "\t");
             }
             conn.close();
         } catch (Exception e) {
@@ -114,7 +118,6 @@ public class PersonClientFacade {
                 personDto.setID(id);
                 personDto.setName(name);
                 personDto.setSurname(surname);
-                System.out.println(identificador + "\t" + name + "\t" + surname + "\t");
             }
             conn.close();
         } catch (Exception e) {

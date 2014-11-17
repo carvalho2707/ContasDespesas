@@ -36,29 +36,6 @@ public class CategoryClientFacade {
     private final String userName = "root";
     private final String password = "tiago";
 
-    private Statement createConnectionJavaDb() {
-
-        try {
-            Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
-            conn = DriverManager.getConnection(dbURL);
-            return conn.createStatement();
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-
-    }
-
     private Statement createConenctionMySql() {
         try {
             Class.forName(driver).newInstance();
@@ -84,10 +61,11 @@ public class CategoryClientFacade {
     public List<CategoryDto> findByName(String name) {
         List<CategoryDto> lista = new ArrayList<CategoryDto>();
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st
-                    .executeQuery("SELECT * FROM Category where Name LIKE '%'"
-                            + name + "'%'");
+            createConenctionMySql();
+            PreparedStatement query = conn
+                    .prepareStatement("SELECT * FROM Category WHERE Name LIKE ?");
+            query.setString(1, "%" + name + "%");
+            ResultSet res = query.executeQuery();
             while (res.next()) {
                 categoryDto = new CategoryDto();
                 int id = res.getInt("ID");
@@ -97,8 +75,6 @@ public class CategoryClientFacade {
                 categoryDto.setName(nome);
                 categoryDto.setDescription(description);
                 lista.add(categoryDto);
-                System.out
-                        .println(id + "\t" + nome + "\t" + description + "\t");
             }
             conn.close();
         } catch (Exception e) {
@@ -122,8 +98,6 @@ public class CategoryClientFacade {
                 categoryDto.setName(name);
                 categoryDto.setDescription(description);
                 lista.add(categoryDto);
-                System.out
-                        .println(id + "\t" + name + "\t" + description + "\t");
             }
             conn.close();
         } catch (Exception e) {
