@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategoryDto;
+import pt.tiago.contasdespesas.dto.SubCategoryDto;
 
 /**
  *
@@ -21,6 +22,7 @@ public class CategoryClientFacade {
     private String dbURL = "jdbc:derby://localhost:1527/ContasDespesas;create=true;user=tiago;password=tiago";
     private Connection conn = null;
     private CategoryDto categoryDto = null;
+    private SubCategoryDto subCategoryDto = null;
     private final String url = "jdbc:mysql://localhost:3306/";
     private final String dbName = "ContasDespesas";
     private final String driver = "com.mysql.jdbc.Driver";
@@ -85,6 +87,29 @@ public class CategoryClientFacade {
                 categoryDto.setName(name);
                 categoryDto.setDescription(description);
                 lista.add(categoryDto);
+            }
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+    
+    public List<SubCategoryDto> findAllSub(int categoryID) {
+        List<SubCategoryDto> lista = new ArrayList<SubCategoryDto>();
+        try {
+            Statement st = createConenctionMySql();
+            ResultSet res = st.executeQuery("SELECT * FROM SubCategory where CategoryID = " + categoryID);
+            while (res.next()) {
+                subCategoryDto = new SubCategoryDto();
+                int id = res.getInt("ID");
+                String name = res.getString("Name");
+                String description = res.getString("Descricao");
+                subCategoryDto.setID(id);
+                subCategoryDto.setName(name);
+                subCategoryDto.setDescription(description);
+                lista.add(subCategoryDto);
             }
             conn.close();
         } catch (Exception e) {

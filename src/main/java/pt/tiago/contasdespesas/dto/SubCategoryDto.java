@@ -6,7 +6,7 @@ import java.io.Serializable;
  *
  * @author Tiago Carvalho
  */
-public class SubCategory implements Serializable {
+public class SubCategoryDto implements Serializable {
     private int ID;
     private String Name;
     private String Description;
