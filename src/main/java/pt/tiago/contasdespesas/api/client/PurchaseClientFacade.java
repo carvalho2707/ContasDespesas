@@ -21,12 +21,14 @@ import pt.tiago.contasdespesas.dto.PurchaseDto;
 @Component
 public class PurchaseClientFacade {
 
-    private Connection conn = null;
-    private final String url = "jdbc:mysql://localhost:3306/";
-    private final String dbName = "ContasDespesas";
-    private final String driver = "com.mysql.jdbc.Driver";
-    private final String userName = "root";
-    private final String password = "tiago";
+    private transient Connection conn;
+    private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
+    private static final String driver = "com.mysql.jdbc.Driver";
+    private static final String userName = "root";
+    private static final String password = "tiago";
+    private ResultSet res = null;
+    private PreparedStatement query = null;
+    private Statement st = null;
     private PurchaseDto purchaseDto = null;
     private CategoryDto categoryDto = null;
     private PersonDto personDto = null;
@@ -34,7 +36,7 @@ public class PurchaseClientFacade {
     private Statement createConenctionMySql() {
         try {
             Class.forName(driver).newInstance();
-            conn = DriverManager.getConnection(url + dbName,
+            conn = DriverManager.getConnection(urlDbName,
                     userName, password);
             return conn.createStatement();
         } catch (InstantiationException e) {
@@ -49,15 +51,21 @@ public class PurchaseClientFacade {
         return null;
     }
 
+    private void closeConnections() throws SQLException {
+        conn.close();
+        res.close();
+        query.close();
+        st.close();
+    }
+
     public List<PurchaseDto> findByName(String name, Integer person, Integer category) {
         List<PurchaseDto> lista = new ArrayList<PurchaseDto>();
-        PreparedStatement query = null;
         try {
             createConenctionMySql();
             if (!name.isEmpty()) {
                 query = conn.prepareStatement("SELECT * FROM Purchase WHERE Name LIKE ?");
                 query.setString(1, "%" + name + "%");
-            } 
+            }
             ResultSet res = query.executeQuery();
             while (res.next()) {
                 purchaseDto = new PurchaseDto();
@@ -75,7 +83,7 @@ public class PurchaseClientFacade {
                 purchaseDto.setPrice(price);
                 lista.add(purchaseDto);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -86,8 +94,8 @@ public class PurchaseClientFacade {
     public List<PurchaseDto> findAll() {
         List<PurchaseDto> lista = new ArrayList<PurchaseDto>();
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT * FROM Purchase");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT * FROM Purchase");
             while (res.next()) {
                 purchaseDto = new PurchaseDto();
                 int id = res.getInt("ID");
@@ -132,7 +140,7 @@ public class PurchaseClientFacade {
                     }
                 }
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -142,8 +150,8 @@ public class PurchaseClientFacade {
 
     public PurchaseDto findByID(int id) {
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT * FROM Purchase where ID = " + id);
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT * FROM Purchase where ID = " + id);
             while (res.next()) {
                 purchaseDto = new PurchaseDto();
                 int identificador = res.getInt("ID");
@@ -159,7 +167,7 @@ public class PurchaseClientFacade {
                 purchaseDto.setCategoryID(categoryID);
                 purchaseDto.setPrice(price);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -168,12 +176,11 @@ public class PurchaseClientFacade {
 
     public void create(PurchaseDto dto) {
         try {
-            Statement st = createConenctionMySql();
-            String query = "INSERT INTO Purchase (ItemName,DateOfPurchase,PersonID,CategoryID,Price) VALUES (" + "'" + dto.getItemName() + "'" + "," + "'" + dto.getDateOfPurchase() + "'" + "," + dto.getPersonID() + "," + dto.getPersonID() + "," + dto.getCategoryID() + "," + dto.getPrice() + ")";
-            st.executeUpdate(query);
-            conn.close();
+            st = createConenctionMySql();
+            String queryTo = "INSERT INTO Purchase (ItemName,DateOfPurchase,PersonID,CategoryID,Price) VALUES (" + "'" + dto.getItemName() + "'" + "," + "'" + dto.getDateOfPurchase() + "'" + "," + dto.getPersonID() + "," + dto.getPersonID() + "," + dto.getCategoryID() + "," + dto.getPrice() + ")";
+            st.executeUpdate(queryTo);
+            closeConnections();
         } catch (Exception e) {
-            System.err.println("Execpcao no create Purchase");
             e.printStackTrace();
         }
 
@@ -181,12 +188,11 @@ public class PurchaseClientFacade {
 
     public void remove(PurchaseDto dto) {
         try {
-            Statement st = createConenctionMySql();
-            String query = "DELETE FROM Purchase WHERE ID =" + dto.getID();
-            st.executeUpdate(query);
-            conn.close();
+            st = createConenctionMySql();
+            String queryTo = "DELETE FROM Purchase WHERE ID =" + dto.getID();
+            st.executeUpdate(queryTo);
+            closeConnections();
         } catch (Exception e) {
-            System.err.println("Execpcao no remove Purchase");
             e.printStackTrace();
         }
     }
@@ -194,7 +200,7 @@ public class PurchaseClientFacade {
     public void edit(PurchaseDto dto) {
         try {
             createConenctionMySql();
-            PreparedStatement query = conn.prepareStatement("UPDATE Purchase SET ItemName = ? , DateOfPurchase = ?, PersonID = ?, CategoryID = ?, Price = ? WHERE ID = ?");
+            query = conn.prepareStatement("UPDATE Purchase SET ItemName = ? , DateOfPurchase = ?, PersonID = ?, CategoryID = ?, Price = ? WHERE ID = ?");
             query.setString(1, dto.getItemName());
             query.setDate(2, (Date.valueOf(dto.getDateOfPurchase().toString())));
             query.setDouble(3, dto.getPersonID());
@@ -202,9 +208,8 @@ public class PurchaseClientFacade {
             query.setDouble(5, dto.getPrice());
             query.setInt(6, dto.getID());
             query.executeUpdate();
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
-            System.err.println("Execpcao no edit Purchase");
             e.printStackTrace();
         }
     }
@@ -212,12 +217,12 @@ public class PurchaseClientFacade {
     public double findTotalYear(int ano, int id) {
         double total = 0.0;
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE CategoryID = " + id + " AND Year(DateOfPurchase) = " + ano);
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE CategoryID = " + id + " AND Year(DateOfPurchase) = " + ano);
             while (res.next()) {
                 total = res.getDouble("Sumatorio");
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }

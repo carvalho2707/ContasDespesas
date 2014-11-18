@@ -19,25 +19,35 @@ import pt.tiago.contasdespesas.dto.SubCategoryDto;
  */
 @Component
 public class CategoryClientFacade implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
 
-    private transient  Connection conn;
+    private transient Connection conn;
     private CategoryDto categoryDto = null;
     private SubCategoryDto subCategoryDto = null;
-    private static final  String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
+    private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
     private static final String driver = "com.mysql.jdbc.Driver";
     private static final String userName = "root";
     private static final String password = "tiago";
+    private ResultSet res = null;
+    private PreparedStatement query = null;
+    private Statement st = null;
 
     public CategoryClientFacade() {
         this.conn = null;
     }
 
+    private void closeConnections() throws SQLException {
+        conn.close();
+        res.close();
+        query.close();
+        st.close();
+    }
+
     private Statement createConenctionMySql() {
         try {
             Class.forName(driver).newInstance();
-             conn = DriverManager.getConnection(urlDbName,
+            conn = DriverManager.getConnection(urlDbName,
                     userName, password);
             return conn.createStatement();
         } catch (InstantiationException e) {
@@ -56,10 +66,10 @@ public class CategoryClientFacade implements Serializable {
         List<CategoryDto> lista = new ArrayList<CategoryDto>();
         try {
             createConenctionMySql();
-            PreparedStatement query = conn
+            query = conn
                     .prepareStatement("SELECT * FROM Category WHERE Name LIKE ?");
             query.setString(1, "%" + name + "%");
-            ResultSet res = query.executeQuery();
+            res = query.executeQuery();
             while (res.next()) {
                 categoryDto = new CategoryDto();
                 int id = res.getInt("ID");
@@ -70,7 +80,7 @@ public class CategoryClientFacade implements Serializable {
                 categoryDto.setDescription(description);
                 lista.add(categoryDto);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,8 +91,8 @@ public class CategoryClientFacade implements Serializable {
     public List<CategoryDto> findAll() {
         List<CategoryDto> lista = new ArrayList<CategoryDto>();
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT * FROM Category");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT * FROM Category");
             while (res.next()) {
                 categoryDto = new CategoryDto();
                 int id = res.getInt("ID");
@@ -93,19 +103,19 @@ public class CategoryClientFacade implements Serializable {
                 categoryDto.setDescription(description);
                 lista.add(categoryDto);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return lista;
     }
-    
+
     public List<SubCategoryDto> findAllSub(int categoryID) {
         List<SubCategoryDto> lista = new ArrayList<SubCategoryDto>();
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT * FROM SubCategory where CategoryID = " + categoryID);
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT * FROM SubCategory where CategoryID = " + categoryID);
             while (res.next()) {
                 subCategoryDto = new SubCategoryDto();
                 int id = res.getInt("ID");
@@ -116,7 +126,7 @@ public class CategoryClientFacade implements Serializable {
                 subCategoryDto.setDescription(description);
                 lista.add(subCategoryDto);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -126,9 +136,8 @@ public class CategoryClientFacade implements Serializable {
 
     public CategoryDto findByID(int id) {
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st
-                    .executeQuery("SELECT * FROM Category where ID = " + id);
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT * FROM Category where ID = " + id);
             while (res.next()) {
                 categoryDto = new CategoryDto();
                 int identificador = res.getInt("ID");
@@ -138,7 +147,7 @@ public class CategoryClientFacade implements Serializable {
                 categoryDto.setName(name);
                 categoryDto.setDescription(description);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -147,16 +156,16 @@ public class CategoryClientFacade implements Serializable {
 
     public void create(CategoryDto dto) {
         try {
-            Statement st = createConenctionMySql();
-            String query = "INSERT INTO Category (Name,Descricao) VALUES ("
+            st = createConenctionMySql();
+            String queryTo = "INSERT INTO Category (Name,Descricao) VALUES ("
                     + "'"
                     + dto.getName()
                     + "'"
                     + ","
                     + "'"
                     + dto.getDescription() + "'" + ")";
-            st.executeUpdate(query);
-            conn.close();
+            st.executeUpdate(queryTo);
+            closeConnections();
         } catch (Exception e) {
             System.err.println("Execpcao no create category");
             e.printStackTrace();
@@ -166,10 +175,10 @@ public class CategoryClientFacade implements Serializable {
 
     public void remove(CategoryDto dto) {
         try {
-            Statement st = createConenctionMySql();
-            String query = "DELETE FROM Category WHERE ID =" + dto.getID();
-            st.executeUpdate(query);
-            conn.close();
+            st = createConenctionMySql();
+            String queryTo = "DELETE FROM Category WHERE ID =" + dto.getID();
+            st.executeUpdate(queryTo);
+            closeConnections();
         } catch (Exception e) {
             System.err.println("Execpcao no remove category");
             e.printStackTrace();
@@ -179,13 +188,13 @@ public class CategoryClientFacade implements Serializable {
     public void edit(CategoryDto dto) {
         try {
             createConenctionMySql();
-            PreparedStatement query = conn
+            query = conn
                     .prepareStatement("UPDATE Category SET Name = ? , Descricao = ? WHERE ID = ?");
             query.setString(1, dto.getName());
             query.setString(2, dto.getDescription());
             query.setInt(3, dto.getID());
             query.executeUpdate();
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             System.err.println("Execpcao no edit category");
             e.printStackTrace();
@@ -197,12 +206,12 @@ public class CategoryClientFacade implements Serializable {
         try {
             createConenctionMySql();
             String nameEnclosed = name.replaceAll("\\s+", "%20");
-            PreparedStatement query = conn
+            query = conn
                     .prepareStatement("SELECT * FROM Category WHERE Name LIKE ?");
             query.setString(1, "%" + nameEnclosed + "%");
-            ResultSet res = query.executeQuery();
+            res = query.executeQuery();
             identificador = res.getInt("ID");
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -212,13 +221,13 @@ public class CategoryClientFacade implements Serializable {
     public List<String> findAllNames() {
         List<String> lista = new ArrayList<String>();
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT Name FROM Category");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT Name FROM Category");
             while (res.next()) {
                 String name = res.getString("Name");
                 lista.add(name);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -228,13 +237,13 @@ public class CategoryClientFacade implements Serializable {
     public ArrayList<Integer> findYears() {
         ArrayList<Integer> lista = new ArrayList<Integer>();
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
             while (res.next()) {
                 int valor = res.getInt("ano");
                 lista.add(valor);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -244,12 +253,12 @@ public class CategoryClientFacade implements Serializable {
     public double findCategoryTotalByYear(int ano, int categoria) {
         double total = 0.0;
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE CategoryID = " + categoria + " AND Year(DateOfPurchase) = " + ano);
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE CategoryID = " + categoria + " AND Year(DateOfPurchase) = " + ano);
             while (res.next()) {
                 total = res.getDouble("Sumatorio");
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             total = 0.0;
             e.printStackTrace();

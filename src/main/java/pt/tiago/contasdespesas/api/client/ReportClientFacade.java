@@ -26,14 +26,15 @@ import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
 @Component
 public class ReportClientFacade {
 
-    private Connection conn = null;
     private PurchaseSumByMonthDto categoryByMonth = null;
     private Month[] mes = Month.values();
-    private final String url = "jdbc:mysql://localhost:3306/";
-    private final String dbName = "ContasDespesas";
-    private final String driver = "com.mysql.jdbc.Driver";
-    private final String userName = "root";
-    private final String password = "tiago";
+    private transient Connection conn;
+    private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
+    private static final String driver = "com.mysql.jdbc.Driver";
+    private static final String userName = "root";
+    private static final String password = "tiago";
+    private ResultSet res = null;
+    private Statement st = null;
 
     public Month[] getMes() {
         return mes;
@@ -43,10 +44,16 @@ public class ReportClientFacade {
         this.mes = mes;
     }
 
+    private void closeConnections() throws SQLException {
+        conn.close();
+        res.close();
+        st.close();
+    }
+
     private Statement createConenctionMySql() {
         try {
             Class.forName(driver).newInstance();
-            conn = DriverManager.getConnection(url + dbName,
+            conn = DriverManager.getConnection(urlDbName,
                     userName, password);
             return conn.createStatement();
         } catch (InstantiationException e) {
@@ -64,8 +71,8 @@ public class ReportClientFacade {
     public List<PurchaseSumByMonthDto> findAllByMonth() {
         List<PurchaseSumByMonthDto> lista = new ArrayList<PurchaseSumByMonthDto>();
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("Select sum(Price) as Sumatorio, MONTH(DateOfPurchase) as Mes, CategoryID from Purchase group by CategoryID ,MONTH(DateOfPurchase)");
+            st = createConenctionMySql();
+            res = st.executeQuery("Select sum(Price) as Sumatorio, MONTH(DateOfPurchase) as Mes, CategoryID from Purchase group by CategoryID ,MONTH(DateOfPurchase)");
             while (res.next()) {
                 categoryByMonth = new PurchaseSumByMonthDto();
                 int id = res.getInt("CategoryID");
@@ -86,7 +93,7 @@ public class ReportClientFacade {
                     }
                 }
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,9 +104,8 @@ public class ReportClientFacade {
     public PurchaseSumByMonthDto[] findTotalPersonByNameByMonth(int identificador, int categoryID) {
         PurchaseSumByMonthDto[] purchase = new PurchaseSumByMonthDto[12];
         PurchaseSumByMonthDto temp;
-        ResultSet res = null;
         try {
-            Statement st = createConenctionMySql();
+            st = createConenctionMySql();
             if (categoryID == -1) {
                 res = st.executeQuery("SELECT SUM(Price) AS Sumatorio, MONTH(DateOfPurchase) AS Mes FROM Purchase WHERE PersonID = " + identificador + " GROUP BY MONTH(DateOfPurchase)");
             } else {
@@ -115,7 +121,7 @@ public class ReportClientFacade {
                 temp.setTotal(total);
                 purchase[pos] = temp;
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -127,8 +133,8 @@ public class ReportClientFacade {
         List<PersonDto> lista = new ArrayList<PersonDto>();
         PersonDto personDto;
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT * FROM Person");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT * FROM Person");
             while (res.next()) {
                 personDto = new PersonDto();
                 int id = res.getInt("ID");
@@ -138,9 +144,8 @@ public class ReportClientFacade {
                 personDto.setName(name);
                 personDto.setSurname(surname);
                 lista.add(personDto);
-                System.out.println(id + "\t" + name + "\t" + surname + "\t");
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -153,8 +158,8 @@ public class ReportClientFacade {
         PurchaseSumByYearDto[] purchase = new PurchaseSumByYearDto[tamanho + 1];
         PurchaseSumByYearDto temp;
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT SUM(Price) AS Sumatorio, Year(DateOfPurchase) AS Ano FROM Purchase WHERE PersonID = " + identificador + " GROUP BY Year(DateOfPurchase)");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio, Year(DateOfPurchase) AS Ano FROM Purchase WHERE PersonID = " + identificador + " GROUP BY Year(DateOfPurchase)");
             while (res.next()) {
                 temp = new PurchaseSumByYearDto();
                 int ano = res.getInt("Ano");
@@ -164,7 +169,7 @@ public class ReportClientFacade {
                 int pos = ano - dataInicio;
                 purchase[pos] = temp;
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -175,12 +180,12 @@ public class ReportClientFacade {
     public int findMinYear() {
         int pos = 0;
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT MIN(YEAR(DateOfPurchase)) AS inicial FROM Purchase");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT MIN(YEAR(DateOfPurchase)) AS inicial FROM Purchase");
             while (res.next()) {
                 pos = res.getInt("inicial");
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -195,8 +200,8 @@ public class ReportClientFacade {
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
             int monthInt = cal.get(Calendar.MONTH) + 1;
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT SUM(Price) AS Sumatorio, PersonID AS pessoa FROM Purchase WHERE MONTH(DateOfPurchase) = " + monthInt + " GROUP BY PersonID");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio, PersonID AS pessoa FROM Purchase WHERE MONTH(DateOfPurchase) = " + monthInt + " GROUP BY PersonID");
             while (res.next()) {
                 temp = new PurchaseSumByMonthDto();
                 double total = res.getDouble("Sumatorio");
@@ -205,7 +210,7 @@ public class ReportClientFacade {
                 temp.setID(idP);
                 purchase.add(temp);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -216,8 +221,8 @@ public class ReportClientFacade {
         List<PurchaseSumByYearDto> purchase = new ArrayList<PurchaseSumByYearDto>();
         PurchaseSumByYearDto temp;
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT SUM(Price) AS Sumatorio, PersonID AS pessoa FROM Purchase WHERE YEAR(DateOfPurchase) = " + ano + " GROUP BY PersonID");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio, PersonID AS pessoa FROM Purchase WHERE YEAR(DateOfPurchase) = " + ano + " GROUP BY PersonID");
             while (res.next()) {
                 temp = new PurchaseSumByYearDto();
                 double total = res.getDouble("Sumatorio");
@@ -226,7 +231,7 @@ public class ReportClientFacade {
                 temp.setID(idP);
                 purchase.add(temp);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -236,13 +241,13 @@ public class ReportClientFacade {
     public ArrayList<String> findYears() {
         ArrayList<String> lista = new ArrayList<String>();
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
             while (res.next()) {
                 int valor = res.getInt("ano");
                 lista.add(Integer.toString(valor));
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -253,8 +258,8 @@ public class ReportClientFacade {
         List<CategorySumByYearDto> purchase = new ArrayList<CategorySumByYearDto>();
         CategorySumByYearDto temp;
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT SUM(Price) AS Sumatorio, CategoryID AS categoria FROM Purchase WHERE YEAR(DateOfPurchase) = " + ano + " GROUP BY CategoryID");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio, CategoryID AS categoria FROM Purchase WHERE YEAR(DateOfPurchase) = " + ano + " GROUP BY CategoryID");
             while (res.next()) {
                 temp = new CategorySumByYearDto();
                 double total = res.getDouble("Sumatorio");
@@ -263,7 +268,7 @@ public class ReportClientFacade {
                 temp.setID(idP);
                 purchase.add(temp);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }

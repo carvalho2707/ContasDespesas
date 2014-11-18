@@ -18,18 +18,20 @@ import pt.tiago.contasdespesas.dto.PersonDto;
 @Component
 public class PersonClientFacade {
 
-    private Connection conn = null;
-    private final String url = "jdbc:mysql://localhost:3306/";
-    private final String dbName = "ContasDespesas";
-    private final String driver = "com.mysql.jdbc.Driver";
-    private final String userName = "root";
-    private final String password = "tiago";
+    private transient Connection conn;
+    private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
+    private static final String driver = "com.mysql.jdbc.Driver";
+    private static final String userName = "root";
+    private static final String password = "tiago";
+    private ResultSet res = null;
+    private PreparedStatement query = null;
+    private Statement st = null;
     private PersonDto personDto = null;
 
     private Statement createConenctionMySql() {
         try {
             Class.forName(driver).newInstance();
-            conn = DriverManager.getConnection(url + dbName,
+            conn = DriverManager.getConnection(urlDbName,
                     userName, password);
             return conn.createStatement();
         } catch (InstantiationException e) {
@@ -44,9 +46,15 @@ public class PersonClientFacade {
         return null;
     }
 
+    private void closeConnections() throws SQLException {
+        conn.close();
+        res.close();
+        query.close();
+        st.close();
+    }
+
     public List<PersonDto> findByName(String name, String surname) {
         List<PersonDto> lista = new ArrayList<PersonDto>();
-        PreparedStatement query = null;
         try {
             createConenctionMySql();
             if (!name.isEmpty() && surname.isEmpty()) {
@@ -60,7 +68,7 @@ public class PersonClientFacade {
                 query.setString(1, "%" + name + "%");
                 query.setString(2, "%" + surname + "%");
             }
-            ResultSet res = query.executeQuery();
+            res = query.executeQuery();
             while (res.next()) {
                 personDto = new PersonDto();
                 int id = res.getInt("ID");
@@ -71,7 +79,7 @@ public class PersonClientFacade {
                 personDto.setSurname(surnameQ);
                 lista.add(personDto);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,8 +89,8 @@ public class PersonClientFacade {
     public List<PersonDto> findAll() {
         List<PersonDto> lista = new ArrayList<PersonDto>();
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT * FROM Person");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT * FROM Person");
             while (res.next()) {
                 personDto = new PersonDto();
                 int id = res.getInt("ID");
@@ -93,7 +101,7 @@ public class PersonClientFacade {
                 personDto.setSurname(surname);
                 lista.add(personDto);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,8 +111,8 @@ public class PersonClientFacade {
 
     public PersonDto findByID(int id) {
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT * FROM Person where ID = " + id);
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT * FROM Person where ID = " + id);
             while (res.next()) {
                 personDto = new PersonDto();
                 int identificador = res.getInt("ID");
@@ -114,7 +122,7 @@ public class PersonClientFacade {
                 personDto.setName(name);
                 personDto.setSurname(surname);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -123,12 +131,11 @@ public class PersonClientFacade {
 
     public void create(PersonDto dto) {
         try {
-            Statement st = createConenctionMySql();
-            String query = "INSERT INTO Person (Name,Surname) VALUES (" + "'" + dto.getName() + "'" + "," + "'" + dto.getSurname() + "'" + ")";
-            st.executeUpdate(query);
-            conn.close();
+            st = createConenctionMySql();
+            String queryTo = "INSERT INTO Person (Name,Surname) VALUES (" + "'" + dto.getName() + "'" + "," + "'" + dto.getSurname() + "'" + ")";
+            st.executeUpdate(queryTo);
+            closeConnections();
         } catch (Exception e) {
-            System.err.println("Execpcao no create person");
             e.printStackTrace();
         }
 
@@ -136,12 +143,11 @@ public class PersonClientFacade {
 
     public void remove(PersonDto dto) {
         try {
-            Statement st = createConenctionMySql();
-            String query = "DELETE FROM Person WHERE ID =" + dto.getID();
-            st.executeUpdate(query);
-            conn.close();
+            st = createConenctionMySql();
+            String queryTo = "DELETE FROM Person WHERE ID =" + dto.getID();
+            st.executeUpdate(queryTo);
+            closeConnections();
         } catch (Exception e) {
-            System.err.println("Execpcao no remove person");
             e.printStackTrace();
         }
     }
@@ -149,59 +155,59 @@ public class PersonClientFacade {
     public void edit(PersonDto dto) {
         try {
             createConenctionMySql();
-            PreparedStatement query = conn.prepareStatement("UPDATE Person SET Name = ? , Surname = ? WHERE ID = ?");
+            query = conn.prepareStatement("UPDATE Person SET Name = ? , Surname = ? WHERE ID = ?");
             query.setString(1, dto.getName());
             query.setString(2, dto.getSurname());
             query.setInt(3, dto.getID());
             query.executeUpdate();
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
-            System.err.println("Execpcao no edit person");
             e.printStackTrace();
         }
     }
-    
+
     public int findIDByName(String name) {
         Integer identificador = 0;
         try {
             createConenctionMySql();
             String nameEnclosed = name.replaceAll("\\s+", "%20");
-            PreparedStatement query = conn
+            query = conn
                     .prepareStatement("SELECT * FROM Person WHERE Name LIKE ?");
             query.setString(1, "%" + nameEnclosed + "%");
-            ResultSet res = query.executeQuery();
+            res = query.executeQuery();
             identificador = res.getInt("ID");
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return identificador;
     }
+
     public ArrayList<Integer> findYears() {
         ArrayList<Integer> lista = new ArrayList<Integer>();
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
             while (res.next()) {
                 int valor = res.getInt("ano");
                 lista.add(valor);
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return lista;
     }
-    
+
     public double findPersonTotalByYear(int ano, int pessoa) {
         double total = 0.0;
         try {
-            Statement st = createConenctionMySql();
-            ResultSet res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE PersonID = " + pessoa + " AND Year(DateOfPurchase) = " + ano);
+            st = createConenctionMySql();
+            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE PersonID = " + pessoa + " AND Year(DateOfPurchase) = " + ano);
             while (res.next()) {
                 total = res.getDouble("Sumatorio");
             }
-            conn.close();
+            closeConnections();
         } catch (Exception e) {
             total = 0.0;
             e.printStackTrace();
