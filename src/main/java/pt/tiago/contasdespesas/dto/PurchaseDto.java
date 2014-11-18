@@ -1,13 +1,15 @@
 package pt.tiago.contasdespesas.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author Tiago Carvalho
  */
-public class PurchaseDto {
+public class PurchaseDto implements Serializable{
 
+    private static final long serialVersionUID = 1L;
     private int ID;
     private String ItemName;
     private double Price;

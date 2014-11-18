@@ -37,7 +37,7 @@ public class CategoryClientFacade implements Serializable {
     private Statement createConenctionMySql() {
         try {
             Class.forName(driver).newInstance();
-            conn = DriverManager.getConnection(urlDbName,
+             conn = DriverManager.getConnection(urlDbName,
                     userName, password);
             return conn.createStatement();
         } catch (InstantiationException e) {

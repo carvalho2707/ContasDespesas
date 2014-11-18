@@ -8,6 +8,7 @@ import java.io.Serializable;
  */
 public class PurchaseSumByYearDto implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private int ID;
     private String Name;
     private double Total;

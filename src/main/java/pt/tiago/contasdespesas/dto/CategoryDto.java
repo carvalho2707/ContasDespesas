@@ -8,6 +8,7 @@ import java.io.Serializable;
  */
 public class CategoryDto implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private int ID;
     private String Name;
     private String Description;
