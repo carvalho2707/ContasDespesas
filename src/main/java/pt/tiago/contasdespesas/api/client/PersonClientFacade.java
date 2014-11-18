@@ -1,5 +1,6 @@
 package pt.tiago.contasdespesas.api.client;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,18 +16,28 @@ import pt.tiago.contasdespesas.dto.PersonDto;
  *
  * @author Tiago Carvalho
  */
+@SuppressWarnings("CallToPrintStackTrace")
 @Component
-public class PersonClientFacade {
+public class PersonClientFacade implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private transient Connection conn;
     private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
     private static final String driver = "com.mysql.jdbc.Driver";
     private static final String userName = "root";
     private static final String password = "tiago";
-    private ResultSet res = null;
-    private PreparedStatement query = null;
-    private Statement st = null;
     private PersonDto personDto = null;
+    private transient ResultSet res;
+    private transient PreparedStatement query;
+    private transient Statement st;
+
+    public PersonClientFacade() {
+        this.query = null;
+        this.st = null;
+        this.res = null;
+        this.conn = null;
+    }
+    
 
     private Statement createConenctionMySql() {
         try {

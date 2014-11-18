@@ -18,6 +18,7 @@ import pt.tiago.contasdespesas.dto.PurchaseDto;
  *
  * @author Tiago Carvalho
  */
+@SuppressWarnings("CallToPrintStackTrace")
 @Component
 public class PurchaseClientFacade {
 

@@ -17,25 +17,23 @@ import pt.tiago.contasdespesas.dto.SubCategoryDto;
  *
  * @author Tiago Carvalho
  */
+@SuppressWarnings("CallToPrintStackTrace")
 @Component
-public class CategoryClientFacade implements Serializable {
+public class CategoryClientFacade {
 
-    private static final long serialVersionUID = 1L;
 
-    private transient Connection conn;
     private CategoryDto categoryDto = null;
     private SubCategoryDto subCategoryDto = null;
     private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
     private static final String driver = "com.mysql.jdbc.Driver";
     private static final String userName = "root";
     private static final String password = "tiago";
+    private Connection conn;
     private ResultSet res = null;
     private PreparedStatement query = null;
     private Statement st = null;
 
-    public CategoryClientFacade() {
-        this.conn = null;
-    }
+ 
 
     private void closeConnections() throws SQLException {
         conn.close();
