@@ -1,17 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.tiago.contasdespesas.dto;
 
 import java.util.Date;
 
 /**
  *
- * @author NB20708
+ * @author Tiago Carvalho
  */
 public class PurchaseDto {
+
     private int ID;
     private String ItemName;
     private double Price;
@@ -36,8 +32,6 @@ public class PurchaseDto {
     public void setPersonID(int personID) {
         this.personID = personID;
     }
-    
-    
 
     public Date getDateOfPurchase() {
         return DateOfPurchase;
@@ -91,7 +85,4 @@ public class PurchaseDto {
     public String toString() {
         return "PurchaseDto{" + "PurchaseID=" + ID + ", ItemName=" + ItemName + ", Price=" + Price + ", person=" + person + ", category=" + category + ", DateOfPurchase=" + DateOfPurchase + '}';
     }
-    
-    
-    
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.tiago.contasdespesas.api.client;
 
 import java.sql.Connection;
@@ -17,7 +12,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import javax.ejb.Stateless;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategorySumByYearDto;
 import pt.tiago.contasdespesas.dto.PurchaseSumByMonthDto;
@@ -26,7 +20,7 @@ import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
 
 /**
  *
- * @author NB20708
+ * @author Tiago Carvalho
  */
 @SuppressWarnings("CallToPrintStackTrace")
 @Component
@@ -35,7 +29,6 @@ public class ReportClientFacade {
     private Connection conn = null;
     private PurchaseSumByMonthDto categoryByMonth = null;
     private Month[] mes = Month.values();
-
     private final String url = "jdbc:mysql://localhost:3306/";
     private final String dbName = "ContasDespesas";
     private final String driver = "com.mysql.jdbc.Driver";
@@ -57,16 +50,12 @@ public class ReportClientFacade {
                     userName, password);
             return conn.createStatement();
         } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
@@ -120,7 +109,6 @@ public class ReportClientFacade {
             while (res.next()) {
                 temp = new PurchaseSumByMonthDto();
                 int pos = res.getInt("Mes") - 1;
-                System.out.println("Pos era ->   " + pos );
                 Month data = mes[pos];
                 double total = res.getDouble("Sumatorio");
                 temp.setMonth(data);
@@ -260,7 +248,7 @@ public class ReportClientFacade {
         }
         return lista;
     }
-    
+
     public List<CategorySumByYearDto> findTotalCategorySumByYear(int ano) {
         List<CategorySumByYearDto> purchase = new ArrayList<CategorySumByYearDto>();
         CategorySumByYearDto temp;

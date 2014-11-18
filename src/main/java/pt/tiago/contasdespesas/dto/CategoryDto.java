@@ -1,27 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.tiago.contasdespesas.dto;
 
 import java.io.Serializable;
 
 /**
  *
- * @author NB20708
+ * @author Tiago Carvalho
  */
 public class CategoryDto implements Serializable {
+
     private int ID;
     private String Name;
     private String Description;
     private double Total;
     private double[] TotalByMonth;
 
-    
-    
-    
-    
     public double[] getTotalByMonth() {
         return TotalByMonth;
     }
@@ -66,7 +58,4 @@ public class CategoryDto implements Serializable {
     public String toString() {
         return "CategoryDto{" + "CategoryID=" + ID + ", Name=" + Name + ", Description=" + Description + ", TotalSpent=" + Total + '}';
     }
-    
-    
-    
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.tiago.contasdespesas.api.client;
 
 import java.sql.Connection;
@@ -21,7 +16,7 @@ import pt.tiago.contasdespesas.dto.PurchaseDto;
 
 /**
  *
- * @author NB20708
+ * @author Tiago Carvalho
  */
 @Component
 public class PurchaseClientFacade {
@@ -43,16 +38,12 @@ public class PurchaseClientFacade {
                     userName, password);
             return conn.createStatement();
         } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
@@ -161,7 +152,7 @@ public class PurchaseClientFacade {
                 int personID = res.getInt("PersonID");
                 int categoryID = res.getInt("CategoryID");
                 double price = res.getDouble("Price");
-                purchaseDto.setID(id);
+                purchaseDto.setID(identificador);
                 purchaseDto.setItemName(nome);
                 purchaseDto.setDateOfPurchase(data);
                 purchaseDto.setPersonID(personID);
@@ -179,8 +170,7 @@ public class PurchaseClientFacade {
         try {
             Statement st = createConenctionMySql();
             String query = "INSERT INTO Purchase (ItemName,DateOfPurchase,PersonID,CategoryID,Price) VALUES (" + "'" + dto.getItemName() + "'" + "," + "'" + dto.getDateOfPurchase() + "'" + "," + dto.getPersonID() + "," + dto.getPersonID() + "," + dto.getCategoryID() + "," + dto.getPrice() + ")";
-            System.out.println("Query to execute = " + query);
-            int output = st.executeUpdate(query);
+            st.executeUpdate(query);
             conn.close();
         } catch (Exception e) {
             System.err.println("Execpcao no create Purchase");
@@ -193,9 +183,7 @@ public class PurchaseClientFacade {
         try {
             Statement st = createConenctionMySql();
             String query = "DELETE FROM Purchase WHERE ID =" + dto.getID();
-            System.out.println("Query to execute = " + query);
-            int output = st.executeUpdate(query);
-            System.out.println("Result query remove Purchase = " + output);
+            st.executeUpdate(query);
             conn.close();
         } catch (Exception e) {
             System.err.println("Execpcao no remove Purchase");
@@ -205,7 +193,7 @@ public class PurchaseClientFacade {
 
     public void edit(PurchaseDto dto) {
         try {
-            Statement st = createConenctionMySql();
+            createConenctionMySql();
             PreparedStatement query = conn.prepareStatement("UPDATE Purchase SET ItemName = ? , DateOfPurchase = ?, PersonID = ?, CategoryID = ?, Price = ? WHERE ID = ?");
             query.setString(1, dto.getItemName());
             query.setDate(2, (Date.valueOf(dto.getDateOfPurchase().toString())));
@@ -213,7 +201,7 @@ public class PurchaseClientFacade {
             query.setInt(4, dto.getCategoryID());
             query.setDouble(5, dto.getPrice());
             query.setInt(6, dto.getID());
-            int output = query.executeUpdate();
+            query.executeUpdate();
             conn.close();
         } catch (Exception e) {
             System.err.println("Execpcao no edit Purchase");

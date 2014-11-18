@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.tiago.contasdespesas.controller;
 
 import java.io.Serializable;
@@ -29,13 +24,13 @@ import pt.tiago.contasdespesas.util.JsfUtil.PersistAction;
 
 /**
  *
- * @author NB20708
+ * @author Tiago Carvalho
  */
 @Component("personController")
 @Scope("session")
 public class PersonController implements Serializable {
-    //TODO Descobrir o que faz SessionScoped
 
+    private static final long serialVersionUID = 1L;
     @Autowired
     private pt.tiago.contasdespesas.api.client.PersonClientFacade ejbFacade;
     private List<PersonDto> items = null;
@@ -109,10 +104,6 @@ public class PersonController implements Serializable {
         return getFacade().findAll();
     }
 
-    /**
-     * Clear the filter
-     *
-     */
     public void clear() {
         name = "";
         surname = "";
@@ -254,6 +245,5 @@ public class PersonController implements Serializable {
                 return null;
             }
         }
-
     }
 }

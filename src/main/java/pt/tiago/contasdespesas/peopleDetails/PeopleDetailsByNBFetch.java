@@ -22,7 +22,6 @@ public class PeopleDetailsByNBFetch implements Serializable {
             userDetail = new User();
             userDetail.setName(nbName);
         }
-        this.userDetail = userDetail;
     }
 
 }

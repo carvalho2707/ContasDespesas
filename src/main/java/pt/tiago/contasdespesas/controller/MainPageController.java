@@ -11,6 +11,11 @@ import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.peopleDetails.PeopleDetailsByNBFetch;
 import pt.tiago.contasdespesas.peopleDetails.User;
 
+
+/**
+ *
+ * @author Tiago Carvalho
+ */
 @Component("mainPageController")
 @Scope("session")
 public class MainPageController implements Serializable {
@@ -48,7 +53,4 @@ public class MainPageController implements Serializable {
     public void setUserNB(String userNB) {
         this.userNB = userNB;
     }
-    
-    
-
 }

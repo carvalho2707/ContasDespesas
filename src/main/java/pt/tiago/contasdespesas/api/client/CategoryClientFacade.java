@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.tiago.contasdespesas.api.client;
 
 import java.sql.Connection;
@@ -13,14 +8,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.stereotype.Component;
-
 import pt.tiago.contasdespesas.dto.CategoryDto;
 
 /**
  *
- * @author NB20708
+ * @author Tiago Carvalho
  */
 @Component
 public class CategoryClientFacade {
@@ -28,8 +21,6 @@ public class CategoryClientFacade {
     private String dbURL = "jdbc:derby://localhost:1527/ContasDespesas;create=true;user=tiago;password=tiago";
     private Connection conn = null;
     private CategoryDto categoryDto = null;
-    private Statement stmt = null;
-
     private final String url = "jdbc:mysql://localhost:3306/";
     private final String dbName = "ContasDespesas";
     private final String driver = "com.mysql.jdbc.Driver";
@@ -43,16 +34,12 @@ public class CategoryClientFacade {
                     userName, password);
             return conn.createStatement();
         } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
@@ -117,11 +104,9 @@ public class CategoryClientFacade {
                 int identificador = res.getInt("ID");
                 String name = res.getString("Name");
                 String description = res.getString("Descricao");
-                categoryDto.setID(id);
+                categoryDto.setID(identificador);
                 categoryDto.setName(name);
                 categoryDto.setDescription(description);
-                System.out.println(identificador + "\t" + name + "\t"
-                        + description + "\t");
             }
             conn.close();
         } catch (Exception e) {
@@ -140,9 +125,7 @@ public class CategoryClientFacade {
                     + ","
                     + "'"
                     + dto.getDescription() + "'" + ")";
-            System.out.println("Query to execute = " + query);
-            int output = st.executeUpdate(query);
-            System.out.println("Result query create category = " + output);
+            st.executeUpdate(query);
             conn.close();
         } catch (Exception e) {
             System.err.println("Execpcao no create category");
@@ -155,9 +138,7 @@ public class CategoryClientFacade {
         try {
             Statement st = createConenctionMySql();
             String query = "DELETE FROM Category WHERE ID =" + dto.getID();
-            System.out.println("Query to execute = " + query);
-            int output = st.executeUpdate(query);
-            System.out.println("Result query remove category = " + output);
+            st.executeUpdate(query);
             conn.close();
         } catch (Exception e) {
             System.err.println("Execpcao no remove category");
@@ -167,16 +148,13 @@ public class CategoryClientFacade {
 
     public void edit(CategoryDto dto) {
         try {
-            Class.forName(driver).newInstance();
-            Connection conn = DriverManager.getConnection(url + dbName,
-                    userName, password);
+            createConenctionMySql();
             PreparedStatement query = conn
                     .prepareStatement("UPDATE Category SET Name = ? , Descricao = ? WHERE ID = ?");
             query.setString(1, dto.getName());
             query.setString(2, dto.getDescription());
             query.setInt(3, dto.getID());
-            int output = query.executeUpdate();
-            System.out.println("Result query edit category = " + output);
+            query.executeUpdate();
             conn.close();
         } catch (Exception e) {
             System.err.println("Execpcao no edit category");
@@ -187,15 +165,13 @@ public class CategoryClientFacade {
     public int findIDByName(String name) {
         Integer identificador = 0;
         try {
-            System.out.println("NAME A PEDIR ->    " + name);
-            Statement st = createConenctionMySql();
+            createConenctionMySql();
             String nameEnclosed = name.replaceAll("\\s+", "%20");
             PreparedStatement query = conn
                     .prepareStatement("SELECT * FROM Category WHERE Name LIKE ?");
             query.setString(1, "%" + nameEnclosed + "%");
             ResultSet res = query.executeQuery();
             identificador = res.getInt("ID");
-            System.out.println("RESULTADO ->    " + identificador);
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -242,13 +218,11 @@ public class CategoryClientFacade {
             ResultSet res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE CategoryID = " + categoria + " AND Year(DateOfPurchase) = " + ano);
             while (res.next()) {
                 total = res.getDouble("Sumatorio");
-
             }
             conn.close();
         } catch (Exception e) {
             total = 0.0;
             e.printStackTrace();
-
         }
         return total;
     }

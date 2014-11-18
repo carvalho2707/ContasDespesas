@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.tiago.contasdespesas.controller;
 
 import java.io.Serializable;
@@ -12,14 +7,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
-import javax.enterprise.context.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.inject.Named;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.CartesianChartModel;
@@ -35,7 +26,7 @@ import pt.tiago.contasdespesas.util.JsfUtil.PersistAction;
 
 /**
  *
- * @author NB20708
+ * @author Tiago Carvalho
  */
 @Component("categoryController")
 @Scope("session")
@@ -43,8 +34,7 @@ public class CategoryController implements Serializable {
 
     @Autowired
     private CategoryClientFacade ejbFacade;
-
-     @Autowired
+    @Autowired
     private PurchaseClientFacade ejbFacadePurchase;
     private List<CategoryDto> items = null;
     private CartesianChartModel lineTotalYearModel;
@@ -214,7 +204,7 @@ public class CategoryController implements Serializable {
                     getFacade().edit(selected);
                 }
                 JsfUtil.addSuccessMessage(successMessage);
-            }catch (Exception ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
                 JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             }

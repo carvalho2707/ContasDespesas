@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.tiago.contasdespesas.dto;
 
 import java.io.Serializable;
@@ -10,9 +5,10 @@ import java.util.List;
 
 /**
  *
- * @author NB20708
+ * @author Tiago Carvalho
  */
 public class PersonDto implements Serializable {
+
     private int ID;
     private String Name;
     private String Surname;
@@ -54,6 +50,4 @@ public class PersonDto implements Serializable {
     public String toString() {
         return "PersonDto{" + "PersonID=" + ID + ", Name=" + Name + ", Surname=" + Surname + ", purchases=" + purchases + '}';
     }
-    
-    
 }

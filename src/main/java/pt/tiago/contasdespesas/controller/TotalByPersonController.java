@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.tiago.contasdespesas.controller;
 
 import org.primefaces.model.chart.CartesianChartModel;
@@ -31,12 +26,13 @@ import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
 
 /**
  *
- * @author NB20708
+ * @author Tiago Carvalho
  */
 @Component("totalByPersonController")
 @Scope("session")
 public class TotalByPersonController implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Autowired
     private pt.tiago.contasdespesas.api.client.ReportClientFacade ejbFacade;
     @Autowired
@@ -46,7 +42,6 @@ public class TotalByPersonController implements Serializable {
     private CartesianChartModel lineTotalMonthModel;
     private PieChartModel pieModelYear = null;
     private PieChartModel pieModelYearCategory = null;
-    //private final String[] mes = new DateFormatSymbols(Locale.UK).getMonths();
     private List<String> anos;
     private String escolhido = "";
     private String anoEscolhido = "";

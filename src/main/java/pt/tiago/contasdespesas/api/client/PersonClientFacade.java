@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.tiago.contasdespesas.api.client;
 
 import java.sql.Connection;
@@ -18,7 +13,7 @@ import pt.tiago.contasdespesas.dto.PersonDto;
 
 /**
  *
- * @author NB20708
+ * @author Tiago Carvalho
  */
 @Component
 public class PersonClientFacade {
@@ -115,7 +110,7 @@ public class PersonClientFacade {
                 int identificador = res.getInt("ID");
                 String name = res.getString("Name");
                 String surname = res.getString("Surname");
-                personDto.setID(id);
+                personDto.setID(identificador);
                 personDto.setName(name);
                 personDto.setSurname(surname);
             }
@@ -130,9 +125,7 @@ public class PersonClientFacade {
         try {
             Statement st = createConenctionMySql();
             String query = "INSERT INTO Person (Name,Surname) VALUES (" + "'" + dto.getName() + "'" + "," + "'" + dto.getSurname() + "'" + ")";
-            System.out.println("Query to execute = " + query);
-            int output = st.executeUpdate(query);
-            System.out.println("Result query create person = " + output);
+            st.executeUpdate(query);
             conn.close();
         } catch (Exception e) {
             System.err.println("Execpcao no create person");
@@ -145,9 +138,7 @@ public class PersonClientFacade {
         try {
             Statement st = createConenctionMySql();
             String query = "DELETE FROM Person WHERE ID =" + dto.getID();
-            System.out.println("Query to execute = " + query);
-            int output = st.executeUpdate(query);
-            System.out.println("Result query person = " + output);
+            st.executeUpdate(query);
             conn.close();
         } catch (Exception e) {
             System.err.println("Execpcao no remove person");
@@ -157,13 +148,12 @@ public class PersonClientFacade {
 
     public void edit(PersonDto dto) {
         try {
-            Statement st = createConenctionMySql();
+            createConenctionMySql();
             PreparedStatement query = conn.prepareStatement("UPDATE Person SET Name = ? , Surname = ? WHERE ID = ?");
             query.setString(1, dto.getName());
             query.setString(2, dto.getSurname());
             query.setInt(3, dto.getID());
-            int output = query.executeUpdate();
-            System.out.println("Result query edit person = " + output);
+            query.executeUpdate();
             conn.close();
         } catch (Exception e) {
             System.err.println("Execpcao no edit person");
@@ -174,15 +164,13 @@ public class PersonClientFacade {
     public int findIDByName(String name) {
         Integer identificador = 0;
         try {
-            System.out.println("NAME A PEDIR ->    " + name);
-            Statement st = createConenctionMySql();
+            createConenctionMySql();
             String nameEnclosed = name.replaceAll("\\s+", "%20");
             PreparedStatement query = conn
                     .prepareStatement("SELECT * FROM Person WHERE Name LIKE ?");
             query.setString(1, "%" + nameEnclosed + "%");
             ResultSet res = query.executeQuery();
             identificador = res.getInt("ID");
-            System.out.println("RESULTADO ->    " + identificador);
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -212,16 +200,12 @@ public class PersonClientFacade {
             ResultSet res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE PersonID = " + pessoa + " AND Year(DateOfPurchase) = " + ano);
             while (res.next()) {
                 total = res.getDouble("Sumatorio");
-
             }
             conn.close();
         } catch (Exception e) {
             total = 0.0;
             e.printStackTrace();
-
         }
         return total;
     }
-    
-
 }
