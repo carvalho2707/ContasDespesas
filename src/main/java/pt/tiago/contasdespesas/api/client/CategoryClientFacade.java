@@ -1,5 +1,6 @@
 package pt.tiago.contasdespesas.api.client;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,22 +18,26 @@ import pt.tiago.contasdespesas.dto.SubCategoryDto;
  * @author Tiago Carvalho
  */
 @Component
-public class CategoryClientFacade {
+public class CategoryClientFacade implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
 
-    private String dbURL = "jdbc:derby://localhost:1527/ContasDespesas;create=true;user=tiago;password=tiago";
-    private Connection conn = null;
+    private transient  Connection conn;
     private CategoryDto categoryDto = null;
     private SubCategoryDto subCategoryDto = null;
-    private final String url = "jdbc:mysql://localhost:3306/";
-    private final String dbName = "ContasDespesas";
-    private final String driver = "com.mysql.jdbc.Driver";
-    private final String userName = "root";
-    private final String password = "tiago";
+    private static final  String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
+    private static final String driver = "com.mysql.jdbc.Driver";
+    private static final String userName = "root";
+    private static final String password = "tiago";
+
+    public CategoryClientFacade() {
+        this.conn = null;
+    }
 
     private Statement createConenctionMySql() {
         try {
             Class.forName(driver).newInstance();
-            conn = DriverManager.getConnection(url + dbName,
+            conn = DriverManager.getConnection(urlDbName,
                     userName, password);
             return conn.createStatement();
         } catch (InstantiationException e) {

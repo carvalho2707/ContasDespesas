@@ -31,6 +31,7 @@ import pt.tiago.contasdespesas.util.JsfUtil.PersistAction;
 @Component("categoryController")
 @Scope("session")
 public class CategoryController implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Autowired
     private CategoryClientFacade ejbFacade;
