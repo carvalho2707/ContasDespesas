@@ -6,29 +6,12 @@ import java.io.Serializable;
  *
  * @author Tiago Carvalho
  */
-public class CategoryDto implements Serializable {
-
+public class SubCategory implements Serializable {
     private int ID;
     private String Name;
     private String Description;
     private double Total;
-    private double[] TotalByMonth;
-
-    public double[] getTotalByMonth() {
-        return TotalByMonth;
-    }
-
-    public void setTotalByMonth(double[] TotalByMonth) {
-        this.TotalByMonth = TotalByMonth;
-    }
-
-    public double getTotal() {
-        return Total;
-    }
-
-    public void setTotal(double Total) {
-        this.Total = Total;
-    }
+    private int categoryID;
 
     public int getID() {
         return ID;
@@ -54,9 +37,25 @@ public class CategoryDto implements Serializable {
         this.Description = Description;
     }
 
-    @Override
-    public String toString() {
-        return "CategoryDto{" + "ID=" + ID + ", Name=" + Name + ", Description=" + Description + ", Total=" + Total + ", TotalByMonth=" + TotalByMonth + '}';
+    public double getTotal() {
+        return Total;
     }
 
+    public void setTotal(double Total) {
+        this.Total = Total;
+    }
+
+    public int getCategoryID() {
+        return categoryID;
+    }
+
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
+    }
+
+    @Override
+    public String toString() {
+        return "SubCategory{" + "ID=" + ID + ", Name=" + Name + ", Description=" + Description + ", Total=" + Total + ", categoryID=" + categoryID + '}';
+    }
+    
 }

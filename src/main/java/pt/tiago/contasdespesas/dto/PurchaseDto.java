@@ -15,7 +15,16 @@ public class PurchaseDto {
     private CategoryDto category;
     private Date DateOfPurchase;
     private int categoryID;
+    private int subCategoryID;
     private int personID;
+
+    public int getSubCategoryID() {
+        return subCategoryID;
+    }
+
+    public void setSubCategoryID(int subCategoryID) {
+        this.subCategoryID = subCategoryID;
+    }
 
     public int getCategoryID() {
         return categoryID;
@@ -83,6 +92,6 @@ public class PurchaseDto {
 
     @Override
     public String toString() {
-        return "PurchaseDto{" + "PurchaseID=" + ID + ", ItemName=" + ItemName + ", Price=" + Price + ", person=" + person + ", category=" + category + ", DateOfPurchase=" + DateOfPurchase + '}';
+        return "PurchaseDto{" + "ID=" + ID + ", ItemName=" + ItemName + ", Price=" + Price + ", person=" + person + ", category=" + category + ", DateOfPurchase=" + DateOfPurchase + ", categoryID=" + categoryID + ", subCategoryID=" + subCategoryID + ", personID=" + personID + '}';
     }
 }
