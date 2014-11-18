@@ -1,3 +1,2 @@
 Implementar procura por nome categoria e pessoa nas compras
 ----Usar Dropdow para procurar alguma
-Ver vistas que ao procura e clear nao limpam o ecra todo
