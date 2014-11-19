@@ -16,8 +16,8 @@
                         <p:spacer width="5" height="10" />
                         <p:inputText id="name" value="#{categoryController.name}" title="#{bundle.Category}"/>
                         <p:spacer width="10" height="10" />                          
-                        <p:commandButton update=":CategoryListForm:tabela :growl, :CategoryListForm:display2, :CategoryListForm:display3 " actionListener="#{categoryController.filteredItems}" id="search" icon="ui-icon-search"  partialSubmit="false" title="Pesquisar" style="margin-top:-10px;"/>
-                        <p:commandButton id="clear" icon="ui-icon-closethick" title="Limpar Filtro" update="filter :CategoryListForm:tabela, :CategoryListForm:display2, :CategoryListForm:display3 " actionListener="#{categoryController.clear}" style="margin-top:-10px;">
+                        <p:commandButton update=":CategoryListForm:tabela :growl, :CategoryListForm:display2, :CategoryListForm:display3 :CategoryListForm:display5 " actionListener="#{categoryController.filteredItems}" id="search" icon="ui-icon-search"  partialSubmit="false" title="Pesquisar" style="margin-top:-10px;"/>
+                        <p:commandButton id="clear" icon="ui-icon-closethick" title="Limpar Filtro" update="filter :CategoryListForm:tabela, :CategoryListForm:display2, :CategoryListForm:display3,:CategoryListForm:display5 " actionListener="#{categoryController.clear}" style="margin-top:-10px;">
                             <p:resetInput target="filter" />
                         </p:commandButton>
                     </h:panelGrid>
@@ -36,13 +36,15 @@
                                             </span>
                                         </br>
                                         <p:panel id="tabela" styleClass="dataListDiv">
-                                            <p:commandButton style="margin-bottom:10px;" id="createButton" icon="ui-icon-plus"    value="#{bundle.Create}" actionListener="#{categoryController.prepareCreate}" update=":CategoryCreateForm" oncomplete="PF('CategoryCreateDialog').show()"/>
+                                            <p:commandButton style="margin-bottom:10px;" id="createButton" icon="ui-icon-plus"    value="#{bundle.CreateCategory}" actionListener="#{categoryController.prepareCreate}" update=":CategoryCreateForm" oncomplete="PF('CategoryCreateDialog').show()"/>
+                                            <p:commandButton style="margin-bottom:10px;" id="createButtonSub" icon="ui-icon-plus"    value="#{bundle.CreateSubCategory}" actionListener="#{categoryController.prepareCreateSub()}" update=":SubCategoryCreateForm" oncomplete="PF('SubCategoryCreateDialog').show()"/>
                                             <p:treeTable  id="datalist"
                                                           value="#{categoryController.categoryItems}" 
                                                           var="document"
                                                           selection="#{categoryController.selectedDocument}" 
                                                           selectionMode="single"
                                                           resizableColumns="true">
+                                                <p:ajax listener="#{categoryController.onNodeSelect}" event="select" update=" :CategoryListForm:display3 :CategoryListForm:display2 , :CategoryListForm:display5 "/>
                                                 <p:column>
                                                     <f:facet name="header">
                                                         <h:outputText value="#{bundle.Name}"/>
@@ -129,6 +131,64 @@
                                                 </div>
                                             </p:panel>
                                         </h:panelGroup>
+                                        <h:panelGroup id="display5" class="row">
+                                            <p:panel id="display6" styleClass="genericPanel" rendered="#{!empty categoryController.selectedSub}">
+                                                <div class ="row" id="detailedProfile">
+                                                    <div class="span12">
+                                                        <div class="modulewrap">
+                                                            <div class="moduletittle">
+                                                                <h4>
+                                                                    #{bundle.SubCategoryprofile}
+                                                                </h4>
+                                                            </div>
+                                                            <div class="modulecontent gpslist" style="padding: 25px">
+                                                                <p:panel style="border: none !important;">
+                                                                    <p:panelGrid id="panelSubCategory" styleClass="perfil" rendered="#{!empty categoryController.selectedSub}">
+                                                                        <f:facet name ="header">
+                                                                        </f:facet>
+                                                                        <p:row>
+                                                                            <p:column colspan="2">
+                                                                                <h:outputText value="#{bundle.Category}" styleClass="bold"/>
+                                                                            </p:column>                                                                          
+                                                                            <p:column>
+                                                                                <h:outputText value="#{bundle.Description}" styleClass="bold"/>
+                                                                            </p:column> 
+                                                                            <p:column>
+                                                                                <h:outputText value="#{bundle.TotalSpent}" styleClass="bold"/>
+                                                                            </p:column> 
+                                                                            <p:column>
+                                                                                <h:outputText value="Acoes" styleClass="bold"/>
+                                                                            </p:column> 
+                                                                        </p:row>
+                                                                        <p:row>
+                                                                            <p:column colspan="2">
+                                                                                <h:outputText value="#{categoryController.selectedSub.name}"/>
+                                                                                <br/>
+                                                                            </p:column>
+                                                                            <p:column >
+                                                                                <h:outputText value="#{categoryController.selectedSub.description}"/>
+                                                                                <br/>
+                                                                            </p:column>                                                                           
+                                                                            <p:column >
+                                                                                <h:outputText value="#{categoryController.selectedSub.total} €"/>
+                                                                            </p:column>
+                                                                            <p:column>
+                                                                                <br>
+                                                                                    <p:commandButton id="editButtonSub"   icon="ui-icon-pencil" value="#{bundle.Edit}" update=":CategoryEditForm" oncomplete="PF('CategoryEditDialog').show()" disabled="#{empty categoryController.selectedSub}"/>
+                                                                                </br>
+                                                                                <br>
+                                                                                    <p:commandButton id="deleteButtonSub" icon="ui-icon-trash"  value="#{bundle.Delete}" update=":CategoryRemoveForm" oncomplete="PF('CategoryRemoveDialog').show()" disabled="#{empty categoryController.selectedSub}"/>
+                                                                                </br>
+                                                                            </p:column>
+                                                                        </p:row>
+                                                                    </p:panelGrid>
+                                                                </p:panel>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </p:panel>
+                                        </h:panelGroup>
                                         <h:panelGroup id="display3" class="row">
                                             <p:panel id="display4" styleClass="genericPanel" rendered="#{!empty categoryController.selected}">
                                                 <div class ="row" id="detailedProfile">
@@ -151,6 +211,7 @@
                                             </p:panel>
                                         </h:panelGroup>
                                     </h:form>
+                                    <ui:include src="CreateSub.xhtml"/>
                                     <ui:include src="Create.xhtml"/>
                                     <ui:include src="Edit.xhtml"/>
                                     <ui:include src="Remove.xhtml"/>

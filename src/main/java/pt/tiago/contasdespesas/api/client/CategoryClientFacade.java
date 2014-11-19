@@ -199,7 +199,6 @@ public class CategoryClientFacade {
 
     public void create(CategoryDto dto) {
         try {
-
             createConenctionMySql();
             String insertTableSQL = "INSERT INTO Category (Name,Descricao) VALUES " + "(?,?)";
             query = conn
@@ -209,10 +208,24 @@ public class CategoryClientFacade {
             res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
-            System.err.println("Execpcao no create category");
             e.printStackTrace();
         }
-
+    }
+    
+    public void createSub(SubCategoryDto dto) {
+        try {
+            createConenctionMySql();
+            String insertTableSQL = "INSERT INTO SubCategory (Name,Descricao,CategoryID) VALUES " + "(?,?,?)";
+            query = conn
+                    .prepareStatement(insertTableSQL);
+            query.setString(1, dto.getName());
+            query.setString(2, dto.getDescription());
+            query.setInt(2, dto.getCategoryID());
+            res = query.executeQuery();
+            closeConnections();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void remove(CategoryDto dto) {
@@ -225,7 +238,6 @@ public class CategoryClientFacade {
             res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
-            System.err.println("Execpcao no remove category");
             e.printStackTrace();
         }
     }
@@ -241,7 +253,6 @@ public class CategoryClientFacade {
             query.executeUpdate();
             closeConnections();
         } catch (Exception e) {
-            System.err.println("Execpcao no edit category");
             e.printStackTrace();
         }
     }

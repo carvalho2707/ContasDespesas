@@ -43,10 +43,11 @@ public class CategoryController implements Serializable {
     @Autowired
     private PurchaseClientFacade purchaseFacade;
     private TreeNode categoryItems = null;
-    private Document selectedDocument;
+    private TreeNode selectedDocument;
     private List<CategoryDto> items = null;
     private CartesianChartModel lineTotalYearModel;
     private CategoryDto selected;
+    private SubCategoryDto selectedSub;
     private String name = "";
     private Boolean entry = false;
 
@@ -54,11 +55,19 @@ public class CategoryController implements Serializable {
 
     }
 
-    public Document getSelectedDocument() {
+    public SubCategoryDto getSelectedSub() {
+        return selectedSub;
+    }
+
+    public void setSelectedSub(SubCategoryDto selectedSub) {
+        this.selectedSub = selectedSub;
+    }
+    
+    public TreeNode getSelectedDocument() {
         return selectedDocument;
     }
 
-    public void setSelectedDocument(Document selectedDocument) {
+    public void setSelectedDocument(TreeNode selectedDocument) {
         this.selectedDocument = selectedDocument;
     }
 
@@ -184,6 +193,20 @@ public class CategoryController implements Serializable {
         }
         entry = true;
     }
+    
+    public void onNodeSelect(){
+        selectedSub = null;
+        Document doc = (Document)selectedDocument.getData();
+        if(doc.getSubCategoryDto() != null){
+            Document father = (Document)selectedDocument.getParent().getData();
+            selected = (CategoryDto)father.getCategoryDto();
+            selectedSub = (SubCategoryDto)doc.getSubCategoryDto();
+            populateCollections();
+        } else{
+            selected = (CategoryDto)doc.getCategoryDto();
+            populateCollections();
+        }
+    }
 
     public void filteredCategoryItems() {
         if (!name.isEmpty()) {
@@ -212,6 +235,8 @@ public class CategoryController implements Serializable {
         name = "";
         entry = false;
         selected = null;
+        selectedDocument = null;
+        selectedSub = null;
         lineTotalYearModel = null;
         items = null;
         categoryItems = null;
@@ -224,6 +249,13 @@ public class CategoryController implements Serializable {
 
     public void create() {
         persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("CategoryCreated"));
+        if (!JsfUtil.isValidationFailed()) {
+            clear();
+        }
+    }
+    
+    public void createSub() {
+        persist(PersistAction.CREATESUB, ResourceBundle.getBundle("/Bundle").getString("CategoryCreated"));
         if (!JsfUtil.isValidationFailed()) {
             clear();
         }
@@ -251,6 +283,8 @@ public class CategoryController implements Serializable {
                     getFacade().remove(selected);
                 } else if (persistAction == PersistAction.UPDATE) {
                     getFacade().edit(selected);
+                }else if(persistAction == PersistAction.CREATESUB){
+                     getFacade().createSub(selectedSub);
                 }
                 JsfUtil.addSuccessMessage(successMessage);
             } catch (Exception ex) {
@@ -264,6 +298,12 @@ public class CategoryController implements Serializable {
         selected = new CategoryDto();
         initializeEmbeddableKey();
         return selected;
+    }
+    
+    public SubCategoryDto prepareCreateSub(){
+        selectedSub = new SubCategoryDto();
+        initializeEmbeddableKey();
+        return selectedSub;
     }
 
     public CategoryDto getCategory(java.lang.Integer id) {
