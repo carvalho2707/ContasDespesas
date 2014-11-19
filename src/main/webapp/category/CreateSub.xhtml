@@ -15,7 +15,7 @@
                         <p:outputLabel value="#{bundle.Description}:" for="type" />
                         <p:inputText id="type" value="#{categoryController.selectedSub.description}" title="#{bundle.Description}" required="true" requiredMessage="#{bundle.The} '#{bundle.Description}' #{bundle.FieldIsRequired}"/>                        
                         <p:outputLabel value="#{bundle.CategoryName}:" for="category" />
-                        <p:selectOneMenu id="category" value="#{categoryController.selectedSub.categoryID}" required="true" requiredMessage="#{bundle.The} '#{bundle.CategoryName}' #{bundle.FieldIsRequired}">
+                        <p:selectOneMenu id="category" value="#{categoryController.selectedSub.categoryID}" required="true" requiredMessage="#{bundle.The} '#{bundle.SubCategoryName}' #{bundle.FieldIsRequired}">
                             <f:selectItems value="#{categoryController.itemsAvailableSelectOne}"
                                            var="categoria"
                                            itemValue="#{categoria.ID}"

@@ -66,11 +66,6 @@
                                                     <h:outputText value="#{document.categoryDto.total} €" class="categoryHeader" rendered="#{document.categoryDto != null}" />
                                                     <h:outputText value="#{document.subCategoryDto.total} €" rendered="#{document.subCategoryDto != null}" />
                                                 </p:column>
-                                                <p:column style="width:24px">
-                                                    <p:commandLink update=":CategoryListForm:display3 :CategoryListForm:display2" title="View Detail" styleClass="ui-icon ui-icon-search">
-                                                        <f:setPropertyActionListener disabled="true" listener="#{categoryController.populateCollections()}"  value="#{document}" target="#{categoryController.selectedDocument}" />
-                                                    </p:commandLink>
-                                                </p:column>
                                             </p:treeTable>
                                         </p:panel>
                                         <h:panelGroup id="display2" class="row">

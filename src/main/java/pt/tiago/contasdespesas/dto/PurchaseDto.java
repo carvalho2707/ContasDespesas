@@ -15,11 +15,20 @@ public class PurchaseDto implements Serializable{
     private double Price;
     private PersonDto person;
     private CategoryDto category;
+    private SubCategoryDto subCategory;
     private Date DateOfPurchase;
     private int categoryID;
     private int subCategoryID;
     private int personID;
 
+    public SubCategoryDto getSubCategory() {
+        return subCategory;
+    }
+
+    public void setSubCategory(SubCategoryDto subCategory) {
+        this.subCategory = subCategory;
+    }
+    
     public int getSubCategoryID() {
         return this.subCategoryID;
     }

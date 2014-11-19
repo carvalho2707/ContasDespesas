@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategoryDto;
 import pt.tiago.contasdespesas.dto.PersonDto;
 import pt.tiago.contasdespesas.dto.PurchaseDto;
+import pt.tiago.contasdespesas.dto.SubCategoryDto;
 
 /**
  *
@@ -127,20 +128,29 @@ public class PurchaseClientFacade {
             }
             if (!lista.isEmpty()) {
                 for (PurchaseDto purchase : lista) {
+                    SubCategoryDto sub = null;
                     createConenctionMySql();
                     query = conn
-                            .prepareStatement("SELECT * FROM Category where ID = ? ");
+                            .prepareStatement("SELECT * FROM Category C , SubCategory S where C.ID = ? AND S.ID = ? ");
                     query.setInt(1, purchase.getCategoryID());
+                    query.setInt(2, purchase.getSubCategoryID());
                     res = query.executeQuery();
                     while (res.next()) {
                         categoryDto = new CategoryDto();
-                        int id = res.getInt("ID");
-                        String nome = res.getString("Name");
-                        String description = res.getString("Descricao");
+                        sub = new SubCategoryDto();
+                        int id = res.getInt("C.ID");
+                        String nome = res.getString("C.Name");
+                        String description = res.getString("C.Descricao");
                         categoryDto.setID(id);
                         categoryDto.setName(nome);
                         categoryDto.setDescription(description);
-                        purchase.setCategory(categoryDto);
+                        id = res.getInt("S.ID");
+                        nome = res.getString("S.Name");
+                        description = res.getString("S.Descricao");
+                        sub.setID(id);
+                        sub.setName(nome);
+                        sub.setDescription(description);
+                        purchase.setSubCategory(sub);
                     }
                     createConenctionMySql();
                     query = conn

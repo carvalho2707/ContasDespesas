@@ -128,6 +128,10 @@ public class CategoryController implements Serializable {
     public List<CategoryDto> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
+    
+    public List<SubCategoryDto> getItemsSubAvailableSelectOne() {
+        return getFacade().findAllSub();
+    }
 
     public CategoryClientFacade getCategoryFacade() {
         return categoryFacade;
