@@ -16,7 +16,7 @@ public class CategoryDto implements Serializable {
     private double[] TotalByMonth;
 
     public double[] getTotalByMonth() {
-        return TotalByMonth;
+        return this.TotalByMonth;
     }
 
     public void setTotalByMonth(double[] TotalByMonth) {
@@ -24,7 +24,7 @@ public class CategoryDto implements Serializable {
     }
 
     public double getTotal() {
-        return Total;
+        return this.Total;
     }
 
     public void setTotal(double Total) {
@@ -32,7 +32,7 @@ public class CategoryDto implements Serializable {
     }
 
     public int getID() {
-        return ID;
+        return this.ID;
     }
 
     public void setID(int ID) {

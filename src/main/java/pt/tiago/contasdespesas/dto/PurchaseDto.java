@@ -21,7 +21,7 @@ public class PurchaseDto implements Serializable{
     private int personID;
 
     public int getSubCategoryID() {
-        return subCategoryID;
+        return this.subCategoryID;
     }
 
     public void setSubCategoryID(int subCategoryID) {
@@ -29,7 +29,7 @@ public class PurchaseDto implements Serializable{
     }
 
     public int getCategoryID() {
-        return categoryID;
+        return this.categoryID;
     }
 
     public void setCategoryID(int categoryID) {
@@ -37,7 +37,7 @@ public class PurchaseDto implements Serializable{
     }
 
     public int getPersonID() {
-        return personID;
+        return this.personID;
     }
 
     public void setPersonID(int personID) {
@@ -45,7 +45,7 @@ public class PurchaseDto implements Serializable{
     }
 
     public Date getDateOfPurchase() {
-        return DateOfPurchase;
+        return this.DateOfPurchase;
     }
 
     public void setDateOfPurchase(Date DateOfPurchase) {
@@ -53,7 +53,7 @@ public class PurchaseDto implements Serializable{
     }
 
     public int getID() {
-        return ID;
+        return this.ID;
     }
 
     public void setID(int ID) {
@@ -61,7 +61,7 @@ public class PurchaseDto implements Serializable{
     }
 
     public String getItemName() {
-        return ItemName;
+        return this.ItemName;
     }
 
     public void setItemName(String ItemName) {
@@ -69,7 +69,7 @@ public class PurchaseDto implements Serializable{
     }
 
     public double getPrice() {
-        return Price;
+        return this.Price;
     }
 
     public void setPrice(double Price) {
@@ -77,7 +77,7 @@ public class PurchaseDto implements Serializable{
     }
 
     public PersonDto getPerson() {
-        return person;
+        return this.person;
     }
 
     public void setPerson(PersonDto person) {
@@ -85,7 +85,7 @@ public class PurchaseDto implements Serializable{
     }
 
     public CategoryDto getCategory() {
-        return category;
+        return this.category;
     }
 
     public void setCategory(CategoryDto category) {
