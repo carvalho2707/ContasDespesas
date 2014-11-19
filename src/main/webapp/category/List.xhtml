@@ -47,21 +47,21 @@
                                                     <f:facet name="header">
                                                         <h:outputText value="#{bundle.Name}"/>
                                                     </f:facet>
-                                                    <h:outputText value="#{document.categoryDto.name}" rendered="#{document.categoryDto != null}" />
+                                                    <h:outputText value="#{document.categoryDto.name}" class="categoryHeader" rendered="#{document.categoryDto != null}" />
                                                     <h:outputText value="#{document.subCategoryDto.name}" rendered="#{document.subCategoryDto != null}" />
                                                 </p:column>
                                                 <p:column>
                                                     <f:facet name="header">
                                                         <h:outputText value="#{bundle.Description}"/>
                                                     </f:facet>
-                                                    <h:outputText value="#{document.categoryDto.description}" rendered="#{document.categoryDto != null}" />
+                                                    <h:outputText value="#{document.categoryDto.description}" class="categoryHeader" rendered="#{document.categoryDto != null}" />
                                                     <h:outputText value="#{document.subCategoryDto.description}" rendered="#{document.subCategoryDto != null}" />
                                                 </p:column>
                                                 <p:column>
                                                     <f:facet name="header">
                                                         <h:outputText value="#{bundle.TotalSpent}"/>
                                                     </f:facet>
-                                                    <h:outputText value="#{document.categoryDto.total} €" rendered="#{document.categoryDto != null}" />
+                                                    <h:outputText value="#{document.categoryDto.total} €" class="categoryHeader" rendered="#{document.categoryDto != null}" />
                                                     <h:outputText value="#{document.subCategoryDto.total} €" rendered="#{document.subCategoryDto != null}" />
                                                 </p:column>
                                                 <p:column style="width:24px">

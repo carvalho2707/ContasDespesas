@@ -2088,3 +2088,7 @@ a {
             background: #e7e7e7;
         }
         
+        .categoryHeader{
+            font-weight:bold;
+            color:#8b9dc3;
+        }
