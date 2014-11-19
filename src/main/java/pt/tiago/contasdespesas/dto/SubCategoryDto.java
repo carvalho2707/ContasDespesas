@@ -7,13 +7,31 @@ import java.io.Serializable;
  * @author Tiago Carvalho
  */
 public class SubCategoryDto implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
     private int ID;
     private String Name;
     private String Description;
     private double Total;
     private int categoryID;
+    private String categoryName;
+    private String categoryDescription;
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getCategoryDescription() {
+        return categoryDescription;
+    }
+
+    public void setCategoryDescription(String categoryDescription) {
+        this.categoryDescription = categoryDescription;
+    }
 
     public int getID() {
         return ID;
@@ -59,5 +77,5 @@ public class SubCategoryDto implements Serializable {
     public String toString() {
         return "SubCategory{" + "ID=" + ID + ", Name=" + Name + ", Description=" + Description + ", Total=" + Total + ", categoryID=" + categoryID + '}';
     }
-    
+
 }

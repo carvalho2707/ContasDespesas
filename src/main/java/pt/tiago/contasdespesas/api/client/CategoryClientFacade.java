@@ -105,26 +105,31 @@ public class CategoryClientFacade {
         return lista;
     }
 
-    public List<SubCategoryDto> findAllSub(int categoryID) {
+    public List<SubCategoryDto> findAllSub() {
         List<SubCategoryDto> lista = new ArrayList<SubCategoryDto>();
         try {
             st = createConenctionMySql();
-            res = st.executeQuery("SELECT * FROM SubCategory where CategoryID = " + categoryID);
+            res = st.executeQuery("SELECT * FROM SubCategory S INNER JOIN Category C ON S.CategoryID = C.ID");
             while (res.next()) {
                 subCategoryDto = new SubCategoryDto();
-                int id = res.getInt("ID");
-                String name = res.getString("Name");
-                String description = res.getString("Descricao");
+                int id = res.getInt("S.ID");
+                String name = res.getString("S.Name");
+                String description = res.getString("S.Descricao");
+                int categoryid = res.getInt("C.ID");
+                String categoryName = res.getString("C.Name");
+                String categoryDescription = res.getString("C.Descricao");
                 subCategoryDto.setID(id);
                 subCategoryDto.setName(name);
                 subCategoryDto.setDescription(description);
+                subCategoryDto.setCategoryID(categoryid);
+                subCategoryDto.setCategoryName(categoryName);
+                subCategoryDto.setCategoryDescription(categoryDescription);
                 lista.add(subCategoryDto);
             }
             closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return lista;
     }
 
