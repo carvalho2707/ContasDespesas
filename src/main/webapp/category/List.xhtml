@@ -37,11 +37,12 @@
                                         </br>
                                         <p:panel id="tabela" styleClass="dataListDiv">
                                             <p:commandButton style="margin-bottom:10px;" id="createButton" icon="ui-icon-plus"    value="#{bundle.Create}" actionListener="#{categoryController.prepareCreate}" update=":CategoryCreateForm" oncomplete="PF('CategoryCreateDialog').show()"/>
-                                            <p:treeTable value="#{categoryController.categoryItems}" 
-                                                         var="document"
-                                                         selection="#{categoryController.selectedDocument}" 
-                                                         selectionMode="single"
-                                                         resizableColumns="true">
+                                            <p:treeTable  id="datalist"
+                                                          value="#{categoryController.categoryItems}" 
+                                                          var="document"
+                                                          selection="#{categoryController.selectedDocument}" 
+                                                          selectionMode="single"
+                                                          resizableColumns="true">
                                                 <p:column>
                                                     <f:facet name="header">
                                                         <h:outputText value="#{bundle.Name}"/>
@@ -69,30 +70,6 @@
                                                     </p:commandLink>
                                                 </p:column>
                                             </p:treeTable>
-                                            <p:dataTable id="datalist" value="#{categoryController.items}" var="item"
-                                                         selectionMode="single" selection="#{categoryController.selected}"
-                                                         paginator="true" rowKey="#{item.ID}" rows="10"
-                                                         paginatorPosition="bottom" styleClass="datalist">
-                                                <p:ajax event="rowSelect" listener="#{categoryController.populateCollections()}"   update=" :CategoryListForm:display3 :CategoryListForm:display2 "/>
-                                                <p:column sortBy="#{item.name}">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="#{bundle.Name}"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{item.name}"/>
-                                                </p:column>
-                                                <p:column sortBy="#{item.description}">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="#{bundle.Description}"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{item.description}"/>
-                                                </p:column>
-                                                <p:column sortBy="#{item.total}">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="#{bundle.TotalSpent}"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{item.total} €"/>
-                                                </p:column>
-                                            </p:dataTable>
                                         </p:panel>
                                         <h:panelGroup id="display2" class="row">
                                             <p:panel id="display" styleClass="genericPanel" rendered="#{!empty categoryController.selected}">

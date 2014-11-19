@@ -6,7 +6,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -21,30 +20,21 @@ import pt.tiago.contasdespesas.dto.PersonDto;
 public class PersonClientFacade implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private transient Connection conn;
+    private  Connection conn;
     private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
     private static final String driver = "com.mysql.jdbc.Driver";
     private static final String userName = "root";
     private static final String password = "tiago";
     private PersonDto personDto = null;
-    private transient ResultSet res;
-    private transient PreparedStatement query;
-    private transient Statement st;
+    private  ResultSet res;
+    private  PreparedStatement query;
 
-    public PersonClientFacade() {
-        this.query = null;
-        this.st = null;
-        this.res = null;
-        this.conn = null;
-    }
-    
 
-    private Statement createConenctionMySql() {
+    private void createConenctionMySql() {
         try {
             Class.forName(driver).newInstance();
             conn = DriverManager.getConnection(urlDbName,
                     userName, password);
-            return conn.createStatement();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -54,36 +44,25 @@ public class PersonClientFacade implements Serializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     private void closeConnections() throws SQLException {
-        if(conn != null){
-            try{
-               conn.close(); 
-            }catch(SQLException e){
-                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
             }
         }
-        if(res != null){
-            try{
-               res.close(); 
-            }catch(SQLException e){
-                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        if (res != null) {
+            try {
+                res.close();
+            } catch (SQLException e) {
             }
         }
-        if(query != null){
-            try{
-               query.close(); 
-            }catch(SQLException e){
-                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            }
-        }
-        if(st != null){
-            try{
-               st.close(); 
-            }catch(SQLException e){
-                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        if (query != null) {
+            try {
+                query.close();
+            } catch (SQLException e) {
             }
         }
     }
@@ -124,8 +103,10 @@ public class PersonClientFacade implements Serializable {
     public List<PersonDto> findAll() {
         List<PersonDto> lista = new ArrayList<PersonDto>();
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT * FROM Person");
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT * FROM Person");
+            res = query.executeQuery();
             while (res.next()) {
                 personDto = new PersonDto();
                 int id = res.getInt("ID");
@@ -146,8 +127,11 @@ public class PersonClientFacade implements Serializable {
 
     public PersonDto findByID(int id) {
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT * FROM Person where ID = " + id);
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT * FROM Person where ID = ? ");
+            query.setInt(1, id);
+            res = query.executeQuery();
             while (res.next()) {
                 personDto = new PersonDto();
                 int identificador = res.getInt("ID");
@@ -166,21 +150,27 @@ public class PersonClientFacade implements Serializable {
 
     public void create(PersonDto dto) {
         try {
-            st = createConenctionMySql();
-            String queryTo = "INSERT INTO Person (Name,Surname) VALUES (" + "'" + dto.getName() + "'" + "," + "'" + dto.getSurname() + "'" + ")";
-            st.executeUpdate(queryTo);
+            createConenctionMySql();
+            String insertTableSQL = "INSERT INTO Person (Name,Surname) VALUES " + "(?,?)";
+            query = conn
+                    .prepareStatement(insertTableSQL);
+            query.setString(1, dto.getName());
+            query.setString(2, dto.getSurname());
+            res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public void remove(PersonDto dto) {
         try {
-            st = createConenctionMySql();
-            String queryTo = "DELETE FROM Person WHERE ID =" + dto.getID();
-            st.executeUpdate(queryTo);
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("DELETE FROM Person WHERE ID = ?");
+            query.setInt(1,dto.getID());
+            res = query.executeQuery();
+            
             closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
@@ -221,8 +211,9 @@ public class PersonClientFacade implements Serializable {
     public ArrayList<Integer> findYears() {
         ArrayList<Integer> lista = new ArrayList<Integer>();
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
             while (res.next()) {
                 int valor = res.getInt("ano");
                 lista.add(valor);
@@ -237,8 +228,12 @@ public class PersonClientFacade implements Serializable {
     public double findPersonTotalByYear(int ano, int pessoa) {
         double total = 0.0;
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE PersonID = " + pessoa + " AND Year(DateOfPurchase) = " + ano);
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE PersonID = ? AND Year(DateOfPurchase) = ?");
+            query.setInt(1, pessoa);
+            query.setInt(2, ano);
+            
             while (res.next()) {
                 total = res.getDouble("Sumatorio");
             }

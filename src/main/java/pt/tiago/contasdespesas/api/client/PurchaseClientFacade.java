@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,17 +28,15 @@ public class PurchaseClientFacade {
     private static final String password = "tiago";
     private ResultSet res = null;
     private PreparedStatement query = null;
-    private Statement st = null;
     private PurchaseDto purchaseDto = null;
     private CategoryDto categoryDto = null;
     private PersonDto personDto = null;
 
-    private Statement createConenctionMySql() {
+    private void createConenctionMySql() {
         try {
             Class.forName(driver).newInstance();
             conn = DriverManager.getConnection(urlDbName,
                     userName, password);
-            return conn.createStatement();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -49,36 +46,25 @@ public class PurchaseClientFacade {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     private void closeConnections() throws SQLException {
-        if(conn != null){
-            try{
-               conn.close(); 
-            }catch(SQLException e){
-                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
             }
         }
-        if(res != null){
-            try{
-               res.close(); 
-            }catch(SQLException e){
-                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        if (res != null) {
+            try {
+                res.close();
+            } catch (SQLException e) {
             }
         }
-        if(query != null){
-            try{
-               query.close(); 
-            }catch(SQLException e){
-                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            }
-        }
-        if(st != null){
-            try{
-               st.close(); 
-            }catch(SQLException e){
-                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        if (query != null) {
+            try {
+                query.close();
+            } catch (SQLException e) {
             }
         }
     }
@@ -91,7 +77,7 @@ public class PurchaseClientFacade {
                 query = conn.prepareStatement("SELECT * FROM Purchase WHERE Name LIKE ?");
                 query.setString(1, "%" + name + "%");
             }
-            ResultSet res = query.executeQuery();
+            res = query.executeQuery();
             while (res.next()) {
                 purchaseDto = new PurchaseDto();
                 int id = res.getInt("ID");
@@ -119,8 +105,10 @@ public class PurchaseClientFacade {
     public List<PurchaseDto> findAll() {
         List<PurchaseDto> lista = new ArrayList<PurchaseDto>();
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT * FROM Purchase");
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT * FROM Purchase");
+            res = query.executeQuery();
             while (res.next()) {
                 purchaseDto = new PurchaseDto();
                 int id = res.getInt("ID");
@@ -139,8 +127,11 @@ public class PurchaseClientFacade {
             }
             if (!lista.isEmpty()) {
                 for (PurchaseDto purchase : lista) {
-                    st = createConenctionMySql();
-                    res = st.executeQuery("SELECT * FROM Category where ID = " + purchase.getCategoryID());
+                    createConenctionMySql();
+                    query = conn
+                            .prepareStatement("SELECT * FROM Category where ID = ? ");
+                    query.setInt(1, purchase.getCategoryID());
+                    res = query.executeQuery();
                     while (res.next()) {
                         categoryDto = new CategoryDto();
                         int id = res.getInt("ID");
@@ -151,8 +142,11 @@ public class PurchaseClientFacade {
                         categoryDto.setDescription(description);
                         purchase.setCategory(categoryDto);
                     }
-                    st = createConenctionMySql();
-                    res = st.executeQuery("SELECT * FROM Person where ID = " + purchase.getPersonID());
+                    createConenctionMySql();
+                    query = conn
+                            .prepareStatement("SELECT * FROM Person where ID = ? ");
+                    query.setInt(1, purchase.getPersonID());
+                    res = query.executeQuery();
                     while (res.next()) {
                         personDto = new PersonDto();
                         int id = res.getInt("ID");
@@ -175,8 +169,11 @@ public class PurchaseClientFacade {
 
     public PurchaseDto findByID(int id) {
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT * FROM Purchase where ID = " + id);
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT * FROM Purchase where ID = ? ");
+            query.setInt(1, id);
+            res = query.executeQuery();
             while (res.next()) {
                 purchaseDto = new PurchaseDto();
                 int identificador = res.getInt("ID");
@@ -201,9 +198,17 @@ public class PurchaseClientFacade {
 
     public void create(PurchaseDto dto) {
         try {
-            st = createConenctionMySql();
-            String queryTo = "INSERT INTO Purchase (ItemName,DateOfPurchase,PersonID,CategoryID,Price) VALUES (" + "'" + dto.getItemName() + "'" + "," + "'" + dto.getDateOfPurchase() + "'" + "," + dto.getPersonID() + "," + dto.getPersonID() + "," + dto.getCategoryID() + "," + dto.getPrice() + ")";
-            st.executeUpdate(queryTo);
+            createConenctionMySql();
+            String insertTableSQL = "INSERT INTO Purchase (ItemName,DateOfPurchase,PersonID,CategoryID,Price,SubCategoryID) VALUES " + "(?,?,?,?,?,?)";
+            query = conn
+                    .prepareStatement(insertTableSQL);
+            query.setString(1, dto.getItemName());
+            query.setString(2, dto.getDateOfPurchase().toString());
+            query.setInt(3, dto.getPersonID());
+            query.setInt(4, dto.getCategoryID());
+            query.setDouble(5, dto.getPrice());
+            query.setInt(6, dto.getSubCategoryID());
+            res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
@@ -213,9 +218,11 @@ public class PurchaseClientFacade {
 
     public void remove(PurchaseDto dto) {
         try {
-            st = createConenctionMySql();
-            String queryTo = "DELETE FROM Purchase WHERE ID =" + dto.getID();
-            st.executeUpdate(queryTo);
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("DELETE FROM Purchase WHERE ID = ? ");
+            query.setInt(1, dto.getID());
+            res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
@@ -239,11 +246,16 @@ public class PurchaseClientFacade {
         }
     }
 
-    public double findTotalYear(int ano,int subCategoryID, int categoryID) {
+    public double findTotalYear(int ano, int subCategoryID, int categoryID) {
         double total = 0.0;
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE SubCategoryID = " + subCategoryID + " AND CategoryID = " + categoryID + " AND Year(DateOfPurchase) = " + ano);
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE SubCategoryID = ? AND CategoryID = ? AND Year(DateOfPurchase) = ? ");
+            query.setInt(1, subCategoryID);
+            query.setInt(2, categoryID);
+            query.setInt(3, ano);
+            res = query.executeQuery();
             while (res.next()) {
                 total = res.getDouble("Sumatorio");
             }

@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -31,25 +30,22 @@ public class CategoryClientFacade {
     private PreparedStatement query = null;
 
     private void closeConnections() throws SQLException {
-        if(conn != null){
-            try{
-               conn.close(); 
-            }catch(SQLException e){
-                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
             }
         }
-        if(res != null){
-            try{
-               res.close(); 
-            }catch(SQLException e){
-                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        if (res != null) {
+            try {
+                res.close();
+            } catch (SQLException e) {
             }
         }
-        if(query != null){
-            try{
-               query.close(); 
-            }catch(SQLException e){
-                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        if (query != null) {
+            try {
+                query.close();
+            } catch (SQLException e) {
             }
         }
     }
