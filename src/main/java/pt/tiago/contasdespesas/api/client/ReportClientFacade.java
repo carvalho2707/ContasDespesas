@@ -45,9 +45,27 @@ public class ReportClientFacade {
     }
 
     private void closeConnections() throws SQLException {
-        conn.close();
-        res.close();
-        st.close();
+        if(conn != null){
+            try{
+               conn.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
+        if(res != null){
+            try{
+               res.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
+        if(st != null){
+            try{
+               st.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
     }
 
     private Statement createConenctionMySql() {

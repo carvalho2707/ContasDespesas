@@ -11,6 +11,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.CartesianChartModel;
@@ -21,6 +23,8 @@ import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.api.client.CategoryClientFacade;
 import pt.tiago.contasdespesas.api.client.PurchaseClientFacade;
 import pt.tiago.contasdespesas.dto.CategoryDto;
+import pt.tiago.contasdespesas.dto.SubCategoryDto;
+import pt.tiago.contasdespesas.util.Document;
 import pt.tiago.contasdespesas.util.JsfUtil;
 import pt.tiago.contasdespesas.util.JsfUtil.PersistAction;
 
@@ -31,12 +35,15 @@ import pt.tiago.contasdespesas.util.JsfUtil.PersistAction;
 @Component("categoryController")
 @Scope("session")
 public class CategoryController implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Autowired
     private CategoryClientFacade categoryFacade;
     @Autowired
     private PurchaseClientFacade purchaseFacade;
+    private TreeNode categoryItems = null;
+    private Document selectedDocument;
     private List<CategoryDto> items = null;
     private CartesianChartModel lineTotalYearModel;
     private CategoryDto selected;
@@ -45,6 +52,14 @@ public class CategoryController implements Serializable {
 
     public CategoryController() {
 
+    }
+
+    public Document getSelectedDocument() {
+        return selectedDocument;
+    }
+
+    public void setSelectedDocument(Document selectedDocument) {
+        this.selectedDocument = selectedDocument;
     }
 
     public CartesianChartModel getLineTotalYearModel() {
@@ -121,6 +136,15 @@ public class CategoryController implements Serializable {
         this.categoryFacade = facadeCategory;
     }
 
+    public TreeNode getCategoryItems() {
+        filteredCategoryItems();
+        return categoryItems;
+    }
+
+    public void setCategoryItems(TreeNode categoryItems) {
+        this.categoryItems = categoryItems;
+    }
+
     public List<CategoryDto> getItems() {
         if (items == null && entry == false) {
             filteredItems();
@@ -156,7 +180,30 @@ public class CategoryController implements Serializable {
         }
         int ano = Calendar.getInstance().get(Calendar.YEAR);
         for (CategoryDto cate : items) {
-            cate.setTotal(purchaseFacade.findTotalYear(ano, cate.getID()));
+            //cate.setTotal(purchaseFacade.findTotalYear(ano, cate.getID()));
+        }
+        entry = true;
+    }
+
+    public void filteredCategoryItems() {
+        if (!name.isEmpty()) {
+            items = getFacade().findByName(name);
+        } else {
+            //o que esta dentro do document é o que aparece
+            categoryItems = new DefaultTreeNode(new Document(null), null);
+            double total = 0.0;
+            int ano = Calendar.getInstance().get(Calendar.YEAR);
+            for (CategoryDto cat : categoryFacade.findAll()) {
+                TreeNode tr = new DefaultTreeNode(cat.getName(), new Document(cat), categoryItems);
+                for (SubCategoryDto subCat : categoryFacade.findAllSubByCategoryID(cat.getID())) {
+                    TreeNode expenses = new DefaultTreeNode(subCat.getName(), new Document(subCat), tr);
+                    double aux = purchaseFacade.findTotalYear(ano, subCat.getID(), cat.getID());
+                    subCat.setTotal(aux);
+                    total += aux;
+                }
+                cat.setTotal(total);
+                total = 0.0;
+            }
         }
         entry = true;
     }
@@ -167,6 +214,7 @@ public class CategoryController implements Serializable {
         selected = null;
         lineTotalYearModel = null;
         items = null;
+        categoryItems = null;
         filteredItems();
     }
 

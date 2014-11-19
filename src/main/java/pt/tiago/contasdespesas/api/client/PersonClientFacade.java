@@ -58,10 +58,34 @@ public class PersonClientFacade implements Serializable {
     }
 
     private void closeConnections() throws SQLException {
-        conn.close();
-        res.close();
-        query.close();
-        st.close();
+        if(conn != null){
+            try{
+               conn.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
+        if(res != null){
+            try{
+               res.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
+        if(query != null){
+            try{
+               query.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
+        if(st != null){
+            try{
+               st.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
     }
 
     public List<PersonDto> findByName(String name, String surname) {

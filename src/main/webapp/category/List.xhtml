@@ -37,6 +37,38 @@
                                         </br>
                                         <p:panel id="tabela" styleClass="dataListDiv">
                                             <p:commandButton style="margin-bottom:10px;" id="createButton" icon="ui-icon-plus"    value="#{bundle.Create}" actionListener="#{categoryController.prepareCreate}" update=":CategoryCreateForm" oncomplete="PF('CategoryCreateDialog').show()"/>
+                                            <p:treeTable value="#{categoryController.categoryItems}" 
+                                                         var="document"
+                                                         selection="#{categoryController.selectedDocument}" 
+                                                         selectionMode="single"
+                                                         resizableColumns="true">
+                                                <p:column>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{bundle.Name}"/>
+                                                    </f:facet>
+                                                    <h:outputText value="#{document.categoryDto.name}" rendered="#{document.categoryDto != null}" />
+                                                    <h:outputText value="#{document.subCategoryDto.name}" rendered="#{document.subCategoryDto != null}" />
+                                                </p:column>
+                                                <p:column>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{bundle.Description}"/>
+                                                    </f:facet>
+                                                    <h:outputText value="#{document.categoryDto.description}" rendered="#{document.categoryDto != null}" />
+                                                    <h:outputText value="#{document.subCategoryDto.description}" rendered="#{document.subCategoryDto != null}" />
+                                                </p:column>
+                                                <p:column>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="#{bundle.TotalSpent}"/>
+                                                    </f:facet>
+                                                    <h:outputText value="#{document.categoryDto.total} €" rendered="#{document.categoryDto != null}" />
+                                                    <h:outputText value="#{document.subCategoryDto.total} €" rendered="#{document.subCategoryDto != null}" />
+                                                </p:column>
+                                                <p:column style="width:24px">
+                                                    <p:commandLink update=":CategoryListForm:display3 :CategoryListForm:display2" title="View Detail" styleClass="ui-icon ui-icon-search">
+                                                        <f:setPropertyActionListener disabled="true" listener="#{categoryController.populateCollections()}"  value="#{document}" target="#{categoryController.selectedDocument}" />
+                                                    </p:commandLink>
+                                                </p:column>
+                                            </p:treeTable>
                                             <p:dataTable id="datalist" value="#{categoryController.items}" var="item"
                                                          selectionMode="single" selection="#{categoryController.selected}"
                                                          paginator="true" rowKey="#{item.ID}" rows="10"

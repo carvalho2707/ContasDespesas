@@ -53,10 +53,34 @@ public class PurchaseClientFacade {
     }
 
     private void closeConnections() throws SQLException {
-        conn.close();
-        res.close();
-        query.close();
-        st.close();
+        if(conn != null){
+            try{
+               conn.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
+        if(res != null){
+            try{
+               res.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
+        if(query != null){
+            try{
+               query.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
+        if(st != null){
+            try{
+               st.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
     }
 
     public List<PurchaseDto> findByName(String name, Integer person, Integer category) {
@@ -215,11 +239,11 @@ public class PurchaseClientFacade {
         }
     }
 
-    public double findTotalYear(int ano, int id) {
+    public double findTotalYear(int ano,int subCategoryID, int categoryID) {
         double total = 0.0;
         try {
             st = createConenctionMySql();
-            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE CategoryID = " + id + " AND Year(DateOfPurchase) = " + ano);
+            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE SubCategoryID = " + subCategoryID + " AND CategoryID = " + categoryID + " AND Year(DateOfPurchase) = " + ano);
             while (res.next()) {
                 total = res.getDouble("Sumatorio");
             }

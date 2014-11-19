@@ -29,21 +29,36 @@ public class CategoryClientFacade {
     private Connection conn;
     private ResultSet res = null;
     private PreparedStatement query = null;
-    private Statement st = null;
 
     private void closeConnections() throws SQLException {
-        conn.close();
-        res.close();
-        query.close();
-        st.close();
+        if(conn != null){
+            try{
+               conn.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
+        if(res != null){
+            try{
+               res.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
+        if(query != null){
+            try{
+               query.close(); 
+            }catch(SQLException e){
+                System.out.println("FILHA DA PUTA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
     }
 
-    private Statement createConenctionMySql() {
+    private void createConenctionMySql() {
         try {
             Class.forName(driver).newInstance();
             conn = DriverManager.getConnection(urlDbName,
                     userName, password);
-            return conn.createStatement();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -53,7 +68,6 @@ public class CategoryClientFacade {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     public List<CategoryDto> findByName(String name) {
@@ -85,8 +99,10 @@ public class CategoryClientFacade {
     public List<CategoryDto> findAll() {
         List<CategoryDto> lista = new ArrayList<CategoryDto>();
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT * FROM Category");
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT * FROM Category");
+            res = query.executeQuery();
             while (res.next()) {
                 categoryDto = new CategoryDto();
                 int id = res.getInt("ID");
@@ -108,8 +124,10 @@ public class CategoryClientFacade {
     public List<SubCategoryDto> findAllSub() {
         List<SubCategoryDto> lista = new ArrayList<SubCategoryDto>();
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT * FROM SubCategory S INNER JOIN Category C ON S.CategoryID = C.ID");
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT * FROM SubCategory S INNER JOIN Category C ON S.CategoryID = C.ID");
+            res = query.executeQuery();
             while (res.next()) {
                 subCategoryDto = new SubCategoryDto();
                 int id = res.getInt("S.ID");
@@ -133,10 +151,40 @@ public class CategoryClientFacade {
         return lista;
     }
 
+    public List<SubCategoryDto> findAllSubByCategoryID(int id) {
+        List<SubCategoryDto> lista = new ArrayList<SubCategoryDto>();
+        try {
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT * FROM SubCategory S WHERE CategoryID = ? ");
+            query.setInt(1, id);
+            res = query.executeQuery();
+            while (res.next()) {
+                subCategoryDto = new SubCategoryDto();
+                int identification = res.getInt("S.ID");
+                String name = res.getString("S.Name");
+                String description = res.getString("S.Descricao");
+                int categoryID = res.getInt("S.CategoryID");
+                subCategoryDto.setID(identification);
+                subCategoryDto.setName(name);
+                subCategoryDto.setDescription(description);
+                subCategoryDto.setCategoryID(categoryID);
+                lista.add(subCategoryDto);
+            }
+            closeConnections();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
     public CategoryDto findByID(int id) {
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT * FROM Category where ID = " + id);
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT * FROM Category where ID = ? ");
+            query.setInt(1, id);
+            res = query.executeQuery();
             while (res.next()) {
                 categoryDto = new CategoryDto();
                 int identificador = res.getInt("ID");
@@ -155,15 +203,14 @@ public class CategoryClientFacade {
 
     public void create(CategoryDto dto) {
         try {
-            st = createConenctionMySql();
-            String queryTo = "INSERT INTO Category (Name,Descricao) VALUES ("
-                    + "'"
-                    + dto.getName()
-                    + "'"
-                    + ","
-                    + "'"
-                    + dto.getDescription() + "'" + ")";
-            st.executeUpdate(queryTo);
+
+            createConenctionMySql();
+            String insertTableSQL = "INSERT INTO Category (Name,Descricao) VALUES " + "(?,?)";
+            query = conn
+                    .prepareStatement(insertTableSQL);
+            query.setString(1, dto.getName());
+            query.setString(2, dto.getDescription());
+            res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
             System.err.println("Execpcao no create category");
@@ -174,9 +221,12 @@ public class CategoryClientFacade {
 
     public void remove(CategoryDto dto) {
         try {
-            st = createConenctionMySql();
-            String queryTo = "DELETE FROM Category WHERE ID =" + dto.getID();
-            st.executeUpdate(queryTo);
+            createConenctionMySql();
+            String insertTableSQL = "DELETE FROM Category WHERE ID = " + "(?)";
+            query = conn
+                    .prepareStatement(insertTableSQL);
+            query.setInt(1, dto.getID());
+            res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
             System.err.println("Execpcao no remove category");
@@ -220,8 +270,10 @@ public class CategoryClientFacade {
     public List<String> findAllNames() {
         List<String> lista = new ArrayList<String>();
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT Name FROM Category");
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT Name FROM Category");
+            res = query.executeQuery();
             while (res.next()) {
                 String name = res.getString("Name");
                 lista.add(name);
@@ -236,8 +288,10 @@ public class CategoryClientFacade {
     public ArrayList<Integer> findYears() {
         ArrayList<Integer> lista = new ArrayList<Integer>();
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
+            res = query.executeQuery();
             while (res.next()) {
                 int valor = res.getInt("ano");
                 lista.add(valor);
@@ -252,8 +306,12 @@ public class CategoryClientFacade {
     public double findCategoryTotalByYear(int ano, int categoria) {
         double total = 0.0;
         try {
-            st = createConenctionMySql();
-            res = st.executeQuery("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE CategoryID = " + categoria + " AND Year(DateOfPurchase) = " + ano);
+            createConenctionMySql();
+            query = conn
+                    .prepareStatement("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE CategoryID = ?  AND Year(DateOfPurchase) = ?");
+            query.setInt(1, categoria);
+            query.setInt(2, ano);
+            res = query.executeQuery();
             while (res.next()) {
                 total = res.getDouble("Sumatorio");
             }
