@@ -29,11 +29,11 @@ public class PurchaseController implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Autowired
-    private PurchaseClientFacade ejbFacade;
+    private PurchaseClientFacade purchaseFacade;
     @Autowired
-    private CategoryClientFacade facadeCategory;
+    private CategoryClientFacade categoryFacade;
     @Autowired
-    private PersonClientFacade facadePerson;
+    private PersonClientFacade personFacade;
     private List<PurchaseDto> items = null;
     private PurchaseDto selected;
     private String name = "";
@@ -45,20 +45,20 @@ public class PurchaseController implements Serializable {
 
     }
 
-    public CategoryClientFacade getFacadeCategory() {
-        return facadeCategory;
+    public CategoryClientFacade getCategoryFacade() {
+        return categoryFacade;
     }
 
-    public void setFacadeCategory(CategoryClientFacade facadeCategory) {
-        this.facadeCategory = facadeCategory;
+    public void setCategoryFacade(CategoryClientFacade categoryFacade) {
+        this.categoryFacade = categoryFacade;
     }
 
-    public PersonClientFacade getFacadePerson() {
-        return facadePerson;
+    public PersonClientFacade getPersonFacade() {
+        return personFacade;
     }
 
-    public void setFacadePerson(PersonClientFacade facadePerson) {
-        this.facadePerson = facadePerson;
+    public void setPersonFacade(PersonClientFacade personFacade) {
+        this.personFacade = personFacade;
     }
 
     public String getCategory() {
@@ -111,8 +111,8 @@ public class PurchaseController implements Serializable {
 
     public void filteredItems() {
         if (!name.isEmpty() || !person.isEmpty() || !category.isEmpty()) {
-            //int categoryID = facadeCategory.findIDByName(category);
-            //int personID = facadePerson.findIDByName(person);
+            //int categoryID = categoryFacade.findIDByName(category);
+            //int personID = personFacade.findIDByName(person);
             items = getFacade().findByName(name, 0, 0);
         } else {
             items = getFacade().findAll();
@@ -125,11 +125,11 @@ public class PurchaseController implements Serializable {
     }
 
     public PurchaseClientFacade getFacade() {
-        return ejbFacade;
+        return purchaseFacade;
     }
 
-    public void setFacade(PurchaseClientFacade ejbFacade) {
-        this.ejbFacade = ejbFacade;
+    public void setFacade(PurchaseClientFacade purchaseFacade) {
+        this.purchaseFacade = purchaseFacade;
     }
 
     public PurchaseDto getSelected() {

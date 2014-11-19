@@ -32,7 +32,7 @@ public class PersonController implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Autowired
-    private pt.tiago.contasdespesas.api.client.PersonClientFacade ejbFacade;
+    private PersonClientFacade personFacade;
     private List<PersonDto> items = null;
     private PersonDto selected;
     private String name = "";
@@ -43,6 +43,7 @@ public class PersonController implements Serializable {
     public PersonController() {
 
     }
+
     public CartesianChartModel getLineTotalYearModel() {
         if (lineTotalYearModel == null) {
             createLineTotalMonthModel();
@@ -58,19 +59,18 @@ public class PersonController implements Serializable {
         lineTotalYearModel = new CartesianChartModel();
         ChartSeries chartSeries = new ChartSeries();
         chartSeries.setLabel(selected.getName());
-        List<Integer> anos = ejbFacade.findYears();
+        List<Integer> anos = personFacade.findYears();
         Axis yAxis = lineTotalYearModel.getAxis(AxisType.Y);
         int idPessoa = selected.getID();
         double max = 20;
         Collections.sort(anos);
         for (Integer ano : anos) {
-            double valor = ejbFacade.findPersonTotalByYear(ano, idPessoa);
+            double valor = personFacade.findPersonTotalByYear(ano, idPessoa);
             chartSeries.set(ano.toString(), valor);
         }
         lineTotalYearModel.addSeries(chartSeries);
         yAxis.setMax(max);
     }
-    
 
     public Boolean getEntry() {
         return entry;
@@ -132,17 +132,17 @@ public class PersonController implements Serializable {
     public void setItems(List<PersonDto> items) {
         this.items = items;
     }
-    
+
     public void populateCollections() {
         lineTotalYearModel = null;
     }
 
     public PersonClientFacade getFacade() {
-        return ejbFacade;
+        return personFacade;
     }
 
-    public void setFacade(PersonClientFacade ejbFacade) {
-        this.ejbFacade = ejbFacade;
+    public void setFacade(PersonClientFacade personFacade) {
+        this.personFacade = personFacade;
     }
 
     public PersonDto getSelected() {

@@ -24,7 +24,6 @@ public class MainPageController implements Serializable {
     private String userNB;
     @Autowired
     PeopleDetailsByNBFetch peopleDetailsByNBFetch;
-
     private Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
 
     public Locale getLocale() {

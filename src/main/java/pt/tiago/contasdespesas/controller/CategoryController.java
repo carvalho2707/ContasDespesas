@@ -34,9 +34,9 @@ public class CategoryController implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Autowired
-    private CategoryClientFacade ejbFacade;
+    private CategoryClientFacade categoryFacade;
     @Autowired
-    private PurchaseClientFacade ejbFacadePurchase;
+    private PurchaseClientFacade purchaseFacade;
     private List<CategoryDto> items = null;
     private CartesianChartModel lineTotalYearModel;
     private CategoryDto selected;
@@ -62,25 +62,25 @@ public class CategoryController implements Serializable {
         lineTotalYearModel = new CartesianChartModel();
         ChartSeries chartSeries = new ChartSeries();
         chartSeries.setLabel(selected.getName());
-        List<Integer> anos = ejbFacade.findYears();
+        List<Integer> anos = categoryFacade.findYears();
         Axis yAxis = lineTotalYearModel.getAxis(AxisType.Y);
         int idCategoria = selected.getID();
         double max = 20;
         Collections.sort(anos);
         for (Integer ano : anos) {
-            double valor = ejbFacade.findCategoryTotalByYear(ano, idCategoria);
+            double valor = categoryFacade.findCategoryTotalByYear(ano, idCategoria);
             chartSeries.set(ano.toString(), valor);
         }
         lineTotalYearModel.addSeries(chartSeries);
         yAxis.setMax(max);
     }
 
-    public PurchaseClientFacade getEjbFacadePurchase() {
-        return ejbFacadePurchase;
+    public PurchaseClientFacade getPurchaseFacade() {
+        return purchaseFacade;
     }
 
-    public void setEjbFacadePurchase(PurchaseClientFacade ejbFacadePurchase) {
-        this.ejbFacadePurchase = ejbFacadePurchase;
+    public void setPurchaseFacade(PurchaseClientFacade purchaseFacade) {
+        this.purchaseFacade = purchaseFacade;
     }
 
     public Boolean getEntry() {
@@ -105,20 +105,20 @@ public class CategoryController implements Serializable {
         return getFacade().findAll();
     }
 
-    public CategoryClientFacade getEjbFacade() {
-        return ejbFacade;
+    public CategoryClientFacade getCategoryFacade() {
+        return categoryFacade;
     }
 
-    public void setEjbFacade(CategoryClientFacade ejbFacade) {
-        this.ejbFacade = ejbFacade;
+    public void setCategoryFacade(CategoryClientFacade categoryFacade) {
+        this.categoryFacade = categoryFacade;
     }
 
     public CategoryClientFacade getFacade() {
-        return ejbFacade;
+        return categoryFacade;
     }
 
-    public void setFacade(CategoryClientFacade ejbFacade) {
-        this.ejbFacade = ejbFacade;
+    public void setFacade(CategoryClientFacade facadeCategory) {
+        this.categoryFacade = facadeCategory;
     }
 
     public List<CategoryDto> getItems() {
@@ -156,7 +156,7 @@ public class CategoryController implements Serializable {
         }
         int ano = Calendar.getInstance().get(Calendar.YEAR);
         for (CategoryDto cate : items) {
-            cate.setTotal(ejbFacadePurchase.findTotalYear(ano, cate.getID()));
+            cate.setTotal(purchaseFacade.findTotalYear(ano, cate.getID()));
         }
         entry = true;
     }

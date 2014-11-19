@@ -1,6 +1,5 @@
 package pt.tiago.contasdespesas.api.client;
 
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -21,7 +20,6 @@ import pt.tiago.contasdespesas.dto.SubCategoryDto;
 @Component
 public class CategoryClientFacade {
 
-
     private CategoryDto categoryDto = null;
     private SubCategoryDto subCategoryDto = null;
     private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
@@ -32,8 +30,6 @@ public class CategoryClientFacade {
     private ResultSet res = null;
     private PreparedStatement query = null;
     private Statement st = null;
-
- 
 
     private void closeConnections() throws SQLException {
         conn.close();

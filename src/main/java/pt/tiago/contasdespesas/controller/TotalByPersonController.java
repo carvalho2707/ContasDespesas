@@ -34,11 +34,11 @@ public class TotalByPersonController implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Autowired
-    private pt.tiago.contasdespesas.api.client.ReportClientFacade ejbFacade;
+    private ReportClientFacade reportFacade;
     @Autowired
-    private pt.tiago.contasdespesas.api.client.CategoryClientFacade ejbFacadeCategory;
+    private CategoryClientFacade categoryFacade;
     @Autowired
-    private pt.tiago.contasdespesas.api.client.PersonClientFacade ejbFacadePerson;
+    private PersonClientFacade personFacade;
     private CartesianChartModel lineTotalMonthModel;
     private PieChartModel pieModelYear = null;
     private PieChartModel pieModelYearCategory = null;
@@ -48,12 +48,12 @@ public class TotalByPersonController implements Serializable {
     private String categoriaEscolhida = "";
     private List<String> categories;
 
-    public PersonClientFacade getEjbFacadePerson() {
-        return ejbFacadePerson;
+    public PersonClientFacade getPersonFacade() {
+        return personFacade;
     }
 
-    public void setEjbFacadePerson(PersonClientFacade ejbFacadePerson) {
-        this.ejbFacadePerson = ejbFacadePerson;
+    public void setPersonFacade(PersonClientFacade personFacade) {
+        this.personFacade = personFacade;
     }
 
     public PieChartModel getPieModelYearCategory() {
@@ -65,16 +65,16 @@ public class TotalByPersonController implements Serializable {
         this.pieModelYearCategory = pieModelYearCategory;
     }
 
-    public CategoryClientFacade getEjbFacadeCategory() {
-        return ejbFacadeCategory;
+    public CategoryClientFacade getCategoryFacade() {
+        return categoryFacade;
     }
 
-    public void setEjbFacadeCategory(CategoryClientFacade ejbFacadeCategory) {
-        this.ejbFacadeCategory = ejbFacadeCategory;
+    public void setCategoryFacade(CategoryClientFacade categoryFacade) {
+        this.categoryFacade = categoryFacade;
     }
 
     public List<String> getCategories() {
-        categories = ejbFacadeCategory.findAllNames();
+        categories = categoryFacade.findAllNames();
         categories.add(0, "Todas");
         return categories;
     }
@@ -175,23 +175,23 @@ public class TotalByPersonController implements Serializable {
     }
 
     public ReportClientFacade getFacade() {
-        return ejbFacade;
+        return reportFacade;
     }
 
-    public void setFacade(ReportClientFacade ejbFacade) {
-        this.ejbFacade = ejbFacade;
+    public void setFacade(ReportClientFacade reportFacade) {
+        this.reportFacade = reportFacade;
     }
 
     private void createLineTotalMonthModel() {
         lineTotalMonthModel = new CartesianChartModel();
-        ChartSeries chartSeries = null;
+        ChartSeries chartSeries;
         List<PersonDto> pessoas = getFacade().findAllPersons();
         Axis yAxis = lineTotalMonthModel.getAxis(AxisType.Y);
         int idCategoria = 0;
         if (categoriaEscolhida.equals("Todas")) {
             idCategoria = -1;
         } else {
-            for (CategoryDto cate : ejbFacadeCategory.findAll()) {
+            for (CategoryDto cate : categoryFacade.findAll()) {
                 if (cate.getName().equals(categoriaEscolhida)) {
                     idCategoria = cate.getID();
                 }
@@ -224,10 +224,10 @@ public class TotalByPersonController implements Serializable {
     private void createPieModelYear() {
         pieModelYear = new PieChartModel();
         List<PurchaseSumByYearDto> lista = getFacade().findTotalPersonByNameByYear(Integer.parseInt(anoEscolhido));
-        String name = "";
         if (!lista.isEmpty()) {
+            String name;
             for (PurchaseSumByYearDto dto : lista) {
-                name = ejbFacadePerson.findByID(dto.getID()).getName();
+                name = personFacade.findByID(dto.getID()).getName();
                 pieModelYear.set(name + " - " + dto.getTotal() + " €", dto.getTotal());
             }
             pieModelYear.setTitle(ResourceBundle.getBundle("/Bundle").getString("TotalByYearByPersonPie") + " - " + anoEscolhido);
@@ -247,10 +247,10 @@ public class TotalByPersonController implements Serializable {
     private void createPieModelYearCategory() {
         pieModelYearCategory = new PieChartModel();
         List<CategorySumByYearDto> lista = getFacade().findTotalCategorySumByYear(Integer.parseInt(anoEscolhido));
-        String name = "";
         if (!lista.isEmpty()) {
+            String name;
             for (CategorySumByYearDto dto : lista) {
-                name = ejbFacadeCategory.findByID(dto.getID()).getName();
+                name = categoryFacade.findByID(dto.getID()).getName();
                 pieModelYearCategory.set(name + " - " + dto.getTotal() + " €", dto.getTotal());
             }
             pieModelYearCategory.setTitle(ResourceBundle.getBundle("/Bundle").getString("TotalByYearByCategoryPie") + " - " + anoEscolhido);

@@ -37,7 +37,7 @@ public class ReportClientFacade {
     private Statement st = null;
 
     public Month[] getMes() {
-        return mes;
+        return this.mes;
     }
 
     public void setMes(Month[] mes) {
