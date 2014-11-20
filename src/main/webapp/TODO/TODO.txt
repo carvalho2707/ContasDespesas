@@ -3,5 +3,6 @@ Implementar procura por nome categoria e pessoa nas compras
 Ver se procurar por nome de categoria estraga tudo
 Na compra colocar dropdown list para escolher subCategoria
 Alterar reports para mostrar categoria -> subcategeoria
-
-aletrar findall purchase para procurar tb sub
+procura por apelido na pessoa da erro
+procurar po nome na compra da erro no name(deve ser itenname)
+procura por pessoa na compra da erro com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException: No operations allowed after statement closed.

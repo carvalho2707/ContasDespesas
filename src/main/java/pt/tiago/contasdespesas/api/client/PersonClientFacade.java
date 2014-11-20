@@ -20,15 +20,14 @@ import pt.tiago.contasdespesas.dto.PersonDto;
 public class PersonClientFacade implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private  Connection conn;
+    private Connection conn;
     private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
     private static final String driver = "com.mysql.jdbc.Driver";
     private static final String userName = "root";
     private static final String password = "tiago";
     private PersonDto personDto = null;
-    private  ResultSet res;
-    private  PreparedStatement query;
-
+    private ResultSet res;
+    private PreparedStatement query;
 
     private void createConenctionMySql() {
         try {
@@ -168,9 +167,9 @@ public class PersonClientFacade implements Serializable {
             createConenctionMySql();
             query = conn
                     .prepareStatement("DELETE FROM Person WHERE ID = ?");
-            query.setInt(1,dto.getID());
+            query.setInt(1, dto.getID());
             res = query.executeQuery();
-            
+
             closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
@@ -212,8 +211,8 @@ public class PersonClientFacade implements Serializable {
         ArrayList<Integer> lista = new ArrayList<Integer>();
         try {
             createConenctionMySql();
-            query = conn
-                    .prepareStatement("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
+            query = conn.prepareStatement("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
+            res = query.executeQuery();
             while (res.next()) {
                 int valor = res.getInt("ano");
                 lista.add(valor);
@@ -233,7 +232,7 @@ public class PersonClientFacade implements Serializable {
                     .prepareStatement("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE PersonID = ? AND Year(DateOfPurchase) = ?");
             query.setInt(1, pessoa);
             query.setInt(2, ano);
-            
+            res = query.executeQuery();
             while (res.next()) {
                 total = res.getDouble("Sumatorio");
             }
