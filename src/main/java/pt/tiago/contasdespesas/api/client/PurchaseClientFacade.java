@@ -117,12 +117,14 @@ public class PurchaseClientFacade {
                 Date data = res.getDate("DateOfPurchase");
                 int personID = res.getInt("PersonID");
                 int categoryID = res.getInt("CategoryID");
+                int subCategoryID = res.getInt("SubCategoryID");
                 double price = res.getDouble("Price");
                 purchaseDto.setID(id);
                 purchaseDto.setItemName(nome);
                 purchaseDto.setDateOfPurchase(data);
                 purchaseDto.setPersonID(personID);
                 purchaseDto.setCategoryID(categoryID);
+                purchaseDto.setSubCategoryID(subCategoryID);
                 purchaseDto.setPrice(price);
                 lista.add(purchaseDto);
             }
@@ -131,23 +133,32 @@ public class PurchaseClientFacade {
                     SubCategoryDto sub = null;
                     createConenctionMySql();
                     query = conn
-                            .prepareStatement("SELECT * FROM Category C , SubCategory S where C.ID = ? AND S.ID = ? ");
+                            .prepareStatement("SELECT * FROM Category WHERE ID = ? ");
                     query.setInt(1, purchase.getCategoryID());
-                    query.setInt(2, purchase.getSubCategoryID());
                     res = query.executeQuery();
                     while (res.next()) {
                         categoryDto = new CategoryDto();
-                        sub = new SubCategoryDto();
-                        int id = res.getInt("C.ID");
-                        String nome = res.getString("C.Name");
-                        String description = res.getString("C.Descricao");
+                        int id = res.getInt("ID");
+                        String nome = res.getString("Name");
+                        String description = res.getString("Descricao");
                         categoryDto.setID(id);
                         categoryDto.setName(nome);
                         categoryDto.setDescription(description);
-                        id = res.getInt("S.ID");
-                        nome = res.getString("S.Name");
-                        description = res.getString("S.Descricao");
+                        purchase.setCategory(categoryDto);
+                    }
+                    createConenctionMySql();
+                    query = conn
+                            .prepareStatement("SELECT * FROM SubCategory WHERE ID = ? ");
+                    query.setInt(1, purchase.getSubCategoryID());
+                    res = query.executeQuery();
+                    while (res.next()) {
+                        sub = new SubCategoryDto();
+                        int id = res.getInt("ID");
+                        String nome = res.getString("Name");
+                        String description = res.getString("Descricao");
+                        int categoryID = res.getInt("CategoryID");
                         sub.setID(id);
+                        sub.setCategoryID(categoryID);
                         sub.setName(nome);
                         sub.setDescription(description);
                         purchase.setSubCategory(sub);
