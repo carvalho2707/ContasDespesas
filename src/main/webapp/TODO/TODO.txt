@@ -1,5 +1,1 @@
-Implementar procura por nome categoria e pessoa nas compras
-----Usar Dropdow para procurar alguma
-Ver se procurar por nome de categoria estraga tudo
 Na compra colocar dropdown list para escolher subCategoria
-Alterar reports para mostrar categoria -> subcategeoria

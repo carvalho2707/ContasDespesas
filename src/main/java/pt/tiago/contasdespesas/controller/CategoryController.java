@@ -44,7 +44,6 @@ public class CategoryController implements Serializable {
     private PurchaseClientFacade purchaseFacade;
     private TreeNode categoryItems = null;
     private TreeNode selectedDocument;
-    private List<CategoryDto> items = null;
     private CartesianChartModel lineTotalYearModel;
     private CategoryDto selected;
     private SubCategoryDto selectedSub;
@@ -62,7 +61,7 @@ public class CategoryController implements Serializable {
     public void setSelectedSub(SubCategoryDto selectedSub) {
         this.selectedSub = selectedSub;
     }
-    
+
     public TreeNode getSelectedDocument() {
         return selectedDocument;
     }
@@ -128,7 +127,7 @@ public class CategoryController implements Serializable {
     public List<CategoryDto> getItemsAvailableSelectOne() {
         return getFacade().findAll();
     }
-    
+
     public List<SubCategoryDto> getItemsSubAvailableSelectOne() {
         return getFacade().findAllSub();
     }
@@ -158,17 +157,6 @@ public class CategoryController implements Serializable {
         this.categoryItems = categoryItems;
     }
 
-    public List<CategoryDto> getItems() {
-        if (items == null && entry == false) {
-            filteredItems();
-        }
-        return items;
-    }
-
-    public void setItems(List<CategoryDto> items) {
-        this.items = items;
-    }
-
     public CategoryDto getSelected() {
         return selected;
     }
@@ -185,52 +173,40 @@ public class CategoryController implements Serializable {
         this.name = name;
     }
 
-    public void filteredItems() {
-        if (!name.isEmpty()) {
-            items = getFacade().findByName(name);
-        } else {
-            items = getFacade().findAll();
-        }
-        int ano = Calendar.getInstance().get(Calendar.YEAR);
-        for (CategoryDto cate : items) {
-            //cate.setTotal(purchaseFacade.findTotalYear(ano, cate.getID()));
-        }
-        entry = true;
-    }
-    
-    public void onNodeSelect(){
+    public void onNodeSelect() {
         selectedSub = null;
-        Document doc = (Document)selectedDocument.getData();
-        if(doc.getSubCategoryDto() != null){
-            Document father = (Document)selectedDocument.getParent().getData();
-            selected = (CategoryDto)father.getCategoryDto();
-            selectedSub = (SubCategoryDto)doc.getSubCategoryDto();
+        Document doc = (Document) selectedDocument.getData();
+        if (doc.getSubCategoryDto() != null) {
+            Document father = (Document) selectedDocument.getParent().getData();
+            selected = (CategoryDto) father.getCategoryDto();
+            selectedSub = (SubCategoryDto) doc.getSubCategoryDto();
             populateCollections();
-        } else{
-            selected = (CategoryDto)doc.getCategoryDto();
+        } else {
+            selected = (CategoryDto) doc.getCategoryDto();
             populateCollections();
         }
     }
 
     public void filteredCategoryItems() {
+        List<CategoryDto> temp;
+        double total = 0.0;
+        int ano = Calendar.getInstance().get(Calendar.YEAR);
+        categoryItems = new DefaultTreeNode(new Document(null), null);
         if (!name.isEmpty()) {
-            items = getFacade().findByName(name);
+            temp = categoryFacade.findByName(name);
         } else {
-            //o que esta dentro do document é o que aparece
-            categoryItems = new DefaultTreeNode(new Document(null), null);
-            double total = 0.0;
-            int ano = Calendar.getInstance().get(Calendar.YEAR);
-            for (CategoryDto cat : categoryFacade.findAll()) {
-                TreeNode tr = new DefaultTreeNode(cat.getName(), new Document(cat), categoryItems);
-                for (SubCategoryDto subCat : categoryFacade.findAllSubByCategoryID(cat.getID())) {
-                    TreeNode expenses = new DefaultTreeNode(subCat.getName(), new Document(subCat), tr);
-                    double aux = purchaseFacade.findTotalYear(ano, subCat.getID(), cat.getID());
-                    subCat.setTotal(aux);
-                    total += aux;
-                }
-                cat.setTotal(total);
-                total = 0.0;
+            temp = categoryFacade.findAll();
+        }
+        for (CategoryDto cat : temp) {
+            TreeNode tr = new DefaultTreeNode(cat.getName(), new Document(cat), categoryItems);
+            for (SubCategoryDto subCat : categoryFacade.findAllSubByCategoryID(cat.getID())) {
+                TreeNode expenses = new DefaultTreeNode(subCat.getName(), new Document(subCat), tr);
+                double aux = purchaseFacade.findTotalYear(ano, subCat.getID(), cat.getID());
+                subCat.setTotal(aux);
+                total += aux;
             }
+            cat.setTotal(total);
+            total = 0.0;
         }
         entry = true;
     }
@@ -242,9 +218,8 @@ public class CategoryController implements Serializable {
         selectedDocument = null;
         selectedSub = null;
         lineTotalYearModel = null;
-        items = null;
         categoryItems = null;
-        filteredItems();
+        filteredCategoryItems();
     }
 
     public void populateCollections() {
@@ -257,7 +232,7 @@ public class CategoryController implements Serializable {
             clear();
         }
     }
-    
+
     public void createSub() {
         persist(PersistAction.CREATESUB, ResourceBundle.getBundle("/Bundle").getString("CategoryCreated"));
         if (!JsfUtil.isValidationFailed()) {
@@ -287,8 +262,8 @@ public class CategoryController implements Serializable {
                     getFacade().remove(selected);
                 } else if (persistAction == PersistAction.UPDATE) {
                     getFacade().edit(selected);
-                }else if(persistAction == PersistAction.CREATESUB){
-                     getFacade().createSub(selectedSub);
+                } else if (persistAction == PersistAction.CREATESUB) {
+                    getFacade().createSub(selectedSub);
                 }
                 JsfUtil.addSuccessMessage(successMessage);
             } catch (Exception ex) {
@@ -303,8 +278,8 @@ public class CategoryController implements Serializable {
         initializeEmbeddableKey();
         return selected;
     }
-    
-    public SubCategoryDto prepareCreateSub(){
+
+    public SubCategoryDto prepareCreateSub() {
         selectedSub = new SubCategoryDto();
         initializeEmbeddableKey();
         return selectedSub;
