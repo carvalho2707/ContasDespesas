@@ -75,7 +75,7 @@ public class PersonClientFacade implements Serializable {
                 query.setString(1, "%" + name + "%");
             } else if (name.isEmpty() && !surname.isEmpty()) {
                 query = conn.prepareStatement("SELECT * FROM Person WHERE Surname LIKE ?");
-                query.setString(2, "%" + surname + "%");
+                query.setString(1, "%" + surname + "%");
             } else if (!name.isEmpty() && !surname.isEmpty()) {
                 query = conn.prepareStatement("SELECT * FROM Person WHERE Name LIKE ? AND Surname LIKE ?");
                 query.setString(1, "%" + name + "%");
@@ -199,12 +199,14 @@ public class PersonClientFacade implements Serializable {
                     .prepareStatement("SELECT * FROM Person WHERE Name LIKE ?");
             query.setString(1, "%" + nameEnclosed + "%");
             res = query.executeQuery();
-            identificador = res.getInt("ID");
+            while (res.next()) {
+                identificador = res.getInt("ID");
+            }
             closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return identificador;
+        return (identificador > 0) ? identificador : 0;
     }
 
     public ArrayList<Integer> findYears() {

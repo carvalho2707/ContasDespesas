@@ -111,9 +111,15 @@ public class PurchaseController implements Serializable {
 
     public void filteredItems() {
         if (!name.isEmpty() || !person.isEmpty() || !category.isEmpty()) {
-            //int categoryID = categoryFacade.findIDByName(category);
-            //int personID = personFacade.findIDByName(person);
-            items = getFacade().findByName(name, 0, 0);
+            int categoryID = 0;
+            int personID = 0;
+            if (!category.isEmpty()) {
+                categoryID = categoryFacade.findIDByName(category);
+            }
+            if (!person.isEmpty()) {
+                personID = personFacade.findIDByName(person);
+            }
+            items = getFacade().findByName(name, personID, categoryID);
         } else {
             items = getFacade().findAll();
         }

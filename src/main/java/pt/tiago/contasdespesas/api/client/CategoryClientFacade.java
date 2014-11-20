@@ -266,12 +266,14 @@ public class CategoryClientFacade {
                     .prepareStatement("SELECT * FROM Category WHERE Name LIKE ?");
             query.setString(1, "%" + nameEnclosed + "%");
             res = query.executeQuery();
-            identificador = res.getInt("ID");
+            while(res.next()){
+              identificador = res.getInt("ID");  
+            }
             closeConnections();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return identificador;
+        return (identificador > 0) ? identificador : 0;
     }
 
     public List<String> findAllNames() {

@@ -70,13 +70,36 @@ public class PurchaseClientFacade {
         }
     }
 
-    public List<PurchaseDto> findByName(String name, Integer person, Integer category) {
+    public List<PurchaseDto> findByName(String name, int person, int category) {
         List<PurchaseDto> lista = new ArrayList<PurchaseDto>();
         try {
             createConenctionMySql();
-            if (!name.isEmpty()) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE Name LIKE ?");
+            if (!name.isEmpty() && person != 0 && category != 0) {
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND PersonID = ? AND CategoryID = ?");
                 query.setString(1, "%" + name + "%");
+                query.setInt(2, person);
+                query.setInt(3, category);
+            } else if (!name.isEmpty() && person != 0 && category == 0) {
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND PersonID = ? ");
+                query.setString(1, "%" + name + "%");
+                query.setInt(2, person);
+            } else if (!name.isEmpty() && person == 0 && category != 0) {
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND CategoryID = ?");
+                query.setString(1, "%" + name + "%");
+                query.setInt(2, category);
+            } else if (!name.isEmpty() && person == 0 && category == 0) {
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? ");
+                query.setString(1, "%" + name + "%");
+            } else if (name.isEmpty() && person != 0 && category != 0) {
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE PersonID = ? AND CategoryID = ?");
+                query.setInt(1, person);
+                query.setInt(2, category);
+            } else if (name.isEmpty() && person != 0 && category == 0) {
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE PersonID = ? ");
+                query.setInt(1, person);
+            } else if (name.isEmpty() && person == 0 && category != 0) {
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE CategoryID = ?");
+                query.setInt(1, category);
             }
             res = query.executeQuery();
             while (res.next()) {
@@ -86,6 +109,7 @@ public class PurchaseClientFacade {
                 Date data = res.getDate("DateOfPurchase");
                 int personID = res.getInt("PersonID");
                 int categoryID = res.getInt("CategoryID");
+                int subCategoryID = res.getInt("SubCategoryID");
                 double price = res.getDouble("Price");
                 purchaseDto.setID(id);
                 purchaseDto.setItemName(nome);
@@ -93,7 +117,63 @@ public class PurchaseClientFacade {
                 purchaseDto.setPersonID(personID);
                 purchaseDto.setCategoryID(categoryID);
                 purchaseDto.setPrice(price);
+                purchaseDto.setSubCategoryID(subCategoryID);
                 lista.add(purchaseDto);
+            }
+            closeConnections();
+            if (!lista.isEmpty()) {
+                for (PurchaseDto purchase : lista) {
+                    SubCategoryDto sub = null;
+                    createConenctionMySql();
+                    query = conn
+                            .prepareStatement("SELECT * FROM Category WHERE ID = ? ");
+                    query.setInt(1, purchase.getCategoryID());
+                    res = query.executeQuery();
+                    while (res.next()) {
+                        categoryDto = new CategoryDto();
+                        int id = res.getInt("ID");
+                        String nome = res.getString("Name");
+                        String description = res.getString("Descricao");
+                        categoryDto.setID(id);
+                        categoryDto.setName(nome);
+                        categoryDto.setDescription(description);
+                        purchase.setCategory(categoryDto);
+                    }
+                    closeConnections();
+                    createConenctionMySql();
+                    query = conn
+                            .prepareStatement("SELECT * FROM SubCategory WHERE ID = ? ");
+                    query.setInt(1, purchase.getSubCategoryID());
+                    res = query.executeQuery();
+                    while (res.next()) {
+                        sub = new SubCategoryDto();
+                        int id = res.getInt("ID");
+                        String nome = res.getString("Name");
+                        String description = res.getString("Descricao");
+                        int categoryID = res.getInt("CategoryID");
+                        sub.setID(id);
+                        sub.setCategoryID(categoryID);
+                        sub.setName(nome);
+                        sub.setDescription(description);
+                        purchase.setSubCategory(sub);
+                    }
+                    closeConnections();
+                    createConenctionMySql();
+                    query = conn
+                            .prepareStatement("SELECT * FROM Person where ID = ? ");
+                    query.setInt(1, purchase.getPersonID());
+                    res = query.executeQuery();
+                    while (res.next()) {
+                        personDto = new PersonDto();
+                        int id = res.getInt("ID");
+                        String nome = res.getString("Name");
+                        String surnameQ = res.getString("Surname");
+                        personDto.setID(id);
+                        personDto.setName(nome);
+                        personDto.setSurname(surnameQ);
+                        purchase.setPerson(personDto);
+                    }
+                }
             }
             closeConnections();
         } catch (Exception e) {
@@ -128,6 +208,7 @@ public class PurchaseClientFacade {
                 purchaseDto.setPrice(price);
                 lista.add(purchaseDto);
             }
+            closeConnections();
             if (!lista.isEmpty()) {
                 for (PurchaseDto purchase : lista) {
                     SubCategoryDto sub = null;
@@ -146,6 +227,7 @@ public class PurchaseClientFacade {
                         categoryDto.setDescription(description);
                         purchase.setCategory(categoryDto);
                     }
+                    closeConnections();
                     createConenctionMySql();
                     query = conn
                             .prepareStatement("SELECT * FROM SubCategory WHERE ID = ? ");
@@ -163,6 +245,7 @@ public class PurchaseClientFacade {
                         sub.setDescription(description);
                         purchase.setSubCategory(sub);
                     }
+                    closeConnections();
                     createConenctionMySql();
                     query = conn
                             .prepareStatement("SELECT * FROM Person where ID = ? ");
