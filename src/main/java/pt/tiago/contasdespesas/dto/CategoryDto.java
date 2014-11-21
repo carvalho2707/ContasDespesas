@@ -1,6 +1,7 @@
 package pt.tiago.contasdespesas.dto;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  *
@@ -57,7 +58,7 @@ public class CategoryDto implements Serializable {
 
     @Override
     public String toString() {
-        return "CategoryDto{" + "ID=" + ID + ", Name=" + Name + ", Description=" + Description + ", Total=" + Total + ", TotalByMonth=" + TotalByMonth + '}';
+        return "CategoryDto{" + "ID=" + ID + ", Name=" + Name + ", Description=" + Description + ", Total=" + Total + ", TotalByMonth=" + Arrays.toString(TotalByMonth) + '}';
     }
 
 }

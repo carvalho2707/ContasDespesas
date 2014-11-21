@@ -47,4 +47,9 @@ public class PurchaseSumByMonthDto implements Serializable {
         this.month = month;
     }
 
+    @Override
+    public String toString() {
+        return "PurchaseSumByMonthDto{" + "ID=" + ID + ", Name=" + Name + ", Total=" + Total + ", month=" + month + '}';
+    }
+    
 }

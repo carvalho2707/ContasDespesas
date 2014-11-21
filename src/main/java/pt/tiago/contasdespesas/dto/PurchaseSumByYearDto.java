@@ -45,4 +45,10 @@ public class PurchaseSumByYearDto implements Serializable {
     public void setYear(int year) {
         this.year = year;
     }
+
+    @Override
+    public String toString() {
+        return "PurchaseSumByYearDto{" + "ID=" + ID + ", Name=" + Name + ", Total=" + Total + ", year=" + year + '}';
+    }
+    
 }
