@@ -1,6 +1,8 @@
 package pt.tiago.contasdespesas.controller;
 
 import java.io.Serializable;
+import java.time.Year;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.api.client.CategoryClientFacade;
 import pt.tiago.contasdespesas.api.client.PersonClientFacade;
 import pt.tiago.contasdespesas.api.client.PurchaseClientFacade;
+import pt.tiago.contasdespesas.api.client.ReportClientFacade;
 import pt.tiago.contasdespesas.dto.PurchaseDto;
 import pt.tiago.contasdespesas.util.JsfUtil;
 import pt.tiago.contasdespesas.util.JsfUtil.PersistAction;
@@ -34,15 +37,40 @@ public class PurchaseController implements Serializable {
     private CategoryClientFacade categoryFacade;
     @Autowired
     private PersonClientFacade personFacade;
+    @Autowired
+    private ReportClientFacade reportFacade;
     private List<PurchaseDto> items = null;
     private PurchaseDto selected;
     private String name = "";
     private String category = "";
     private String person = "";
     private Boolean entry = false;
+    private List<String> anos;
+    private String anoEscolhido = "";
 
     public PurchaseController() {
 
+    }
+    
+    public List<String> getAnos() {
+        anos = reportFacade.findYears();
+        return anos;
+    }
+
+    public void setAnos(List<String> anos) {
+        this.anos = anos;
+    }
+    
+    public String getAnoEscolhido() {
+        if (anoEscolhido.isEmpty()) {
+            Calendar now = Calendar.getInstance();   // Gets the current date and time.
+            anoEscolhido = Year.of(now.get(Calendar.YEAR)).toString();
+        }
+        return anoEscolhido;
+    }
+
+    public void setAnoEscolhido(String anoEscolhido) {
+        this.anoEscolhido = anoEscolhido;
     }
 
     public CategoryClientFacade getCategoryFacade() {
@@ -118,9 +146,9 @@ public class PurchaseController implements Serializable {
             if (!person.isEmpty()) {
                 personID = personFacade.findIDByName(person);
             }
-            items = getFacade().findByName(name, personID, categoryID);
+            items = getFacade().findByName(name, personID, categoryID, Integer.parseInt(anoEscolhido));
         } else {
-            items = getFacade().findAll();
+            items = getFacade().findAll(Integer.parseInt(anoEscolhido));
         }
         entry = true;
     }

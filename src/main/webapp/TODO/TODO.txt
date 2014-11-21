@@ -1,3 +1,0 @@
-Na compra colocar dropdown list para escolher subCategoria
-Criar categoria da erro
-criar subcategoria nao faz nada

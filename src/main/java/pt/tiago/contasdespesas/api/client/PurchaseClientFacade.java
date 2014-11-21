@@ -70,36 +70,43 @@ public class PurchaseClientFacade {
         }
     }
 
-    public List<PurchaseDto> findByName(String name, int person, int category) {
+    public List<PurchaseDto> findByName(String name, int person, int category,int year) {
         List<PurchaseDto> lista = new ArrayList<PurchaseDto>();
         try {
             createConenctionMySql();
             if (!name.isEmpty() && person != 0 && category != 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND PersonID = ? AND CategoryID = ?");
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND PersonID = ? AND CategoryID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
                 query.setString(1, "%" + name + "%");
                 query.setInt(2, person);
                 query.setInt(3, category);
+                query.setInt(4,year);
             } else if (!name.isEmpty() && person != 0 && category == 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND PersonID = ? ");
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND PersonID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50 ");
                 query.setString(1, "%" + name + "%");
                 query.setInt(2, person);
+                query.setInt(3,year);
             } else if (!name.isEmpty() && person == 0 && category != 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND CategoryID = ?");
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND CategoryID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
                 query.setString(1, "%" + name + "%");
                 query.setInt(2, category);
+                query.setInt(3,year);
             } else if (!name.isEmpty() && person == 0 && category == 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? ");
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
                 query.setString(1, "%" + name + "%");
+                query.setInt(2,year);
             } else if (name.isEmpty() && person != 0 && category != 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE PersonID = ? AND CategoryID = ?");
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE PersonID = ? AND CategoryID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
                 query.setInt(1, person);
                 query.setInt(2, category);
+                query.setInt(3,year);
             } else if (name.isEmpty() && person != 0 && category == 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE PersonID = ? ");
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE PersonID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
                 query.setInt(1, person);
+                query.setInt(2,year);
             } else if (name.isEmpty() && person == 0 && category != 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE CategoryID = ?");
+                query = conn.prepareStatement("SELECT * FROM Purchase WHERE CategoryID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
                 query.setInt(1, category);
+                query.setInt(2,year);
             }
             res = query.executeQuery();
             while (res.next()) {
@@ -183,12 +190,13 @@ public class PurchaseClientFacade {
         return lista;
     }
 
-    public List<PurchaseDto> findAll() {
+    public List<PurchaseDto> findAll(int year) {
         List<PurchaseDto> lista = new ArrayList<PurchaseDto>();
         try {
             createConenctionMySql();
             query = conn
-                    .prepareStatement("SELECT * FROM Purchase");
+                    .prepareStatement("SELECT * FROM Purchase WHERE YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
+            query.setInt(1,year);
             res = query.executeQuery();
             while (res.next()) {
                 purchaseDto = new PurchaseDto();
@@ -275,7 +283,7 @@ public class PurchaseClientFacade {
         try {
             createConenctionMySql();
             query = conn
-                    .prepareStatement("SELECT * FROM Purchase where ID = ? ");
+                    .prepareStatement("SELECT * FROM Purchase where ID = ? LIMIT 50 ");
             query.setInt(1, id);
             res = query.executeQuery();
             while (res.next()) {
