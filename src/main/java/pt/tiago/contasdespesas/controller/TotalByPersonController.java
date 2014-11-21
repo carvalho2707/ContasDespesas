@@ -154,7 +154,6 @@ public class TotalByPersonController implements Serializable {
         escolhido = "";
         categoriaEscolhida = "";
         lineTotalMonthModel = null;
-        filteredItemsLine();
     }
 
     public CartesianChartModel getLineTotalMonthModel() {

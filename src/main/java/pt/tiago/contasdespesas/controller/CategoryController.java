@@ -220,7 +220,6 @@ public class CategoryController implements Serializable {
         selectedSub = null;
         lineTotalYearModel = null;
         categoryItems = null;
-        filteredCategoryItems();
     }
 
     public void populateCollections() {

@@ -110,7 +110,6 @@ public class PersonController implements Serializable {
         selected = null;
         entry = false;
         items = null;
-        filteredItems();
     }
 
     public List<PersonDto> getItems() {

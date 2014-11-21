@@ -99,7 +99,6 @@ public class PurchaseController implements Serializable {
         person = "";
         entry = false;
         items = null;
-        filteredItems();
     }
 
     public List<PurchaseDto> getItems() {
