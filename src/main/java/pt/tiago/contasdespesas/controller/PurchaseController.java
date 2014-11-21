@@ -123,7 +123,7 @@ public class PurchaseController implements Serializable {
         } else {
             items = getFacade().findAll();
         }
-        entry = false;
+        entry = true;
     }
 
     public void setItems(List<PurchaseDto> items) {

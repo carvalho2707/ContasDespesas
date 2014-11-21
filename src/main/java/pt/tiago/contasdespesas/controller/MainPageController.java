@@ -24,6 +24,14 @@ public class MainPageController implements Serializable {
     private String userNB;
     @Autowired
     PeopleDetailsByNBFetch peopleDetailsByNBFetch;
+    @Autowired
+    CategoryController categoryController;
+    @Autowired
+    PersonController personController;
+    @Autowired
+    PurchaseController purchaseController;
+    @Autowired
+    TotalByPersonController totalByPersonController;
     private Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
 
     public Locale getLocale() {
@@ -51,5 +59,12 @@ public class MainPageController implements Serializable {
 
     public void setUserNB(String userNB) {
         this.userNB = userNB;
+    }
+    
+    public void clean(){
+        categoryController.clear();
+        personController.clear();
+        purchaseController.clear();
+        totalByPersonController.clear();
     }
 }

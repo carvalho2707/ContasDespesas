@@ -175,6 +175,7 @@ public class CategoryController implements Serializable {
 
     public void onNodeSelect() {
         selectedSub = null;
+        selected = null;
         Document doc = (Document) selectedDocument.getData();
         if (doc.getSubCategoryDto() != null) {
             Document father = (Document) selectedDocument.getParent().getData();
@@ -263,6 +264,17 @@ public class CategoryController implements Serializable {
                 } else if (persistAction == PersistAction.UPDATE) {
                     getFacade().edit(selected);
                 } else if (persistAction == PersistAction.CREATESUB) {
+                    getFacade().createSub(selectedSub);
+                }
+                JsfUtil.addSuccessMessage(successMessage);
+            } catch (Exception ex) {
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+                JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+            }
+        } else if (selectedSub != null) {
+            setEmbeddableKeys();
+            try {
+                if (persistAction == PersistAction.CREATESUB) {
                     getFacade().createSub(selectedSub);
                 }
                 JsfUtil.addSuccessMessage(successMessage);

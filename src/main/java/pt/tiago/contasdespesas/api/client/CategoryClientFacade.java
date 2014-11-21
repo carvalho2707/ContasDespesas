@@ -220,7 +220,7 @@ public class CategoryClientFacade {
                     .prepareStatement(insertTableSQL);
             query.setString(1, dto.getName());
             query.setString(2, dto.getDescription());
-            query.setInt(2, dto.getCategoryID());
+            query.setInt(3, dto.getCategoryID());
             res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
