@@ -3,8 +3,7 @@ package pt.tiago.contasdespesas.controller;
 import org.primefaces.model.chart.CartesianChartModel;
 import java.io.Serializable;
 import java.text.DateFormatSymbols;
-import java.time.Month;
-import java.time.Year;
+import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -46,7 +45,19 @@ public class TotalByPersonController implements Serializable {
     private String escolhido = "";
     private String anoEscolhido = "";
     private String categoriaEscolhida = "";
+    private Integer limitEscolhido;
     private List<String> categories;
+
+    public Integer getLimitEscolhido() {
+        if (limitEscolhido == null || limitEscolhido == 0) {
+            limitEscolhido = 2000;
+        }
+        return limitEscolhido;
+    }
+
+    public void setLimitEscolhido(Integer limitEscolhido) {
+        this.limitEscolhido = limitEscolhido;
+    }
 
     public PersonClientFacade getPersonFacade() {
         return personFacade;
@@ -97,7 +108,7 @@ public class TotalByPersonController implements Serializable {
     public String getAnoEscolhido() {
         if (anoEscolhido.isEmpty()) {
             Calendar now = Calendar.getInstance();   // Gets the current date and time.
-            anoEscolhido = Year.of(now.get(Calendar.YEAR)).toString();
+            anoEscolhido = Integer.toString(now.get(Calendar.YEAR));
         }
         return anoEscolhido;
     }
@@ -127,7 +138,7 @@ public class TotalByPersonController implements Serializable {
     public String getEscolhido() {
         if (escolhido.isEmpty()) {
             Calendar now = Calendar.getInstance();   // Gets the current date and time.
-            escolhido = Month.of(now.get(Calendar.MONTH)).toString();
+            escolhido = Integer.toString(now.get(Calendar.MONTH));
         }
         return escolhido;
     }
@@ -153,6 +164,7 @@ public class TotalByPersonController implements Serializable {
     public void clear() {
         escolhido = "";
         categoriaEscolhida = "";
+        limitEscolhido = 0;
         lineTotalMonthModel = null;
     }
 
@@ -199,7 +211,7 @@ public class TotalByPersonController implements Serializable {
 
         double max = 20;
         for (PersonDto person : pessoas) {
-            PurchaseSumByMonthDto[] lista = getFacade().findTotalPersonByNameByMonth(person.getID(), idCategoria);
+            PurchaseSumByMonthDto[] lista = getFacade().findTotalPersonByNameByMonth(person.getID(), idCategoria, limitEscolhido);
             chartSeries = new ChartSeries();
             chartSeries.setLabel(person.getName());
             for (int i = 0; i < 12; i++) {
@@ -222,7 +234,7 @@ public class TotalByPersonController implements Serializable {
 
     private void createPieModelYear() {
         pieModelYear = new PieChartModel();
-        List<PurchaseSumByYearDto> lista = getFacade().findTotalPersonByNameByYear(Integer.parseInt(anoEscolhido));
+        List<PurchaseSumByYearDto> lista = getFacade().findTotalPersonByNameByYear(Integer.parseInt(anoEscolhido), limitEscolhido);
         if (!lista.isEmpty()) {
             String name;
             for (PurchaseSumByYearDto dto : lista) {
@@ -245,7 +257,7 @@ public class TotalByPersonController implements Serializable {
 
     private void createPieModelYearCategory() {
         pieModelYearCategory = new PieChartModel();
-        List<CategorySumByYearDto> lista = getFacade().findTotalCategorySumByYear(Integer.parseInt(anoEscolhido));
+        List<CategorySumByYearDto> lista = getFacade().findTotalCategorySumByYear(Integer.parseInt(anoEscolhido), limitEscolhido);
         if (!lista.isEmpty()) {
             String name;
             for (CategorySumByYearDto dto : lista) {

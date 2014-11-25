@@ -36,4 +36,26 @@
                 <activatedProfile>production</activatedProfile>
             </activatedProfiles>
         </action>
+        <action>
+            <actionName>CUSTOM-LunaBuild</actionName>
+            <displayName>ProdBuild</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>LUNA</activatedProfile>
+            </activatedProfiles>
+        </action>
+        <action>
+            <actionName>CUSTOM-LocalBuild</actionName>
+            <displayName>ProdBuild</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>LOCAL</activatedProfile>
+            </activatedProfiles>
+        </action>
     </actions>

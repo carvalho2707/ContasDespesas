@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.PersonDto;
 
@@ -21,13 +22,13 @@ public class PersonClientFacade implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private Connection conn;
-    private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
-    private static final String driver = "com.mysql.jdbc.Driver";
-    private static final String userName = "root";
-    private static final String password = "tiago";
     private PersonDto personDto = null;
     private ResultSet res;
     private PreparedStatement query;
+    private static final String urlDbName = ResourceBundle.getBundle("/Services").getString("db.urlDB");
+    private static final String driver = ResourceBundle.getBundle("/Services").getString("db.driver");
+    private static final String userName = ResourceBundle.getBundle("/Services").getString("db.userName");
+    private static final String password = ResourceBundle.getBundle("/Services").getString("db.password");
 
     private void createConenctionMySql() {
         try {

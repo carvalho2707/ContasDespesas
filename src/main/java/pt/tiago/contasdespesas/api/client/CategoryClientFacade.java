@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategoryDto;
 import pt.tiago.contasdespesas.dto.SubCategoryDto;
@@ -21,13 +24,13 @@ public class CategoryClientFacade {
 
     private CategoryDto categoryDto = null;
     private SubCategoryDto subCategoryDto = null;
-    private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
-    private static final String driver = "com.mysql.jdbc.Driver";
-    private static final String userName = "root";
-    private static final String password = "tiago";
     private Connection conn;
     private ResultSet res = null;
     private PreparedStatement query = null;
+    private static final String urlDbName = ResourceBundle.getBundle("/Services").getString("db.urlDB");
+    private static final String driver = ResourceBundle.getBundle("/Services").getString("db.driver");
+    private static final String userName = ResourceBundle.getBundle("/Services").getString("db.userName");
+    private static final String password = ResourceBundle.getBundle("/Services").getString("db.password");
 
     private void closeConnections() throws SQLException {
         if (conn != null) {
@@ -55,16 +58,31 @@ public class CategoryClientFacade {
             Class.forName(driver).newInstance();
             conn = DriverManager.getConnection(urlDbName,
                     userName, password);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (InstantiationException ex) {
+            ex.printStackTrace();
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
         }
     }
+//    private void createConenctionMySql() {
+//        try {
+//            Class.forName(driver).newInstance();
+//            conn = DriverManager.getConnection(urlDbName,
+//                    userName, password);
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public List<CategoryDto> findByName(String name) {
         List<CategoryDto> lista = new ArrayList<CategoryDto>();
@@ -211,7 +229,7 @@ public class CategoryClientFacade {
             e.printStackTrace();
         }
     }
-    
+
     public void createSub(SubCategoryDto dto) {
         try {
             createConenctionMySql();
@@ -266,8 +284,8 @@ public class CategoryClientFacade {
                     .prepareStatement("SELECT * FROM Category WHERE Name LIKE ?");
             query.setString(1, "%" + nameEnclosed + "%");
             res = query.executeQuery();
-            while(res.next()){
-              identificador = res.getInt("ID");  
+            while (res.next()) {
+                identificador = res.getInt("ID");
             }
             closeConnections();
         } catch (Exception e) {

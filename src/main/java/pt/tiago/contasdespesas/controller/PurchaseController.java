@@ -1,7 +1,6 @@
 package pt.tiago.contasdespesas.controller;
 
 import java.io.Serializable;
-import java.time.Year;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -64,7 +63,7 @@ public class PurchaseController implements Serializable {
     public String getAnoEscolhido() {
         if (anoEscolhido.isEmpty()) {
             Calendar now = Calendar.getInstance();   // Gets the current date and time.
-            anoEscolhido = Year.of(now.get(Calendar.YEAR)).toString();
+            anoEscolhido = Integer.toString(now.get(Calendar.YEAR));
         }
         return anoEscolhido;
     }

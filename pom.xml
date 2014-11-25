@@ -11,45 +11,21 @@
     
     <profiles>
         <profile>
-            <id>development</id>
+            <id>LUNA</id>
             <properties>
-                <idea.url>http://nbideasdev.azure-mobile.net/tables/Idea</idea.url>
-                <badge.url>http://nbideasdev.azure-mobile.net/tables/Badge</badge.url>
-                <badgecategory.url>http://nbideasdev.azure-mobile.net/tables/BadgeCategory</badgecategory.url>
-                <challenge.url>http://nbideasdev.azure-mobile.net/tables/Challenge</challenge.url>
-                <curiosity.url>http://nbideasdev.azure-mobile.net/tables/Curiosity</curiosity.url>
-                <level.url>http://nbideasdev.azure-mobile.net/tables/Level</level.url>
-                <sponsor.url>http://nbideasdev.azure-mobile.net/tables/Sponsor</sponsor.url>
-                <tag.url>http://nbideasdev.azure-mobile.net/tables/Tag</tag.url>
-                <usercomment.url>http://nbideasdev.azure-mobile.net/tables/UserComment</usercomment.url>
-                <user.url>http://nbideasdev.azure-mobile.net/tables/User</user.url>
-                <uservote.url>http://nbideasdev.azure-mobile.net/tables/UserVote</uservote.url>
-                <azure.tables>http://nbideasdev.azure-mobile.net/tables</azure.tables>
-                <azure.api>http://nbideasdev.azure-mobile.net/api</azure.api>
-                <azure.password>nveRJmqYBciwbwIVzrNDaUdyphYcWP12</azure.password>
-                <blob.account>newideasblob</blob.account>
-                <blob.password>xxBd8mN5IMruT0y23O9oC5/objJU/VwjEWFp6EWTuf8kgfzIPZwZksnW+zDXlnaDgB0CtE7vF/aBAA4W1on1sw==</blob.password>
+                <db.urlDB>jdbc:mysql://mysql-env-3633822.jelastic.lunacloud.com/ContasDespesas</db.urlDB>
+                <db.userName>root</db.userName>
+                <db.password>ORROjHURl9</db.password>
+                <db.driver>com.mysql.jdbc.Driver</db.driver>
             </properties>
         </profile>
         <profile>
-            <id>production</id>
+            <id>LOCAL</id>
             <properties>
-                <idea.url>http://nbideiasprod.azure-mobile.net/tables/Idea</idea.url>
-                <badge.url>http://nbideiasprod.azure-mobile.net/tables/Badge</badge.url>
-                <badgecategory.url>http://nbideiasprod.azure-mobile.net/tables/BadgeCategory</badgecategory.url>
-                <challenge.url>http://nbideiasprod.azure-mobile.net/tables/Challenge</challenge.url>
-                <curiosity.url>http://nbideiasprod.azure-mobile.net/tables/Curiosity</curiosity.url>
-                <level.url>http://nbideiasprod.azure-mobile.net/tables/Level</level.url>
-                <sponsor.url>http://nbideiasprod.azure-mobile.net/tables/Sponsor</sponsor.url>
-                <tag.url>http://nbideiasprod.azure-mobile.net/tables/Tag</tag.url>
-                <usercomment.url>http://nbideiasprod.azure-mobile.net/tables/UserComment</usercomment.url>
-                <user.url>http://nbideiasprod.azure-mobile.net/tables/User</user.url>
-                <uservote.url>http://nbideiasprod.azure-mobile.net/tables/UserVote</uservote.url>
-                <azure.tables>http://nbideiasprod.azure-mobile.net/tables</azure.tables>
-                <azure.api>http://nbideiasprod.azure-mobile.net/api</azure.api>
-                <azure.password>NxIngFXbZeWmIuOtkbkMGAoKjykGZP27</azure.password>
-                <blob.account>newideasblob</blob.account>
-                <blob.password>xxBd8mN5IMruT0y23O9oC5/objJU/VwjEWFp6EWTuf8kgfzIPZwZksnW+zDXlnaDgB0CtE7vF/aBAA4W1on1sw==</blob.password>
+                <db.urlDB>jdbc:mysql://localhost:3306/ContasDespesas</db.urlDB>
+                <db.userName>root</db.userName>
+                <db.password>tiago</db.password>
+                <db.driver>com.mysql.jdbc.Driver</db.driver>
             </properties>
         </profile>
     </profiles>

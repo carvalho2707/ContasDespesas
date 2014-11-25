@@ -6,12 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategorySumByYearDto;
 import pt.tiago.contasdespesas.dto.PurchaseSumByMonthDto;
@@ -27,20 +27,20 @@ import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
 public class ReportClientFacade {
 
     private PurchaseSumByMonthDto categoryByMonth = null;
-    private Month[] mes = Month.values();
+    private int[] mes = { 0,1,2,3,4,5,6,7,8,9,10,11 };
     private Connection conn;
-    private static final String urlDbName = "jdbc:mysql://localhost:3306/ContasDespesas";
-    private static final String driver = "com.mysql.jdbc.Driver";
-    private static final String userName = "root";
-    private static final String password = "tiago";
+    private static final String urlDbName = ResourceBundle.getBundle("/Services").getString("db.urlDB");
+    private static final String driver = ResourceBundle.getBundle("/Services").getString("db.driver");
+    private static final String userName = ResourceBundle.getBundle("/Services").getString("db.userName");
+    private static final String password = ResourceBundle.getBundle("/Services").getString("db.password");
     private ResultSet res = null;
     private PreparedStatement query = null;
 
-    public Month[] getMes() {
+    public int[] getMes() {
         return this.mes;
     }
 
-    public void setMes(Month[] mes) {
+    public void setMes(int[] mes) {
         this.mes = mes;
     }
 
@@ -86,11 +86,11 @@ public class ReportClientFacade {
         try {
             createConenctionMySql();
             query = conn
-                    .prepareStatement("Select sum(Price) as Sumatorio, MONTH(DateOfPurchase) as Mes, CategoryID from Purchase group by CategoryID ,MONTH(DateOfPurchase)");
+                    .prepareStatement("SELECT SUM(Price) AS Sumatorio, MONTH(DateOfPurchase) AS Mes, CategoryID FROM Purchase GROUP BY CategoryID ,MONTH(DateOfPurchase)");
             while (res.next()) {
                 categoryByMonth = new PurchaseSumByMonthDto();
                 int id = res.getInt("CategoryID");
-                Month data = mes[res.getInt("Mes")];
+                int data = mes[res.getInt("Mes")];
                 double total = res.getDouble("Sumatorio");
                 categoryByMonth.setID(id);
                 categoryByMonth.setMonth(data);
@@ -101,7 +101,7 @@ public class ReportClientFacade {
                 for (PurchaseSumByMonthDto categoria : lista) {
                     createConenctionMySql();
                     query = conn
-                            .prepareStatement("SELECT Name FROM Category where ID = ? ");
+                            .prepareStatement("SELECT Name FROM Category WHERE ID = ? ");
                     query.setInt(1, categoria.getID());
                     while (res.next()) {
                         String nome = res.getString("Name");
@@ -117,26 +117,28 @@ public class ReportClientFacade {
         return lista;
     }
 
-    public PurchaseSumByMonthDto[] findTotalPersonByNameByMonth(int identificador, int categoryID) {
+    public PurchaseSumByMonthDto[] findTotalPersonByNameByMonth(int identificador, int categoryID,int limit) {
         PurchaseSumByMonthDto[] purchase = new PurchaseSumByMonthDto[12];
         PurchaseSumByMonthDto temp;
         try {
             createConenctionMySql();
             if (categoryID == -1) {
                 query = conn
-                        .prepareStatement("SELECT SUM(Price) AS Sumatorio, MONTH(DateOfPurchase) AS Mes FROM Purchase WHERE PersonID = ? GROUP BY MONTH(DateOfPurchase) ");
+                        .prepareStatement("SELECT SUM(Price) AS Sumatorio, MONTH(DateOfPurchase) AS Mes FROM Purchase WHERE PersonID = ? AND Price <= ? GROUP BY MONTH(DateOfPurchase) ");
                 query.setInt(1, identificador);
+                query.setInt(2,limit);
             } else {
                 query = conn
-                        .prepareStatement("SELECT SUM(Price) AS Sumatorio, MONTH(DateOfPurchase) AS Mes FROM Purchase WHERE PersonID = ? AND CategoryID = ? GROUP BY MONTH(DateOfPurchase)");
+                        .prepareStatement("SELECT SUM(Price) AS Sumatorio, MONTH(DateOfPurchase) AS Mes FROM Purchase WHERE PersonID = ? AND CategoryID = ? AND Price <= ? GROUP BY MONTH(DateOfPurchase)");
                 query.setInt(1, identificador);
                 query.setInt(2, categoryID);
+                query.setInt(3, limit);
             }
             res = query.executeQuery();
             while (res.next()) {
                 temp = new PurchaseSumByMonthDto();
                 int pos = res.getInt("Mes") - 1;
-                Month data = mes[pos];
+                int data = mes[pos];
                 double total = res.getDouble("Sumatorio");
                 temp.setMonth(data);
                 temp.setTotal(total);
@@ -248,14 +250,15 @@ public class ReportClientFacade {
         return purchase;
     }
 
-    public List<PurchaseSumByYearDto> findTotalPersonByNameByYear(int ano) {
+    public List<PurchaseSumByYearDto> findTotalPersonByNameByYear(int ano, int limit) {
         List<PurchaseSumByYearDto> purchase = new ArrayList<PurchaseSumByYearDto>();
         PurchaseSumByYearDto temp;
         try {
             createConenctionMySql();
             query = conn
-                    .prepareStatement("SELECT SUM(Price) AS Sumatorio, PersonID AS pessoa FROM Purchase WHERE YEAR(DateOfPurchase) = ? GROUP BY PersonID ");
+                    .prepareStatement("SELECT SUM(Price) AS Sumatorio, PersonID AS pessoa FROM Purchase WHERE YEAR(DateOfPurchase) = ? AND Price <= ?  GROUP BY PersonID ");
             query.setInt(1, ano);
+            query.setInt(2,limit);
             res = query.executeQuery();
             while (res.next()) {
                 temp = new PurchaseSumByYearDto();
@@ -290,14 +293,15 @@ public class ReportClientFacade {
         return lista;
     }
 
-    public List<CategorySumByYearDto> findTotalCategorySumByYear(int ano) {
+    public List<CategorySumByYearDto> findTotalCategorySumByYear(int ano,int limit) {
         List<CategorySumByYearDto> purchase = new ArrayList<CategorySumByYearDto>();
         CategorySumByYearDto temp;
         try {
             createConenctionMySql();
             query = conn
-                    .prepareStatement("SELECT SUM(Price) AS Sumatorio, CategoryID AS categoria FROM Purchase WHERE YEAR(DateOfPurchase) = ? GROUP BY CategoryID");
+                    .prepareStatement("SELECT SUM(Price) AS Sumatorio, CategoryID AS categoria FROM Purchase WHERE YEAR(DateOfPurchase) = ? AND Price <= ? GROUP BY CategoryID");
             query.setInt(1, ano);
+            query.setInt(2, limit);
             res = query.executeQuery();
             while (res.next()) {
                 temp = new CategorySumByYearDto();

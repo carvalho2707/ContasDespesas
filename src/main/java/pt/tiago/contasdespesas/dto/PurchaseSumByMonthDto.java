@@ -1,7 +1,7 @@
 package pt.tiago.contasdespesas.dto;
 
 import java.io.Serializable;
-import java.time.Month;
+import java.util.Date;
 
 /**
  *
@@ -13,7 +13,7 @@ public class PurchaseSumByMonthDto implements Serializable {
     private int ID;
     private String Name;
     private double Total;
-    private Month month;
+    private int month;
 
     public int getID() {
         return ID;
@@ -39,11 +39,11 @@ public class PurchaseSumByMonthDto implements Serializable {
         this.Total = Total;
     }
 
-    public Month getMonth() {
+    public int getMonth() {
         return month;
     }
 
-    public void setMonth(Month month) {
+    public void setMonth(int month) {
         this.month = month;
     }
 
