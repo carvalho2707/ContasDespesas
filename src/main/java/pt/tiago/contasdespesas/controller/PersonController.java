@@ -62,10 +62,10 @@ public class PersonController implements Serializable {
         List<Integer> anos = personFacade.findYears();
         Axis yAxis = lineTotalYearModel.getAxis(AxisType.Y);
         int idPessoa = selected.getID();
-        double max = 20;
+        float max = 20.0f;
         Collections.sort(anos);
         for (Integer ano : anos) {
-            double valor = personFacade.findPersonTotalByYear(ano, idPessoa);
+            float valor = personFacade.findPersonTotalByYear(ano, idPessoa);
             chartSeries.set(ano.toString(), valor);
         }
         lineTotalYearModel.addSeries(chartSeries);

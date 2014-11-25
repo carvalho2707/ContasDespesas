@@ -82,6 +82,7 @@ public class PersonClientFacade implements Serializable {
                 query.setString(1, "%" + name + "%");
                 query.setString(2, "%" + surname + "%");
             }
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 personDto = new PersonDto();
@@ -106,6 +107,7 @@ public class PersonClientFacade implements Serializable {
             createConenctionMySql();
             query = conn
                     .prepareStatement("SELECT * FROM Person");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 personDto = new PersonDto();
@@ -131,6 +133,7 @@ public class PersonClientFacade implements Serializable {
             query = conn
                     .prepareStatement("SELECT * FROM Person where ID = ? ");
             query.setInt(1, id);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 personDto = new PersonDto();
@@ -156,6 +159,7 @@ public class PersonClientFacade implements Serializable {
                     .prepareStatement(insertTableSQL);
             query.setString(1, dto.getName());
             query.setString(2, dto.getSurname());
+            System.out.println(query.toString());
             res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
@@ -169,6 +173,7 @@ public class PersonClientFacade implements Serializable {
             query = conn
                     .prepareStatement("DELETE FROM Person WHERE ID = ?");
             query.setInt(1, dto.getID());
+            System.out.println(query.toString());
             res = query.executeQuery();
 
             closeConnections();
@@ -184,6 +189,7 @@ public class PersonClientFacade implements Serializable {
             query.setString(1, dto.getName());
             query.setString(2, dto.getSurname());
             query.setInt(3, dto.getID());
+            System.out.println(query.toString());
             query.executeUpdate();
             closeConnections();
         } catch (Exception e) {
@@ -199,6 +205,7 @@ public class PersonClientFacade implements Serializable {
             query = conn
                     .prepareStatement("SELECT * FROM Person WHERE Name LIKE ?");
             query.setString(1, "%" + nameEnclosed + "%");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 identificador = res.getInt("ID");
@@ -215,6 +222,7 @@ public class PersonClientFacade implements Serializable {
         try {
             createConenctionMySql();
             query = conn.prepareStatement("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 int valor = res.getInt("ano");
@@ -227,21 +235,22 @@ public class PersonClientFacade implements Serializable {
         return lista;
     }
 
-    public double findPersonTotalByYear(int ano, int pessoa) {
-        double total = 0.0;
+    public float findPersonTotalByYear(int ano, int pessoa) {
+        float total = 0.0f;
         try {
             createConenctionMySql();
             query = conn
                     .prepareStatement("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE PersonID = ? AND Year(DateOfPurchase) = ?");
             query.setInt(1, pessoa);
             query.setInt(2, ano);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
-                total = res.getDouble("Sumatorio");
+                total = res.getFloat("Sumatorio");
             }
             closeConnections();
         } catch (Exception e) {
-            total = 0.0;
+            total = 0.0f;
             e.printStackTrace();
         }
         return total;

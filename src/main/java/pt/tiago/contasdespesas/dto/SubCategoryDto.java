@@ -12,7 +12,7 @@ public class SubCategoryDto implements Serializable {
     private int ID;
     private String Name;
     private String Description;
-    private double Total;
+    private float Total;
     private int categoryID;
     private String categoryName;
     private String categoryDescription;
@@ -57,11 +57,11 @@ public class SubCategoryDto implements Serializable {
         this.Description = Description;
     }
 
-    public double getTotal() {
+    public float getTotal() {
         return Total;
     }
 
-    public void setTotal(double Total) {
+    public void setTotal(float Total) {
         this.Total = Total;
     }
 

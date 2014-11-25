@@ -88,10 +88,10 @@ public class CategoryController implements Serializable {
         List<Integer> anos = categoryFacade.findYears();
         Axis yAxis = lineTotalYearModel.getAxis(AxisType.Y);
         int idCategoria = selected.getID();
-        double max = 20;
+        float max = 20.0f;
         Collections.sort(anos);
         for (Integer ano : anos) {
-            double valor = categoryFacade.findCategoryTotalByYear(ano, idCategoria);
+            float valor = categoryFacade.findCategoryTotalByYear(ano, idCategoria);
             chartSeries.set(ano.toString(), valor);
         }
         lineTotalYearModel.addSeries(chartSeries);
@@ -190,7 +190,7 @@ public class CategoryController implements Serializable {
 
     public void filteredCategoryItems() {
         List<CategoryDto> temp;
-        double total = 0.0;
+        float total = 0.0f;
         int ano = Calendar.getInstance().get(Calendar.YEAR);
         categoryItems = new DefaultTreeNode(new Document(null), null);
         if (!name.isEmpty()) {
@@ -202,12 +202,12 @@ public class CategoryController implements Serializable {
             TreeNode tr = new DefaultTreeNode(cat.getName(), new Document(cat), categoryItems);
             for (SubCategoryDto subCat : categoryFacade.findAllSubByCategoryID(cat.getID())) {
                 TreeNode expenses = new DefaultTreeNode(subCat.getName(), new Document(subCat), tr);
-                double aux = purchaseFacade.findTotalYear(ano, subCat.getID(), cat.getID());
+                float aux = purchaseFacade.findTotalYear(ano, subCat.getID(), cat.getID());
                 subCat.setTotal(aux);
                 total += aux;
             }
             cat.setTotal(total);
-            total = 0.0;
+            total = 0.0f;
         }
         entry = true;
     }

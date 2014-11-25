@@ -87,11 +87,13 @@ public class ReportClientFacade {
             createConenctionMySql();
             query = conn
                     .prepareStatement("SELECT SUM(Price) AS Sumatorio, MONTH(DateOfPurchase) AS Mes, CategoryID FROM Purchase GROUP BY CategoryID ,MONTH(DateOfPurchase)");
+            System.out.println(query.toString());
+            res = query.executeQuery();
             while (res.next()) {
                 categoryByMonth = new PurchaseSumByMonthDto();
                 int id = res.getInt("CategoryID");
                 int data = mes[res.getInt("Mes")];
-                double total = res.getDouble("Sumatorio");
+                float total = res.getFloat("Sumatorio");
                 categoryByMonth.setID(id);
                 categoryByMonth.setMonth(data);
                 categoryByMonth.setTotal(total);
@@ -103,6 +105,8 @@ public class ReportClientFacade {
                     query = conn
                             .prepareStatement("SELECT Name FROM Category WHERE ID = ? ");
                     query.setInt(1, categoria.getID());
+                    System.out.println(query.toString());
+                    res = query.executeQuery();
                     while (res.next()) {
                         String nome = res.getString("Name");
                         categoria.setName(nome);
@@ -134,12 +138,13 @@ public class ReportClientFacade {
                 query.setInt(2, categoryID);
                 query.setInt(3, limit);
             }
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 temp = new PurchaseSumByMonthDto();
                 int pos = res.getInt("Mes") - 1;
                 int data = mes[pos];
-                double total = res.getDouble("Sumatorio");
+                float total = res.getFloat("Sumatorio");
                 temp.setMonth(data);
                 temp.setTotal(total);
                 purchase[pos] = temp;
@@ -159,6 +164,7 @@ public class ReportClientFacade {
             createConenctionMySql();
             query = conn
                     .prepareStatement("SELECT * FROM Person");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 personDto = new PersonDto();
@@ -187,11 +193,12 @@ public class ReportClientFacade {
             query = conn
                     .prepareStatement("SELECT SUM(Price) AS Sumatorio, Year(DateOfPurchase) AS Ano FROM Purchase WHERE PersonID = ? GROUP BY Year(DateOfPurchase) ");
             query.setInt(1, identificador);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 temp = new PurchaseSumByYearDto();
                 int ano = res.getInt("Ano");
-                double total = res.getDouble("Sumatorio");
+                float total = res.getFloat("Sumatorio");
                 temp.setYear(ano);
                 temp.setTotal(total);
                 int pos = ano - dataInicio;
@@ -211,6 +218,7 @@ public class ReportClientFacade {
             createConenctionMySql();
             query = conn
                     .prepareStatement("SELECT MIN(YEAR(DateOfPurchase)) AS inicial FROM Purchase");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 pos = res.getInt("inicial");
@@ -234,10 +242,11 @@ public class ReportClientFacade {
             query = conn
                     .prepareStatement("SELECT SUM(Price) AS Sumatorio, PersonID AS pessoa FROM Purchase WHERE MONTH(DateOfPurchase) = ? GROUP BY PersonID ");
             query.setInt(1, monthInt);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 temp = new PurchaseSumByMonthDto();
-                double total = res.getDouble("Sumatorio");
+                float total = res.getFloat("Sumatorio");
                 int idP = res.getInt("pessoa");
                 temp.setTotal(total);
                 temp.setID(idP);
@@ -259,10 +268,11 @@ public class ReportClientFacade {
                     .prepareStatement("SELECT SUM(Price) AS Sumatorio, PersonID AS pessoa FROM Purchase WHERE YEAR(DateOfPurchase) = ? AND Price <= ?  GROUP BY PersonID ");
             query.setInt(1, ano);
             query.setInt(2,limit);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 temp = new PurchaseSumByYearDto();
-                double total = res.getDouble("Sumatorio");
+                float total = res.getFloat("Sumatorio");
                 int idP = res.getInt("pessoa");
                 temp.setTotal(total);
                 temp.setID(idP);
@@ -281,6 +291,7 @@ public class ReportClientFacade {
             createConenctionMySql();
             query = conn
                     .prepareStatement("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase ");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 int valor = res.getInt("ano");
@@ -302,10 +313,11 @@ public class ReportClientFacade {
                     .prepareStatement("SELECT SUM(Price) AS Sumatorio, CategoryID AS categoria FROM Purchase WHERE YEAR(DateOfPurchase) = ? AND Price <= ? GROUP BY CategoryID");
             query.setInt(1, ano);
             query.setInt(2, limit);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 temp = new CategorySumByYearDto();
-                double total = res.getDouble("Sumatorio");
+                float total = res.getFloat("Sumatorio");
                 int idP = res.getInt("categoria");
                 temp.setTotal(total);
                 temp.setID(idP);

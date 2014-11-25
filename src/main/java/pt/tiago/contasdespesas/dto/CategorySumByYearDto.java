@@ -11,7 +11,7 @@ public class CategorySumByYearDto implements Serializable {
     private static final long serialVersionUID = 1L;
     private int ID;
     private String Name;
-    private double Total;
+    private float Total;
     private int year;
 
     public int getID() {
@@ -30,11 +30,11 @@ public class CategorySumByYearDto implements Serializable {
         this.Name = Name;
     }
 
-    public double getTotal() {
+    public float getTotal() {
         return Total;
     }
 
-    public void setTotal(double Total) {
+    public void setTotal(float Total) {
         this.Total = Total;
     }
 

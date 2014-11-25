@@ -109,6 +109,7 @@ public class PurchaseClientFacade {
                 query.setInt(1, category);
                 query.setInt(2,year);
             }
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 purchaseDto = new PurchaseDto();
@@ -118,7 +119,7 @@ public class PurchaseClientFacade {
                 int personID = res.getInt("PersonID");
                 int categoryID = res.getInt("CategoryID");
                 int subCategoryID = res.getInt("SubCategoryID");
-                double price = res.getDouble("Price");
+                float price = res.getFloat("Price");
                 purchaseDto.setID(id);
                 purchaseDto.setItemName(nome);
                 purchaseDto.setDateOfPurchase(data);
@@ -136,6 +137,7 @@ public class PurchaseClientFacade {
                     query = conn
                             .prepareStatement("SELECT * FROM Category WHERE ID = ? ");
                     query.setInt(1, purchase.getCategoryID());
+                    System.out.println(query.toString());
                     res = query.executeQuery();
                     while (res.next()) {
                         categoryDto = new CategoryDto();
@@ -152,6 +154,7 @@ public class PurchaseClientFacade {
                     query = conn
                             .prepareStatement("SELECT * FROM SubCategory WHERE ID = ? ");
                     query.setInt(1, purchase.getSubCategoryID());
+                    System.out.println(query.toString());
                     res = query.executeQuery();
                     while (res.next()) {
                         sub = new SubCategoryDto();
@@ -170,6 +173,7 @@ public class PurchaseClientFacade {
                     query = conn
                             .prepareStatement("SELECT * FROM Person where ID = ? ");
                     query.setInt(1, purchase.getPersonID());
+                    System.out.println(query.toString());
                     res = query.executeQuery();
                     while (res.next()) {
                         personDto = new PersonDto();
@@ -198,6 +202,7 @@ public class PurchaseClientFacade {
             query = conn
                     .prepareStatement("SELECT * FROM Purchase WHERE YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
             query.setInt(1,year);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 purchaseDto = new PurchaseDto();
@@ -207,7 +212,7 @@ public class PurchaseClientFacade {
                 int personID = res.getInt("PersonID");
                 int categoryID = res.getInt("CategoryID");
                 int subCategoryID = res.getInt("SubCategoryID");
-                double price = res.getDouble("Price");
+                float price = res.getFloat("Price");
                 purchaseDto.setID(id);
                 purchaseDto.setItemName(nome);
                 purchaseDto.setDateOfPurchase(data);
@@ -225,6 +230,7 @@ public class PurchaseClientFacade {
                     query = conn
                             .prepareStatement("SELECT * FROM Category WHERE ID = ? ");
                     query.setInt(1, purchase.getCategoryID());
+                    System.out.println(query.toString());
                     res = query.executeQuery();
                     while (res.next()) {
                         categoryDto = new CategoryDto();
@@ -241,6 +247,7 @@ public class PurchaseClientFacade {
                     query = conn
                             .prepareStatement("SELECT * FROM SubCategory WHERE ID = ? ");
                     query.setInt(1, purchase.getSubCategoryID());
+                    System.out.println(query.toString());
                     res = query.executeQuery();
                     while (res.next()) {
                         sub = new SubCategoryDto();
@@ -259,6 +266,7 @@ public class PurchaseClientFacade {
                     query = conn
                             .prepareStatement("SELECT * FROM Person where ID = ? ");
                     query.setInt(1, purchase.getPersonID());
+                    System.out.println(query.toString());
                     res = query.executeQuery();
                     while (res.next()) {
                         personDto = new PersonDto();
@@ -286,6 +294,7 @@ public class PurchaseClientFacade {
             query = conn
                     .prepareStatement("SELECT * FROM Purchase where ID = ? LIMIT 50 ");
             query.setInt(1, id);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 purchaseDto = new PurchaseDto();
@@ -294,7 +303,7 @@ public class PurchaseClientFacade {
                 Date data = res.getDate("DateOfPurchase");
                 int personID = res.getInt("PersonID");
                 int categoryID = res.getInt("CategoryID");
-                double price = res.getDouble("Price");
+                float price = res.getFloat("Price");
                 purchaseDto.setID(identificador);
                 purchaseDto.setItemName(nome);
                 purchaseDto.setDateOfPurchase(data);
@@ -319,8 +328,9 @@ public class PurchaseClientFacade {
             query.setString(2, dto.getDateOfPurchase().toString());
             query.setInt(3, dto.getPersonID());
             query.setInt(4, dto.getCategoryID());
-            query.setDouble(5, dto.getPrice());
+            query.setFloat(5, dto.getPrice());
             query.setInt(6, dto.getSubCategoryID());
+            System.out.println(query.toString());
             res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
@@ -335,6 +345,7 @@ public class PurchaseClientFacade {
             query = conn
                     .prepareStatement("DELETE FROM Purchase WHERE ID = ? ");
             query.setInt(1, dto.getID());
+            System.out.println(query.toString());
             res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
@@ -348,10 +359,11 @@ public class PurchaseClientFacade {
             query = conn.prepareStatement("UPDATE Purchase SET ItemName = ? , DateOfPurchase = ?, PersonID = ?, CategoryID = ?, Price = ? WHERE ID = ?");
             query.setString(1, dto.getItemName());
             query.setDate(2, (Date.valueOf(dto.getDateOfPurchase().toString())));
-            query.setDouble(3, dto.getPersonID());
+            query.setInt(3, dto.getPersonID());
             query.setInt(4, dto.getCategoryID());
-            query.setDouble(5, dto.getPrice());
+            query.setFloat(5, dto.getPrice());
             query.setInt(6, dto.getID());
+            System.out.println(query.toString());
             query.executeUpdate();
             closeConnections();
         } catch (Exception e) {
@@ -359,8 +371,8 @@ public class PurchaseClientFacade {
         }
     }
 
-    public double findTotalYear(int ano, int subCategoryID, int categoryID) {
-        double total = 0.0;
+    public float findTotalYear(int ano, int subCategoryID, int categoryID) {
+        float total = 0.0f;
         try {
             createConenctionMySql();
             query = conn
@@ -368,9 +380,10 @@ public class PurchaseClientFacade {
             query.setInt(1, subCategoryID);
             query.setInt(2, categoryID);
             query.setInt(3, ano);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
-                total = res.getDouble("Sumatorio");
+                total = res.getFloat("Sumatorio");
             }
             closeConnections();
         } catch (Exception e) {

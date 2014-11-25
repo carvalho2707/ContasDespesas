@@ -12,7 +12,7 @@ public class PurchaseDto implements Serializable{
     private static final long serialVersionUID = 1L;
     private int ID;
     private String ItemName;
-    private double Price;
+    private float Price;
     private PersonDto person;
     private CategoryDto category;
     private SubCategoryDto subCategory;
@@ -77,11 +77,11 @@ public class PurchaseDto implements Serializable{
         this.ItemName = ItemName;
     }
 
-    public double getPrice() {
+    public float getPrice() {
         return this.Price;
     }
 
-    public void setPrice(double Price) {
+    public void setPrice(float Price) {
         this.Price = Price;
     }
 

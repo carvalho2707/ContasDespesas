@@ -209,14 +209,14 @@ public class TotalByPersonController implements Serializable {
             }
         }
 
-        double max = 20;
+        float max = 20.0f;
         for (PersonDto person : pessoas) {
             PurchaseSumByMonthDto[] lista = getFacade().findTotalPersonByNameByMonth(person.getID(), idCategoria, limitEscolhido);
             chartSeries = new ChartSeries();
             chartSeries.setLabel(person.getName());
             for (int i = 0; i < 12; i++) {
                 if (lista[i] != null) {
-                    double maxTemp = lista[i].getTotal();
+                    float maxTemp = lista[i].getTotal();
                     if (maxTemp > max) {
                         max = maxTemp;
 

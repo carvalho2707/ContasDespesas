@@ -12,7 +12,7 @@ public class PurchaseSumByMonthDto implements Serializable {
     private static final long serialVersionUID = 1L;
     private int ID;
     private String Name;
-    private double Total;
+    private float Total;
     private int month;
 
     public int getID() {
@@ -31,11 +31,11 @@ public class PurchaseSumByMonthDto implements Serializable {
         this.Name = Name;
     }
 
-    public double getTotal() {
+    public float getTotal() {
         return Total;
     }
 
-    public void setTotal(double Total) {
+    public void setTotal(float Total) {
         this.Total = Total;
     }
 

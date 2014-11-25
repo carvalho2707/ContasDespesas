@@ -13,22 +13,22 @@ public class CategoryDto implements Serializable {
     private int ID;
     private String Name;
     private String Description;
-    private double Total;
-    private double[] TotalByMonth;
+    private float Total;
+    private float[] TotalByMonth;
 
-    public double[] getTotalByMonth() {
+    public float[] getTotalByMonth() {
         return this.TotalByMonth;
     }
 
-    public void setTotalByMonth(double[] TotalByMonth) {
+    public void setTotalByMonth(float[] TotalByMonth) {
         this.TotalByMonth = TotalByMonth;
     }
 
-    public double getTotal() {
+    public float getTotal() {
         return this.Total;
     }
 
-    public void setTotal(double Total) {
+    public void setTotal(float Total) {
         this.Total = Total;
     }
 

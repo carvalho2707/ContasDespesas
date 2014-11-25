@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategoryDto;
 import pt.tiago.contasdespesas.dto.SubCategoryDto;
@@ -68,21 +66,6 @@ public class CategoryClientFacade {
             ex.printStackTrace();
         }
     }
-//    private void createConenctionMySql() {
-//        try {
-//            Class.forName(driver).newInstance();
-//            conn = DriverManager.getConnection(urlDbName,
-//                    userName, password);
-//        } catch (InstantiationException e) {
-//            e.printStackTrace();
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public List<CategoryDto> findByName(String name) {
         List<CategoryDto> lista = new ArrayList<CategoryDto>();
@@ -91,6 +74,7 @@ public class CategoryClientFacade {
             query = conn
                     .prepareStatement("SELECT * FROM Category WHERE Name LIKE ?");
             query.setString(1, "%" + name + "%");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 categoryDto = new CategoryDto();
@@ -116,6 +100,7 @@ public class CategoryClientFacade {
             createConenctionMySql();
             query = conn
                     .prepareStatement("SELECT * FROM Category");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 categoryDto = new CategoryDto();
@@ -141,6 +126,7 @@ public class CategoryClientFacade {
             createConenctionMySql();
             query = conn
                     .prepareStatement("SELECT * FROM SubCategory S INNER JOIN Category C ON S.CategoryID = C.ID");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 subCategoryDto = new SubCategoryDto();
@@ -172,6 +158,7 @@ public class CategoryClientFacade {
             query = conn
                     .prepareStatement("SELECT * FROM SubCategory S WHERE CategoryID = ? ");
             query.setInt(1, id);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 subCategoryDto = new SubCategoryDto();
@@ -198,6 +185,7 @@ public class CategoryClientFacade {
             query = conn
                     .prepareStatement("SELECT * FROM Category where ID = ? ");
             query.setInt(1, id);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 categoryDto = new CategoryDto();
@@ -223,6 +211,7 @@ public class CategoryClientFacade {
                     .prepareStatement(insertTableSQL);
             query.setString(1, dto.getName());
             query.setString(2, dto.getDescription());
+            System.out.println(query.toString());
             res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
@@ -239,6 +228,7 @@ public class CategoryClientFacade {
             query.setString(1, dto.getName());
             query.setString(2, dto.getDescription());
             query.setInt(3, dto.getCategoryID());
+            System.out.println(query.toString());
             res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
@@ -253,6 +243,7 @@ public class CategoryClientFacade {
             query = conn
                     .prepareStatement(insertTableSQL);
             query.setInt(1, dto.getID());
+            System.out.println(query.toString());
             res = query.executeQuery();
             closeConnections();
         } catch (Exception e) {
@@ -268,6 +259,7 @@ public class CategoryClientFacade {
             query.setString(1, dto.getName());
             query.setString(2, dto.getDescription());
             query.setInt(3, dto.getID());
+            System.out.println(query.toString());
             query.executeUpdate();
             closeConnections();
         } catch (Exception e) {
@@ -283,6 +275,7 @@ public class CategoryClientFacade {
             query = conn
                     .prepareStatement("SELECT * FROM Category WHERE Name LIKE ?");
             query.setString(1, "%" + nameEnclosed + "%");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 identificador = res.getInt("ID");
@@ -300,6 +293,7 @@ public class CategoryClientFacade {
             createConenctionMySql();
             query = conn
                     .prepareStatement("SELECT Name FROM Category");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 String name = res.getString("Name");
@@ -318,6 +312,7 @@ public class CategoryClientFacade {
             createConenctionMySql();
             query = conn
                     .prepareStatement("SELECT DISTINCT(YEAR(DateOfPurchase)) AS ano FROM Purchase");
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
                 int valor = res.getInt("ano");
@@ -330,21 +325,22 @@ public class CategoryClientFacade {
         return lista;
     }
 
-    public double findCategoryTotalByYear(int ano, int categoria) {
-        double total = 0.0;
+    public float findCategoryTotalByYear(int ano, int categoria) {
+        float total = 0.0f;
         try {
             createConenctionMySql();
             query = conn
                     .prepareStatement("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE CategoryID = ?  AND Year(DateOfPurchase) = ?");
             query.setInt(1, categoria);
             query.setInt(2, ano);
+            System.out.println(query.toString());
             res = query.executeQuery();
             while (res.next()) {
-                total = res.getDouble("Sumatorio");
+                total = res.getFloat("Sumatorio");
             }
             closeConnections();
         } catch (Exception e) {
-            total = 0.0;
+            total = 0.0f;
             e.printStackTrace();
         }
         return total;
