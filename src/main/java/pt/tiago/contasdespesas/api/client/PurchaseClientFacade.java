@@ -1,14 +1,19 @@
 package pt.tiago.contasdespesas.api.client;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Date;
-import java.sql.SQLException;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.util.JSON;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategoryDto;
 import pt.tiago.contasdespesas.dto.PersonDto;
@@ -23,171 +28,153 @@ import pt.tiago.contasdespesas.dto.SubCategoryDto;
 @Component
 public class PurchaseClientFacade {
 
-    private transient Connection conn;
-    private ResultSet res = null;
-    private PreparedStatement query = null;
     private PurchaseDto purchaseDto = null;
     private CategoryDto categoryDto = null;
+    private SubCategoryDto subCategoryDto = null;
     private PersonDto personDto = null;
-    private static final String urlDbName = ResourceBundle.getBundle("/Services").getString("db.urlDB");
-    private static final String driver = ResourceBundle.getBundle("/Services").getString("db.driver");
-    private static final String userName = ResourceBundle.getBundle("/Services").getString("db.userName");
-    private static final String password = ResourceBundle.getBundle("/Services").getString("db.password");
+    private final static String user = "tiago";
+    private static final String pass = "tiago";
+    private static final String dbName = "contasdespesas";
+    private MongoClientURI clientURI;
+    private MongoClient client;
+    private DB db;
+    private DBCollection collection;
+    private String uri;
 
-    private void createConenctionMySql() {
+    private void closeConnectionMongoDB() {
+        client.close();
+        db = null;
+        collection = null;
+        uri = null;
+        clientURI = null;
+    }
+
+    private void createConnectionMongoDB() {
+        StringBuilder str = new StringBuilder();
+        str.append("mongodb://");
+        str.append(user);
+        str.append(":");
+        str.append(pass);
+        str.append("@ds055690.mongolab.com:55690/");
+        str.append(dbName);
+        uri = str.toString();
         try {
-            Class.forName(driver).newInstance();
-            conn = DriverManager.getConnection(urlDbName,
-                    userName, password);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            clientURI = new MongoClientURI(uri);
+            client = new MongoClient(clientURI);
+            db = client.getDB(clientURI.getDatabase());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void closeConnections() throws SQLException {
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-            }
-        }
-        if (res != null) {
-            try {
-                res.close();
-            } catch (SQLException e) {
-            }
-        }
-        if (query != null) {
-            try {
-                query.close();
-            } catch (SQLException e) {
-            }
-        }
-    }
-
-    public List<PurchaseDto> findByName(String name, int person, int category,int year) {
+    public List<PurchaseDto> findByName(String name, int person, int category, int year) {
         List<PurchaseDto> lista = new ArrayList<PurchaseDto>();
         try {
-            createConenctionMySql();
+            createConnectionMongoDB();
+            collection = db.getCollection("Purchase");
+            BasicDBObject basicObj = new BasicDBObject();
             if (!name.isEmpty() && person != 0 && category != 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND PersonID = ? AND CategoryID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
-                query.setString(1, "%" + name + "%");
-                query.setInt(2, person);
-                query.setInt(3, category);
-                query.setInt(4,year);
+                List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+                obj.add(new BasicDBObject("ItemName", name));
+                obj.add(new BasicDBObject("PersonID", person));
+                obj.add(new BasicDBObject("CategoryID", category));
+                obj.add(new BasicDBObject("Year", year));
+                basicObj.put("$and", obj);
             } else if (!name.isEmpty() && person != 0 && category == 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND PersonID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50 ");
-                query.setString(1, "%" + name + "%");
-                query.setInt(2, person);
-                query.setInt(3,year);
+                List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+                obj.add(new BasicDBObject("ItemName", name));
+                obj.add(new BasicDBObject("PersonID", person));
+                obj.add(new BasicDBObject("Year", year));
+                basicObj.put("$and", obj);
             } else if (!name.isEmpty() && person == 0 && category != 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND CategoryID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
-                query.setString(1, "%" + name + "%");
-                query.setInt(2, category);
-                query.setInt(3,year);
+                List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+                obj.add(new BasicDBObject("ItemName", name));
+                obj.add(new BasicDBObject("CategoryID", category));
+                obj.add(new BasicDBObject("Year", year));
+                basicObj.put("$and", obj);
             } else if (!name.isEmpty() && person == 0 && category == 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE ItemName LIKE ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
-                query.setString(1, "%" + name + "%");
-                query.setInt(2,year);
+                List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+                obj.add(new BasicDBObject("ItemName", name));
+                obj.add(new BasicDBObject("Year", year));
+                basicObj.put("$and", obj);
             } else if (name.isEmpty() && person != 0 && category != 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE PersonID = ? AND CategoryID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
-                query.setInt(1, person);
-                query.setInt(2, category);
-                query.setInt(3,year);
+                List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+                obj.add(new BasicDBObject("PersonID", person));
+                obj.add(new BasicDBObject("CategoryID", category));
+                obj.add(new BasicDBObject("Year", year));
+                basicObj.put("$and", obj);
             } else if (name.isEmpty() && person != 0 && category == 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE PersonID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
-                query.setInt(1, person);
-                query.setInt(2,year);
+                List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+                obj.add(new BasicDBObject("PersonID", person));
+                obj.add(new BasicDBObject("Year", year));
+                basicObj.put("$and", obj);
             } else if (name.isEmpty() && person == 0 && category != 0) {
-                query = conn.prepareStatement("SELECT * FROM Purchase WHERE CategoryID = ? AND YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
-                query.setInt(1, category);
-                query.setInt(2,year);
+                List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+                obj.add(new BasicDBObject("CategoryID", category));
+                obj.add(new BasicDBObject("Year", year));
+                basicObj.put("$and", obj);
             }
-            System.out.println(query.toString());
-            res = query.executeQuery();
-            while (res.next()) {
+            DBCursor cursor = collection.find(basicObj);
+            while (cursor.hasNext()) {
                 purchaseDto = new PurchaseDto();
-                int id = res.getInt("ID");
-                String nome = res.getString("ItemName");
-                Date data = res.getDate("DateOfPurchase");
-                int personID = res.getInt("PersonID");
-                int categoryID = res.getInt("CategoryID");
-                int subCategoryID = res.getInt("SubCategoryID");
-                float price = res.getFloat("Price");
-                purchaseDto.setID(id);
-                purchaseDto.setItemName(nome);
-                purchaseDto.setDateOfPurchase(data);
-                purchaseDto.setPersonID(personID);
-                purchaseDto.setCategoryID(categoryID);
-                purchaseDto.setPrice(price);
-                purchaseDto.setSubCategoryID(subCategoryID);
+                purchaseDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                purchaseDto.setItemName(basicObj.getString("ItemName"));
+                purchaseDto.setCategoryID(basicObj.getString("CategoryID"));
+                purchaseDto.setPersonID(basicObj.getString("PersonID"));
+                purchaseDto.setSubCategoryID(basicObj.getString("SubCategoryID"));
+                purchaseDto.setPrice(basicObj.getDouble("Price"));
+                purchaseDto.setDateOfPurchase(basicObj.getDate("DateOfPurchase"));
                 lista.add(purchaseDto);
             }
-            closeConnections();
+            closeConnectionMongoDB();
             if (!lista.isEmpty()) {
                 for (PurchaseDto purchase : lista) {
                     SubCategoryDto sub = null;
-                    createConenctionMySql();
-                    query = conn
-                            .prepareStatement("SELECT * FROM Category WHERE ID = ? ");
-                    query.setInt(1, purchase.getCategoryID());
-                    System.out.println(query.toString());
-                    res = query.executeQuery();
-                    while (res.next()) {
+                    createConnectionMongoDB();
+                    collection = db.getCollection("Category");
+                    basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(purchase.getCategoryID()));
+                    cursor = collection.find(basicObj);
+                    while (cursor.hasNext()) {
+                        DBObject obj = cursor.next();
+                        basicObj = (BasicDBObject) obj;
                         categoryDto = new CategoryDto();
-                        int id = res.getInt("ID");
-                        String nome = res.getString("Name");
-                        String description = res.getString("Descricao");
-                        categoryDto.setID(id);
-                        categoryDto.setName(nome);
-                        categoryDto.setDescription(description);
+                        categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                        categoryDto.setName(basicObj.getString("name"));
+                        categoryDto.setDescription(basicObj.getString("description"));
                         purchase.setCategory(categoryDto);
                     }
-                    closeConnections();
-                    createConenctionMySql();
-                    query = conn
-                            .prepareStatement("SELECT * FROM SubCategory WHERE ID = ? ");
-                    query.setInt(1, purchase.getSubCategoryID());
-                    System.out.println(query.toString());
-                    res = query.executeQuery();
-                    while (res.next()) {
-                        sub = new SubCategoryDto();
-                        int id = res.getInt("ID");
-                        String nome = res.getString("Name");
-                        String description = res.getString("Descricao");
-                        int categoryID = res.getInt("CategoryID");
-                        sub.setID(id);
-                        sub.setCategoryID(categoryID);
-                        sub.setName(nome);
-                        sub.setDescription(description);
-                        purchase.setSubCategory(sub);
+                    closeConnectionMongoDB();
+                    createConnectionMongoDB();
+                    collection = db.getCollection("SubCategory");
+                    basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(purchase.getCategoryID()));
+                    cursor = collection.find(basicObj);
+                    while (cursor.hasNext()) {
+                        DBObject obj = cursor.next();
+                        basicObj = (BasicDBObject) obj;
+                        subCategoryDto = new SubCategoryDto();
+                        subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                        subCategoryDto.setName(basicObj.getString("name"));
+                        subCategoryDto.setDescription(basicObj.getString("description"));
+                        subCategoryDto.setCategoryID(basicObj.getString("CategoryID"));
+                        purchase.setSubCategory(subCategoryDto);
                     }
-                    closeConnections();
-                    createConenctionMySql();
-                    query = conn
-                            .prepareStatement("SELECT * FROM Person where ID = ? ");
-                    query.setInt(1, purchase.getPersonID());
-                    System.out.println(query.toString());
-                    res = query.executeQuery();
-                    while (res.next()) {
+                    closeConnectionMongoDB();
+                    createConnectionMongoDB();
+                    collection = db.getCollection("Person");
+                    basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(purchase.getCategoryID()));
+                    cursor = collection.find(basicObj);
+                    while (cursor.hasNext()) {
+                        DBObject obj = cursor.next();
+                        basicObj = (BasicDBObject) obj;
                         personDto = new PersonDto();
-                        int id = res.getInt("ID");
-                        String nome = res.getString("Name");
-                        String surnameQ = res.getString("Surname");
-                        personDto.setID(id);
-                        personDto.setName(nome);
-                        personDto.setSurname(surnameQ);
+                        personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                        personDto.setName(basicObj.getString("name"));
+                        personDto.setSurname(basicObj.getString("surname"));
                         purchase.setPerson(personDto);
                     }
                 }
             }
-            closeConnections();
+            closeConnectionMongoDB();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -198,89 +185,72 @@ public class PurchaseClientFacade {
     public List<PurchaseDto> findAll(int year) {
         List<PurchaseDto> lista = new ArrayList<PurchaseDto>();
         try {
-            createConenctionMySql();
-            query = conn
-                    .prepareStatement("SELECT * FROM Purchase WHERE YEAR(DateOfPurchase) = ? ORDER BY DateOfPurchase DESC LIMIT 50");
-            query.setInt(1,year);
-            System.out.println(query.toString());
-            res = query.executeQuery();
-            while (res.next()) {
+            createConnectionMongoDB();
+            collection = db.getCollection("Purchase");
+            BasicDBObject basicObj = new BasicDBObject("DateOfPurchase", year);
+            DBCursor cursor = collection.find(basicObj);
+            while (cursor.hasNext()) {
+                DBObject obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 purchaseDto = new PurchaseDto();
-                int id = res.getInt("ID");
-                String nome = res.getString("ItemName");
-                Date data = res.getDate("DateOfPurchase");
-                int personID = res.getInt("PersonID");
-                int categoryID = res.getInt("CategoryID");
-                int subCategoryID = res.getInt("SubCategoryID");
-                float price = res.getFloat("Price");
-                purchaseDto.setID(id);
-                purchaseDto.setItemName(nome);
-                purchaseDto.setDateOfPurchase(data);
-                purchaseDto.setPersonID(personID);
-                purchaseDto.setCategoryID(categoryID);
-                purchaseDto.setSubCategoryID(subCategoryID);
-                purchaseDto.setPrice(price);
+                purchaseDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                purchaseDto.setItemName(basicObj.getString("ItemName"));
+                purchaseDto.setCategoryID(basicObj.getString("CategoryID"));
+                purchaseDto.setPersonID(basicObj.getString("PersonID"));
+                purchaseDto.setSubCategoryID(basicObj.getString("SubCategoryID"));
+                purchaseDto.setPrice(basicObj.getDouble("Price"));
+                purchaseDto.setDateOfPurchase(basicObj.getDate("DateOfPurchase"));
                 lista.add(purchaseDto);
             }
-            closeConnections();
+            closeConnectionMongoDB();
             if (!lista.isEmpty()) {
                 for (PurchaseDto purchase : lista) {
                     SubCategoryDto sub = null;
-                    createConenctionMySql();
-                    query = conn
-                            .prepareStatement("SELECT * FROM Category WHERE ID = ? ");
-                    query.setInt(1, purchase.getCategoryID());
-                    System.out.println(query.toString());
-                    res = query.executeQuery();
-                    while (res.next()) {
+                    createConnectionMongoDB();
+                    collection = db.getCollection("Category");
+                    basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(purchase.getCategoryID()));
+                    cursor = collection.find(basicObj);
+                    while (cursor.hasNext()) {
+                        DBObject obj = cursor.next();
+                        basicObj = (BasicDBObject) obj;
                         categoryDto = new CategoryDto();
-                        int id = res.getInt("ID");
-                        String nome = res.getString("Name");
-                        String description = res.getString("Descricao");
-                        categoryDto.setID(id);
-                        categoryDto.setName(nome);
-                        categoryDto.setDescription(description);
+                        categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                        categoryDto.setName(basicObj.getString("name"));
+                        categoryDto.setDescription(basicObj.getString("description"));
                         purchase.setCategory(categoryDto);
                     }
-                    closeConnections();
-                    createConenctionMySql();
-                    query = conn
-                            .prepareStatement("SELECT * FROM SubCategory WHERE ID = ? ");
-                    query.setInt(1, purchase.getSubCategoryID());
-                    System.out.println(query.toString());
-                    res = query.executeQuery();
-                    while (res.next()) {
-                        sub = new SubCategoryDto();
-                        int id = res.getInt("ID");
-                        String nome = res.getString("Name");
-                        String description = res.getString("Descricao");
-                        int categoryID = res.getInt("CategoryID");
-                        sub.setID(id);
-                        sub.setCategoryID(categoryID);
-                        sub.setName(nome);
-                        sub.setDescription(description);
-                        purchase.setSubCategory(sub);
+                    closeConnectionMongoDB();
+                    createConnectionMongoDB();
+                    collection = db.getCollection("SubCategory");
+                    basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(purchase.getCategoryID()));
+                    cursor = collection.find(basicObj);
+                    while (cursor.hasNext()) {
+                        DBObject obj = cursor.next();
+                        basicObj = (BasicDBObject) obj;
+                        subCategoryDto = new SubCategoryDto();
+                        subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                        subCategoryDto.setName(basicObj.getString("name"));
+                        subCategoryDto.setDescription(basicObj.getString("description"));
+                        subCategoryDto.setCategoryID(basicObj.getString("CategoryID"));
+                        purchase.setSubCategory(subCategoryDto);
                     }
-                    closeConnections();
-                    createConenctionMySql();
-                    query = conn
-                            .prepareStatement("SELECT * FROM Person where ID = ? ");
-                    query.setInt(1, purchase.getPersonID());
-                    System.out.println(query.toString());
-                    res = query.executeQuery();
-                    while (res.next()) {
+                    closeConnectionMongoDB();
+                    createConnectionMongoDB();
+                    collection = db.getCollection("Person");
+                    basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(purchase.getCategoryID()));
+                    cursor = collection.find(basicObj);
+                    while (cursor.hasNext()) {
+                        DBObject obj = cursor.next();
+                        basicObj = (BasicDBObject) obj;
                         personDto = new PersonDto();
-                        int id = res.getInt("ID");
-                        String nome = res.getString("Name");
-                        String surnameQ = res.getString("Surname");
-                        personDto.setID(id);
-                        personDto.setName(nome);
-                        personDto.setSurname(surnameQ);
+                        personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                        personDto.setName(basicObj.getString("name"));
+                        personDto.setSurname(basicObj.getString("surname"));
                         purchase.setPerson(personDto);
                     }
                 }
             }
-            closeConnections();
+            closeConnectionMongoDB();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -288,30 +258,24 @@ public class PurchaseClientFacade {
         return lista;
     }
 
-    public PurchaseDto findByID(int id) {
+    public PurchaseDto findByID(String id) {
         try {
-            createConenctionMySql();
-            query = conn
-                    .prepareStatement("SELECT * FROM Purchase where ID = ? LIMIT 50 ");
-            query.setInt(1, id);
-            System.out.println(query.toString());
-            res = query.executeQuery();
-            while (res.next()) {
+            createConnectionMongoDB();
+            collection = db.getCollection("Purchase");
+            BasicDBObject basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(id));
+            DBCursor cursor = collection.find(basicObj);
+            while (cursor.hasNext()) {
+                DBObject obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 purchaseDto = new PurchaseDto();
-                int identificador = res.getInt("ID");
-                String nome = res.getString("ItemName");
-                Date data = res.getDate("DateOfPurchase");
-                int personID = res.getInt("PersonID");
-                int categoryID = res.getInt("CategoryID");
-                float price = res.getFloat("Price");
-                purchaseDto.setID(identificador);
-                purchaseDto.setItemName(nome);
-                purchaseDto.setDateOfPurchase(data);
-                purchaseDto.setPersonID(personID);
-                purchaseDto.setCategoryID(categoryID);
-                purchaseDto.setPrice(price);
+                categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                purchaseDto.setItemName(basicObj.getString("ItemName"));
+                purchaseDto.setDateOfPurchase(basicObj.getDate("DateOfPurchase"));
+                purchaseDto.setPersonID(basicObj.getString("PersonID"));
+                purchaseDto.setCategoryID(basicObj.getString("CategoryID"));
+                purchaseDto.setPrice(basicObj.getDouble("Price"));
             }
-            closeConnections();
+            closeConnectionMongoDB();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -320,19 +284,13 @@ public class PurchaseClientFacade {
 
     public void create(PurchaseDto dto) {
         try {
-            createConenctionMySql();
-            String insertTableSQL = "INSERT INTO Purchase (ItemName,DateOfPurchase,PersonID,CategoryID,Price,SubCategoryID) VALUES " + "(?,?,?,?,?,?)";
-            query = conn
-                    .prepareStatement(insertTableSQL);
-            query.setString(1, dto.getItemName());
-            query.setString(2, dto.getDateOfPurchase().toString());
-            query.setInt(3, dto.getPersonID());
-            query.setInt(4, dto.getCategoryID());
-            query.setFloat(5, dto.getPrice());
-            query.setInt(6, dto.getSubCategoryID());
-            System.out.println(query.toString());
-            res = query.executeQuery();
-            closeConnections();
+            createConnectionMongoDB();
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonObject = mapper.writeValueAsString(dto);
+            DBObject dbObject = (DBObject) JSON.parse(jsonObject);
+            collection = db.getCollection("Purchase");
+            collection.insert(dbObject);
+            closeConnectionMongoDB();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -341,13 +299,10 @@ public class PurchaseClientFacade {
 
     public void remove(PurchaseDto dto) {
         try {
-            createConenctionMySql();
-            query = conn
-                    .prepareStatement("DELETE FROM Purchase WHERE ID = ? ");
-            query.setInt(1, dto.getID());
-            System.out.println(query.toString());
-            res = query.executeQuery();
-            closeConnections();
+            createConnectionMongoDB();
+            collection = db.getCollection("Purchase");
+            collection.remove(new BasicDBObject().append("_id", dto.getID()));
+            closeConnectionMongoDB();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -355,38 +310,101 @@ public class PurchaseClientFacade {
 
     public void edit(PurchaseDto dto) {
         try {
-            createConenctionMySql();
-            query = conn.prepareStatement("UPDATE Purchase SET ItemName = ? , DateOfPurchase = ?, PersonID = ?, CategoryID = ?, Price = ? WHERE ID = ?");
-            query.setString(1, dto.getItemName());
-            query.setDate(2, (Date.valueOf(dto.getDateOfPurchase().toString())));
-            query.setInt(3, dto.getPersonID());
-            query.setInt(4, dto.getCategoryID());
-            query.setFloat(5, dto.getPrice());
-            query.setInt(6, dto.getID());
-            System.out.println(query.toString());
-            query.executeUpdate();
-            closeConnections();
+            createConnectionMongoDB();
+            collection = db.getCollection("Purchase");
+            BasicDBObject newDocument = new BasicDBObject();
+            newDocument.put("ItemName", dto.getItemName());
+            newDocument.put("CategoryID", dto.getCategoryID());
+            newDocument.put("PersonID", dto.getPersonID());
+            newDocument.put("Price", dto.getPrice());
+            newDocument.put("SubCategoryID", dto.getSubCategoryID());
+            BasicDBObject searchQuery = new BasicDBObject().append("_id", dto.getID());
+            collection.update(searchQuery, newDocument);
+            closeConnectionMongoDB();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public float findTotalYear(int ano, int subCategoryID, int categoryID) {
-        float total = 0.0f;
+    public double findTotalYear(int ano, int subCategoryID, int categoryID) {
+        double total = 0.0;
         try {
-            createConenctionMySql();
-            query = conn
-                    .prepareStatement("SELECT SUM(Price) AS Sumatorio FROM Purchase WHERE SubCategoryID = ? AND CategoryID = ? AND Year(DateOfPurchase) = ? ");
-            query.setInt(1, subCategoryID);
-            query.setInt(2, categoryID);
-            query.setInt(3, ano);
-            System.out.println(query.toString());
-            res = query.executeQuery();
-            while (res.next()) {
-                total = res.getFloat("Sumatorio");
+            createConnectionMongoDB();
+            collection = db.getCollection("Purchase");
+            BasicDBObject basicObj = new BasicDBObject();
+            List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+            obj.add(new BasicDBObject("DateOfPurchase", ano));
+            obj.add(new BasicDBObject("PersonID", subCategoryID));
+            obj.add(new BasicDBObject("CategoryID", categoryID));
+            basicObj.put("$and", obj);
+            DBCursor cursor = collection.find(basicObj);
+            while (cursor.hasNext()) {
+                total = basicObj.getDouble("Sumatorio");
             }
-            closeConnections();
+            closeConnectionMongoDB();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
+
+    public ArrayList<Integer> findYears() {
+        ArrayList<Integer> lista = new ArrayList<Integer>();
+        try {
+            createConnectionMongoDB();
+            collection = db.getCollection("Purchase");
+            BasicDBObject basicObj = new BasicDBObject();
+            DBCursor cursor = collection.find();
+            while (cursor.hasNext()) {
+                int valor = basicObj.getInt("ano");
+                lista.add(valor);
+            }
+            closeConnectionMongoDB();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public double findCategoryTotalByYear(int ano, int categoria) {
+        double total = 0.0;
+        try {
+            createConnectionMongoDB();
+            collection = db.getCollection("Purchase");
+            BasicDBObject basicObj = new BasicDBObject();
+            List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+            obj.add(new BasicDBObject("CategoryID", categoria));
+            obj.add(new BasicDBObject("DateOfPurchase", ano));
+            basicObj.put("$and", obj);
+            DBCursor cursor = collection.find();
+            while (cursor.hasNext()) {
+                total = basicObj.getDouble("Sumatorio");
+            }
+            closeConnectionMongoDB();
+        } catch (Exception e) {
+            total = 0.0f;
+            e.printStackTrace();
+        }
+        return total;
+    }
+
+    public double findPersonTotalByYear(int ano, int pessoa) {
+        double total = 0.0;
+        try {
+            createConnectionMongoDB();
+             collection = db.getCollection("Purchase");
+            BasicDBObject basicObj = new BasicDBObject();
+            List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+            obj.add(new BasicDBObject("PersonID", pessoa));
+            obj.add(new BasicDBObject("DateOfPurchase", ano));
+            basicObj.put("$and", obj);
+            DBCursor cursor = collection.find();
+            while (cursor.hasNext()) {
+                total = basicObj.getDouble("Sumatorio");
+            }
+            closeConnectionMongoDB();
+        } catch (Exception e) {
+            total = 0.0f;
             e.printStackTrace();
         }
         return total;

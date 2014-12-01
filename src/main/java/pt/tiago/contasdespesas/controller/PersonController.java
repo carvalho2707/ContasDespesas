@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.api.client.PersonClientFacade;
+import pt.tiago.contasdespesas.api.client.PurchaseClientFacade;
 import pt.tiago.contasdespesas.dto.PersonDto;
 import pt.tiago.contasdespesas.util.JsfUtil;
 import pt.tiago.contasdespesas.util.JsfUtil.PersistAction;
@@ -33,6 +34,8 @@ public class PersonController implements Serializable {
     private static final long serialVersionUID = 1L;
     @Autowired
     private PersonClientFacade personFacade;
+    @Autowired
+    private PurchaseClientFacade purchaseFacade;
     private List<PersonDto> items = null;
     private PersonDto selected;
     private String name = "";
@@ -59,13 +62,13 @@ public class PersonController implements Serializable {
         lineTotalYearModel = new CartesianChartModel();
         ChartSeries chartSeries = new ChartSeries();
         chartSeries.setLabel(selected.getName());
-        List<Integer> anos = personFacade.findYears();
+        List<Integer> anos = purchaseFacade.findYears();
         Axis yAxis = lineTotalYearModel.getAxis(AxisType.Y);
-        int idPessoa = selected.getID();
-        float max = 20.0f;
+        String idPessoa = selected.getID();
+        double max = 20.0;
         Collections.sort(anos);
         for (Integer ano : anos) {
-            float valor = personFacade.findPersonTotalByYear(ano, idPessoa);
+            double valor = purchaseFacade.findPersonTotalByYear(ano, idPessoa);
             chartSeries.set(ano.toString(), valor);
         }
         lineTotalYearModel.addSeries(chartSeries);

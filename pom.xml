@@ -28,6 +28,14 @@
                 <db.driver>com.mysql.jdbc.Driver</db.driver>
             </properties>
         </profile>
+        <profile>
+            <id>MONGODB</id>
+            <properties>
+                <db.urlDB>jdbc:mysql://localhost:3306/ContasDespesas</db.urlDB>
+                <db.userName>tiago</db.userName>
+                <db.password>tiago</db.password>
+            </properties>
+        </profile>
     </profiles>
     
     
@@ -253,6 +261,11 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>2.10.1</version>
         </dependency>
     </dependencies>
     <build>

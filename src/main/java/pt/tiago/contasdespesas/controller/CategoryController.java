@@ -85,13 +85,13 @@ public class CategoryController implements Serializable {
         lineTotalYearModel = new CartesianChartModel();
         ChartSeries chartSeries = new ChartSeries();
         chartSeries.setLabel(selected.getName());
-        List<Integer> anos = categoryFacade.findYears();
+        List<Integer> anos = purchaseFacade.findYears();
         Axis yAxis = lineTotalYearModel.getAxis(AxisType.Y);
-        int idCategoria = selected.getID();
-        float max = 20.0f;
+        String idCategoria = selected.getID();
+        double max = 20.0;
         Collections.sort(anos);
         for (Integer ano : anos) {
-            float valor = categoryFacade.findCategoryTotalByYear(ano, idCategoria);
+            double valor = purchaseFacade.findCategoryTotalByYear(ano, idCategoria);
             chartSeries.set(ano.toString(), valor);
         }
         lineTotalYearModel.addSeries(chartSeries);
@@ -190,7 +190,7 @@ public class CategoryController implements Serializable {
 
     public void filteredCategoryItems() {
         List<CategoryDto> temp;
-        float total = 0.0f;
+        double total = 0.0;
         int ano = Calendar.getInstance().get(Calendar.YEAR);
         categoryItems = new DefaultTreeNode(new Document(null), null);
         if (!name.isEmpty()) {
@@ -202,12 +202,12 @@ public class CategoryController implements Serializable {
             TreeNode tr = new DefaultTreeNode(cat.getName(), new Document(cat), categoryItems);
             for (SubCategoryDto subCat : categoryFacade.findAllSubByCategoryID(cat.getID())) {
                 TreeNode expenses = new DefaultTreeNode(subCat.getName(), new Document(subCat), tr);
-                float aux = purchaseFacade.findTotalYear(ano, subCat.getID(), cat.getID());
+                double aux = purchaseFacade.findTotalYear(ano, subCat.getID(), cat.getID());
                 subCat.setTotal(aux);
                 total += aux;
             }
             cat.setTotal(total);
-            total = 0.0f;
+            total = 0.0;
         }
         entry = true;
     }

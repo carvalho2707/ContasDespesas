@@ -3,7 +3,6 @@ package pt.tiago.contasdespesas.controller;
 import org.primefaces.model.chart.CartesianChartModel;
 import java.io.Serializable;
 import java.text.DateFormatSymbols;
-import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -16,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.api.client.CategoryClientFacade;
 import pt.tiago.contasdespesas.api.client.PersonClientFacade;
+import pt.tiago.contasdespesas.api.client.PurchaseClientFacade;
 import pt.tiago.contasdespesas.api.client.ReportClientFacade;
 import pt.tiago.contasdespesas.dto.CategoryDto;
 import pt.tiago.contasdespesas.dto.CategorySumByYearDto;
@@ -38,6 +38,8 @@ public class TotalByPersonController implements Serializable {
     private CategoryClientFacade categoryFacade;
     @Autowired
     private PersonClientFacade personFacade;
+    @Autowired
+    private PurchaseClientFacade purchaseFacade;
     private CartesianChartModel lineTotalMonthModel;
     private PieChartModel pieModelYear = null;
     private PieChartModel pieModelYearCategory = null;
@@ -127,7 +129,7 @@ public class TotalByPersonController implements Serializable {
     }
 
     public List<String> getAnos() {
-        anos = getFacade().findYears();
+        anos = purchaseFacade.findYears();
         return anos;
     }
 
@@ -196,11 +198,11 @@ public class TotalByPersonController implements Serializable {
     private void createLineTotalMonthModel() {
         lineTotalMonthModel = new CartesianChartModel();
         ChartSeries chartSeries;
-        List<PersonDto> pessoas = getFacade().findAllPersons();
+        List<PersonDto> pessoas = personFacade.findAll();
         Axis yAxis = lineTotalMonthModel.getAxis(AxisType.Y);
-        int idCategoria = 0;
+        String idCategoria = "";
         if (categoriaEscolhida.equals("Todas")) {
-            idCategoria = -1;
+            idCategoria = "";
         } else {
             for (CategoryDto cate : categoryFacade.findAll()) {
                 if (cate.getName().equals(categoriaEscolhida)) {
@@ -209,14 +211,14 @@ public class TotalByPersonController implements Serializable {
             }
         }
 
-        float max = 20.0f;
+        double max = 20.0;
         for (PersonDto person : pessoas) {
             PurchaseSumByMonthDto[] lista = getFacade().findTotalPersonByNameByMonth(person.getID(), idCategoria, limitEscolhido);
             chartSeries = new ChartSeries();
             chartSeries.setLabel(person.getName());
             for (int i = 0; i < 12; i++) {
                 if (lista[i] != null) {
-                    float maxTemp = lista[i].getTotal();
+                    double maxTemp = lista[i].getTotal();
                     if (maxTemp > max) {
                         max = maxTemp;
 

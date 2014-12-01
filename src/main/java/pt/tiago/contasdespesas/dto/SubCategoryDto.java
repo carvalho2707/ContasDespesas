@@ -9,11 +9,11 @@ import java.io.Serializable;
 public class SubCategoryDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private int ID;
+    private String ID;
     private String Name;
     private String Description;
-    private float Total;
-    private int categoryID;
+    private double Total;
+    private String categoryID;
     private String categoryName;
     private String categoryDescription;
 
@@ -33,11 +33,11 @@ public class SubCategoryDto implements Serializable {
         this.categoryDescription = categoryDescription;
     }
 
-    public int getID() {
+    public String getID() {
         return ID;
     }
 
-    public void setID(int ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 
@@ -57,19 +57,19 @@ public class SubCategoryDto implements Serializable {
         this.Description = Description;
     }
 
-    public float getTotal() {
+    public double getTotal() {
         return Total;
     }
 
-    public void setTotal(float Total) {
+    public void setTotal(double Total) {
         this.Total = Total;
     }
 
-    public int getCategoryID() {
+    public String getCategoryID() {
         return categoryID;
     }
 
-    public void setCategoryID(int categoryID) {
+    public void setCategoryID(String categoryID) {
         this.categoryID = categoryID;
     }
 

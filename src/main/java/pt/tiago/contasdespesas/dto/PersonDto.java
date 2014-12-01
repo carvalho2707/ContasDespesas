@@ -10,7 +10,7 @@ import java.util.List;
 public class PersonDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private int ID;
+    private String ID;
     private String Name;
     private String Surname;
     private List<PurchaseDto> purchases;
@@ -23,11 +23,11 @@ public class PersonDto implements Serializable {
         this.Surname = Surname;
     }
 
-    public int getID() {
+    public String getID() {
         return ID;
     }
 
-    public void setID(int ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 

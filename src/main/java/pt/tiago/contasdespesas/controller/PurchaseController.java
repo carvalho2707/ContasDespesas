@@ -137,8 +137,8 @@ public class PurchaseController implements Serializable {
 
     public void filteredItems() {
         if (!name.isEmpty() || !person.isEmpty() || !category.isEmpty()) {
-            int categoryID = 0;
-            int personID = 0;
+            String categoryID = "";
+            String personID = "";
             if (!category.isEmpty()) {
                 categoryID = categoryFacade.findIDByName(category);
             }

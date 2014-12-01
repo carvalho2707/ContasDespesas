@@ -10,33 +10,33 @@ import java.util.Arrays;
 public class CategoryDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private int ID;
+    private String ID;
     private String Name;
     private String Description;
-    private float Total;
-    private float[] TotalByMonth;
+    private double Total;
+    private double[] TotalByMonth;
 
-    public float[] getTotalByMonth() {
+    public double[] getTotalByMonth() {
         return this.TotalByMonth;
     }
 
-    public void setTotalByMonth(float[] TotalByMonth) {
+    public void setTotalByMonth(double[] TotalByMonth) {
         this.TotalByMonth = TotalByMonth;
     }
 
-    public float getTotal() {
+    public double getTotal() {
         return this.Total;
     }
 
-    public void setTotal(float Total) {
+    public void setTotal(double Total) {
         this.Total = Total;
     }
 
-    public int getID() {
+    public String getID() {
         return this.ID;
     }
 
-    public void setID(int ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 

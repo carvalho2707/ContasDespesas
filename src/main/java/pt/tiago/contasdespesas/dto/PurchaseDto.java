@@ -10,16 +10,16 @@ import java.util.Date;
 public class PurchaseDto implements Serializable{
 
     private static final long serialVersionUID = 1L;
-    private int ID;
+    private String ID;
     private String ItemName;
-    private float Price;
+    private double Price;
     private PersonDto person;
     private CategoryDto category;
     private SubCategoryDto subCategory;
     private Date DateOfPurchase;
-    private int categoryID;
-    private int subCategoryID;
-    private int personID;
+    private String categoryID;
+    private String subCategoryID;
+    private String personID;
 
     public SubCategoryDto getSubCategory() {
         return subCategory;
@@ -29,27 +29,27 @@ public class PurchaseDto implements Serializable{
         this.subCategory = subCategory;
     }
     
-    public int getSubCategoryID() {
+    public String getSubCategoryID() {
         return this.subCategoryID;
     }
 
-    public void setSubCategoryID(int subCategoryID) {
+    public void setSubCategoryID(String subCategoryID) {
         this.subCategoryID = subCategoryID;
     }
 
-    public int getCategoryID() {
+    public String getCategoryID() {
         return this.categoryID;
     }
 
-    public void setCategoryID(int categoryID) {
+    public void setCategoryID(String categoryID) {
         this.categoryID = categoryID;
     }
 
-    public int getPersonID() {
+    public String getPersonID() {
         return this.personID;
     }
 
-    public void setPersonID(int personID) {
+    public void setPersonID(String personID) {
         this.personID = personID;
     }
 
@@ -61,11 +61,11 @@ public class PurchaseDto implements Serializable{
         this.DateOfPurchase = DateOfPurchase;
     }
 
-    public int getID() {
+    public String getID() {
         return this.ID;
     }
 
-    public void setID(int ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 
@@ -77,11 +77,11 @@ public class PurchaseDto implements Serializable{
         this.ItemName = ItemName;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return this.Price;
     }
 
-    public void setPrice(float Price) {
+    public void setPrice(double Price) {
         this.Price = Price;
     }
 

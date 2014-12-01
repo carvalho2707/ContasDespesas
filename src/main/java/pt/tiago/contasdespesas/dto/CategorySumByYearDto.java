@@ -9,16 +9,16 @@ import java.io.Serializable;
 public class CategorySumByYearDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private int ID;
+    private String ID;
     private String Name;
-    private float Total;
+    private double Total;
     private int year;
 
-    public int getID() {
+    public String getID() {
         return ID;
     }
 
-    public void setID(int ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 
@@ -30,11 +30,11 @@ public class CategorySumByYearDto implements Serializable {
         this.Name = Name;
     }
 
-    public float getTotal() {
+    public double getTotal() {
         return Total;
     }
 
-    public void setTotal(float Total) {
+    public void setTotal(double Total) {
         this.Total = Total;
     }
 
