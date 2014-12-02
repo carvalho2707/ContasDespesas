@@ -1,5 +1,0 @@
-adicionar campo de limitar procuras por preço
-- totalYearByPerson.xhtml---------
-- lineTotalMonth.xhtml----------
-- totalYearByCategory.xhtml----------
-Descobrir erro que faz com que total gasto fique commuitas casas decimais

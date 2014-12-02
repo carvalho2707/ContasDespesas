@@ -90,9 +90,12 @@ public class CategoryController implements Serializable {
         String idCategoria = selected.getID();
         double max = 20.0;
         Collections.sort(anos);
+        if(!anos.isEmpty())
         for (Integer ano : anos) {
             double valor = purchaseFacade.findCategoryTotalByYear(ano, idCategoria);
             chartSeries.set(ano.toString(), valor);
+        }else{
+            chartSeries.set(0, 0);
         }
         lineTotalYearModel.addSeries(chartSeries);
         yAxis.setMax(max);
