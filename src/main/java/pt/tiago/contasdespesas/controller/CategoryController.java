@@ -149,7 +149,10 @@ public class CategoryController implements Serializable {
     }
 
     public TreeNode getCategoryItems() {
-        filteredCategoryItems();
+        if (entry == false) {
+            filteredCategoryItems();
+            entry = true;
+        }
         return categoryItems;
     }
 
@@ -209,7 +212,6 @@ public class CategoryController implements Serializable {
             cat.setTotal(total);
             total = 0.0;
         }
-        entry = true;
     }
 
     public void clear() {
