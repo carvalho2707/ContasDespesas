@@ -1,6 +1,7 @@
 package pt.tiago.contasdespesas.dto;
 
 import java.io.Serializable;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -14,9 +15,27 @@ public class SubCategoryDto implements Serializable {
     private String Description;
     private double Total;
     private String categoryID;
+    private ObjectId categoryObjID;
     private String categoryName;
     private String categoryDescription;
+    private ObjectId objID;
 
+    public ObjectId getCategoryObjID() {
+        return categoryObjID;
+    }
+
+    public void setCategoryObjID(ObjectId categoryObjID) {
+        this.categoryObjID = categoryObjID;
+    }
+    
+    public ObjectId getObjID() {
+        return objID;
+    }
+
+    public void setObjID(ObjectId objID) {
+        this.objID = objID;
+    }
+    
     public String getCategoryName() {
         return categoryName;
     }

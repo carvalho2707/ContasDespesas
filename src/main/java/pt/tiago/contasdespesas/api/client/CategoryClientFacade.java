@@ -7,13 +7,11 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.util.JSON;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategoryDto;
 import pt.tiago.contasdespesas.dto.SubCategoryDto;
@@ -82,6 +80,7 @@ public class CategoryClientFacade {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 categoryDto = new CategoryDto();
+                categoryDto.setObjID(basicObj.getObjectId("_id"));
                 categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 categoryDto.setName(basicObj.getString("name"));
                 categoryDto.setDescription(basicObj.getString("description"));
@@ -112,6 +111,7 @@ public class CategoryClientFacade {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 categoryDto = new CategoryDto();
+                categoryDto.setObjID(basicObj.getObjectId("_id"));
                 categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 categoryDto.setName(basicObj.getString("name"));
                 categoryDto.setDescription("description");
@@ -124,37 +124,34 @@ public class CategoryClientFacade {
 
         return lista;
     }
-    //TODO
-    //    public List<SubCategoryDto> findAllSub() {
-    //        List<SubCategoryDto> lista = new ArrayList<SubCategoryDto>();
-    //        try {
-    //            createConnectionMongoDB();
-    //            query = conn
-    //                    .prepareStatement("SELECT * FROM SubCategory S INNER JOIN Category C ON S.CategoryID = C.ID");
-    //            System.out.println(query.toString());
-    //            res = query.executeQuery();
-    //            while (res.next()) {
-    //                subCategoryDto = new SubCategoryDto();
-    //                int id = res.getInt("S.ID");
-    //                String name = res.getString("S.Name");
-    //                String description = res.getString("S.Descricao");
-    //                int categoryid = res.getInt("C.ID");
-    //                String categoryName = res.getString("C.Name");
-    //                String categoryDescription = res.getString("C.Descricao");
-    //                subCategoryDto.setID(id);
-    //                subCategoryDto.setName(name);
-    //                subCategoryDto.setDescription(description);
-    //                subCategoryDto.setCategoryID(categoryid);
-    //                subCategoryDto.setCategoryName(categoryName);
-    //                subCategoryDto.setCategoryDescription(categoryDescription);
-    //                lista.add(subCategoryDto);
-    //            }
-    //            closeConnections();
-    //        } catch (Exception e) {
-    //            e.printStackTrace();
-    //        }
-    //        return lista;
-    //    }
+
+    public List<SubCategoryDto> findAllSub() {
+        List<SubCategoryDto> lista = new ArrayList<SubCategoryDto>();
+        try {
+            createConnectionMongoDB();
+            collection = db.getCollection("SubCategory");
+            DBCursor cursor = collection.find();
+            DBObject obj;
+            BasicDBObject basicObj;
+            while (cursor.hasNext()) {
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
+                subCategoryDto = new SubCategoryDto();
+                subCategoryDto.setObjID(basicObj.getObjectId("_id"));
+                subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                subCategoryDto.setName(basicObj.getString("name"));
+                subCategoryDto.setDescription(basicObj.getString("description"));
+                subCategoryDto.setDescription("description");
+                subCategoryDto.setCategoryName("not supported");
+                subCategoryDto.setCategoryDescription("not supported");
+                lista.add(subCategoryDto);
+            }
+            closeConnectionMongoDB();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
 
     /**
      * The the SubCategories of one Category
@@ -168,7 +165,7 @@ public class CategoryClientFacade {
         try {
             createConnectionMongoDB();
             collection = db.getCollection("SubCategory");
-            BasicDBObject basicObjSearch = new BasicDBObject("_id", java.util.regex.Pattern.compile(id));
+            BasicDBObject basicObjSearch = new BasicDBObject("_id", id);
             DBCursor cursor = collection.find(basicObjSearch);
             DBObject obj;
             BasicDBObject basicObj;
@@ -176,6 +173,7 @@ public class CategoryClientFacade {
                 subCategoryDto = new SubCategoryDto();
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
+                categoryDto.setObjID(basicObj.getObjectId("_id"));
                 subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 subCategoryDto.setName(basicObj.getString("name"));
                 subCategoryDto.setDescription(basicObj.getString("description"));
@@ -193,13 +191,14 @@ public class CategoryClientFacade {
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Category");
-            BasicDBObject basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(id));
+            BasicDBObject basicObj = new BasicDBObject("_id", id);
             DBCursor cursor = collection.find(basicObj);
             DBObject obj;
             while (cursor.hasNext()) {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 categoryDto = new CategoryDto();
+                categoryDto.setObjID(basicObj.getObjectId("_id"));
                 categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 categoryDto.setName(basicObj.getString("name"));
                 categoryDto.setDescription("description");
@@ -214,11 +213,11 @@ public class CategoryClientFacade {
     public void create(CategoryDto dto) {
         try {
             createConnectionMongoDB();
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonObject = mapper.writeValueAsString(dto);
-            DBObject dbObject = (DBObject) JSON.parse(jsonObject);
             collection = db.getCollection("Category");
-            collection.insert(dbObject);
+            BasicDBObject doc = new BasicDBObject()
+                    .append("name", dto.getName())
+                    .append("description", dto.getDescription());
+            collection.insert(doc);
             closeConnectionMongoDB();
         } catch (Exception e) {
             e.printStackTrace();
@@ -228,11 +227,12 @@ public class CategoryClientFacade {
     public void createSub(SubCategoryDto dto) {
         try {
             createConnectionMongoDB();
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonObject = mapper.writeValueAsString(dto);
-            DBObject dbObject = (DBObject) JSON.parse(jsonObject);
             collection = db.getCollection("SubCategory");
-            collection.insert(dbObject);
+            BasicDBObject doc = new BasicDBObject()
+                    .append("name", dto.getName())
+                    .append("description", dto.getDescription())
+                    .append("categoryObjID", dto.getCategoryObjID());
+            collection.insert(doc);
             closeConnectionMongoDB();
         } catch (Exception e) {
             e.printStackTrace();
