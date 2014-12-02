@@ -7,14 +7,12 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.util.JSON;
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.PersonDto;
 
@@ -112,7 +110,7 @@ public class PersonClientFacade implements Serializable {
                 personDto = new PersonDto();
                 personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 personDto.setName(basicObj.getString("name"));
-                personDto.setSurname("surname");
+                personDto.setSurname(basicObj.getString("surname"));
                 lista.add(personDto);
             }
             closeConnectionMongoDB();
@@ -126,7 +124,7 @@ public class PersonClientFacade implements Serializable {
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Person");
-            BasicDBObject basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(id));
+            BasicDBObject basicObj = new BasicDBObject("_id", id);
             DBCursor cursor = collection.find(basicObj);
             DBObject obj;
             while (cursor.hasNext()) {
@@ -147,11 +145,11 @@ public class PersonClientFacade implements Serializable {
     public void create(PersonDto dto) {
         try {
             createConnectionMongoDB();
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonObject = mapper.writeValueAsString(dto);
-            DBObject dbObject = (DBObject) JSON.parse(jsonObject);
+            BasicDBObject doc = new BasicDBObject()
+                    .append("name", dto.getName())
+                    .append("surname", dto.getSurname());
             collection = db.getCollection("Person");
-            collection.insert(dbObject);
+            collection.insert(doc);
             closeConnectionMongoDB();
         } catch (Exception e) {
             e.printStackTrace();

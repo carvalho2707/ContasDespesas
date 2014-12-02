@@ -67,9 +67,13 @@ public class PersonController implements Serializable {
         String idPessoa = selected.getID();
         double max = 20.0;
         Collections.sort(anos);
-        for (Integer ano : anos) {
-            double valor = purchaseFacade.findPersonTotalByYear(ano, idPessoa);
-            chartSeries.set(ano.toString(), valor);
+        if (!anos.isEmpty()) {
+            for (Integer ano : anos) {
+                double valor = purchaseFacade.findPersonTotalByYear(ano, idPessoa);
+                chartSeries.set(ano.toString(), valor);
+            }
+        } else {
+            chartSeries.set(0, 0);
         }
         lineTotalYearModel.addSeries(chartSeries);
         yAxis.setMax(max);
