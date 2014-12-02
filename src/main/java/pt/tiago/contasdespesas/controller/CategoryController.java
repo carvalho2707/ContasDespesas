@@ -296,7 +296,7 @@ public class CategoryController implements Serializable {
         return selectedSub;
     }
 
-    public CategoryDto getCategory(java.lang.Integer id) {
+    public CategoryDto getCategory(java.lang.String id) {
         return getFacade().findByID(id);
     }
 
@@ -310,7 +310,7 @@ public class CategoryController implements Serializable {
             }
             CategoryController controller = (CategoryController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "categoryController");
-            return controller.getCategory(Integer.parseInt(value));
+            return controller.getCategory(value);
         }
 
         java.lang.Integer getKey(String value) {
@@ -332,7 +332,7 @@ public class CategoryController implements Serializable {
             }
             if (object instanceof CategoryDto) {
                 CategoryDto o = (CategoryDto) object;
-                return getStringKey(o.getID());
+                return o.getID();
             } else {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), CategoryDto.class.getName()});
                 return null;

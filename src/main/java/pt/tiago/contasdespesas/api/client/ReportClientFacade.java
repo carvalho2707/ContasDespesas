@@ -110,7 +110,7 @@ public class ReportClientFacade {
         return lista;
     }
 
-    public PurchaseSumByMonthDto[] findTotalPersonByNameByMonth(int identificador, int categoryID, int limit) {
+    public PurchaseSumByMonthDto[] findTotalPersonByNameByMonth(String identificador, String categoryID, int limit) {
         PurchaseSumByMonthDto[] purchase = new PurchaseSumByMonthDto[12];
         PurchaseSumByMonthDto temp;
         try {
@@ -144,7 +144,7 @@ public class ReportClientFacade {
         return purchase;
     }
 
-    public PurchaseSumByYearDto[] findTotalPersonByNameByYear(int identificador, int dataInicio, int dataFinal) {
+    public PurchaseSumByYearDto[] findTotalPersonByNameByYear(String identificador, int dataInicio, int dataFinal) {
         int tamanho = dataFinal - dataInicio;
         PurchaseSumByYearDto[] purchase = new PurchaseSumByYearDto[tamanho + 1];
         PurchaseSumByYearDto temp;
@@ -175,12 +175,12 @@ public class ReportClientFacade {
         int pos = 0;
         try {
             createConnectionMongoDB();
-            query = conn
-                    .prepareStatement("SELECT MIN(YEAR(DateOfPurchase)) AS inicial FROM Purchase");
-            System.out.println(query.toString());
-            res = query.executeQuery();
-            while (res.next()) {
-                pos = res.getInt("inicial");
+            collection = db.getCollection("Purchase");
+            DBCursor cursor = collection.find();
+            while (cursor.hasNext()) {
+                DBObject obj = cursor.next();
+                BasicDBObject basicObj = (BasicDBObject) obj;
+                pos = basicObj.getInt("DateOfPurchase");
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
@@ -198,17 +198,13 @@ public class ReportClientFacade {
             cal.setTime(date);
             int monthInt = cal.get(Calendar.MONTH) + 1;
             createConnectionMongoDB();
-            query = conn
-                    .prepareStatement("SELECT SUM(Price) AS Sumatorio, PersonID AS pessoa FROM Purchase WHERE MONTH(DateOfPurchase) = ? GROUP BY PersonID ");
-            query.setInt(1, monthInt);
-            System.out.println(query.toString());
-            res = query.executeQuery();
-            while (res.next()) {
+            collection = db.getCollection("Purchase");
+            BasicDBObject basicObj = new BasicDBObject("DateOfPurchase", monthInt);
+            DBCursor cursor = collection.find(basicObj);
+            while (cursor.hasNext()) {
                 temp = new PurchaseSumByMonthDto();
-                float total = res.getFloat("Sumatorio");
-                int idP = res.getInt("pessoa");
-                temp.setTotal(total);
-                temp.setID(idP);
+                temp.setID(String.valueOf(basicObj.getObjectId("_id")));
+                temp.setTotal(basicObj.getDouble("Sumatorio"));
                 purchase.add(temp);
             }
             closeConnectionMongoDB();
@@ -223,18 +219,19 @@ public class ReportClientFacade {
         PurchaseSumByYearDto temp;
         try {
             createConnectionMongoDB();
-            query = conn
-                    .prepareStatement("SELECT SUM(Price) AS Sumatorio, PersonID AS pessoa FROM Purchase WHERE YEAR(DateOfPurchase) = ? AND Price <= ?  GROUP BY PersonID ");
-            query.setInt(1, ano);
-            query.setInt(2, limit);
-            System.out.println(query.toString());
-            res = query.executeQuery();
-            while (res.next()) {
+            collection = db.getCollection("Purchase");
+            BasicDBObject basicObj = new BasicDBObject();
+            List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+            obj.add(new BasicDBObject("DateOfPurchase", ano));
+            obj.add(new BasicDBObject("$lt", limit));
+            basicObj.put("$and", obj);
+            DBCursor cursor = collection.find(basicObj);
+            while (cursor.hasNext()) {
+                DBObject obj2 = cursor.next();
+                basicObj = (BasicDBObject) obj2;
                 temp = new PurchaseSumByYearDto();
-                float total = res.getFloat("Sumatorio");
-                int idP = res.getInt("pessoa");
-                temp.setTotal(total);
-                temp.setID(idP);
+                temp.setID(String.valueOf(basicObj.getObjectId("_id")));
+                temp.setTotal(basicObj.getDouble("Sumatorio"));
                 purchase.add(temp);
             }
             closeConnectionMongoDB();
@@ -249,18 +246,19 @@ public class ReportClientFacade {
         CategorySumByYearDto temp;
         try {
             createConnectionMongoDB();
-            query = conn
-                    .prepareStatement("SELECT SUM(Price) AS Sumatorio, CategoryID AS categoria FROM Purchase WHERE YEAR(DateOfPurchase) = ? AND Price <= ? GROUP BY CategoryID");
-            query.setInt(1, ano);
-            query.setInt(2, limit);
-            System.out.println(query.toString());
-            res = query.executeQuery();
-            while (res.next()) {
+            collection = db.getCollection("Purchase");
+            BasicDBObject basicObj = new BasicDBObject();
+            List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+            obj.add(new BasicDBObject("DateOfPurchase", ano));
+            obj.add(new BasicDBObject("$lt", limit));
+            basicObj.put("$and", obj);
+            DBCursor cursor = collection.find(basicObj);
+            while (cursor.hasNext()) {
                 temp = new CategorySumByYearDto();
-                float total = res.getFloat("Sumatorio");
-                int idP = res.getInt("categoria");
-                temp.setTotal(total);
-                temp.setID(idP);
+                DBObject obj2 = cursor.next();
+                basicObj = (BasicDBObject) obj2;
+                temp.setID(String.valueOf(basicObj.getObjectId("_id")));
+                temp.setTotal(basicObj.getDouble("Sumatorio"));
                 purchase.add(temp);
             }
             closeConnectionMongoDB();

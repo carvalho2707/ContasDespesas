@@ -44,19 +44,19 @@ public class PurchaseController implements Serializable {
     private String category = "";
     private String person = "";
     private Boolean entry = false;
-    private List<String> anos;
+    private List<Integer> anos;
     private String anoEscolhido = "";
 
     public PurchaseController() {
 
     }
     
-    public List<String> getAnos() {
-        anos = reportFacade.findYears();
+    public List<Integer> getAnos() {
+        anos = purchaseFacade.findYears();
         return anos;
     }
 
-    public void setAnos(List<String> anos) {
+    public void setAnos(List<Integer> anos) {
         this.anos = anos;
     }
     
@@ -222,7 +222,7 @@ public class PurchaseController implements Serializable {
         return selected;
     }
 
-    public PurchaseDto getPurchase(java.lang.Integer id) {
+    public PurchaseDto getPurchase(java.lang.String id) {
         return getFacade().findByID(id);
     }
 
@@ -236,7 +236,7 @@ public class PurchaseController implements Serializable {
             }
             PurchaseController controller = (PurchaseController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "personController");
-            return controller.getPurchase(Integer.parseInt(value));
+            return controller.getPurchase(value);
         }
 
         java.lang.Integer getKey(String value) {
@@ -258,7 +258,7 @@ public class PurchaseController implements Serializable {
             }
             if (object instanceof PurchaseDto) {
                 PurchaseDto o = (PurchaseDto) object;
-                return getStringKey(o.getID());
+                return o.getID();
             } else {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), PurchaseDto.class.getName()});
                 return null;

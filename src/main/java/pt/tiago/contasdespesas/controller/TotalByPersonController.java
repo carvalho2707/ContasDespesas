@@ -43,7 +43,7 @@ public class TotalByPersonController implements Serializable {
     private CartesianChartModel lineTotalMonthModel;
     private PieChartModel pieModelYear = null;
     private PieChartModel pieModelYearCategory = null;
-    private List<String> anos;
+    private List<Integer> anos;
     private String escolhido = "";
     private String anoEscolhido = "";
     private String categoriaEscolhida = "";
@@ -128,12 +128,12 @@ public class TotalByPersonController implements Serializable {
         this.pieModelYear = pieModelYear;
     }
 
-    public List<String> getAnos() {
+    public List<Integer> getAnos() {
         anos = purchaseFacade.findYears();
         return anos;
     }
 
-    public void setAnos(List<String> anos) {
+    public void setAnos(List<Integer> anos) {
         this.anos = anos;
     }
 

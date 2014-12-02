@@ -205,7 +205,7 @@ public class PersonController implements Serializable {
         return selected;
     }
 
-    public PersonDto getPerson(java.lang.Integer id) {
+    public PersonDto getPerson(java.lang.String id) {
         return getFacade().findByID(id);
     }
 
@@ -219,7 +219,7 @@ public class PersonController implements Serializable {
             }
             PersonController controller = (PersonController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "personController");
-            return controller.getPerson(Integer.parseInt(value));
+            return controller.getPerson(value);
         }
 
         java.lang.Integer getKey(String value) {
@@ -241,7 +241,7 @@ public class PersonController implements Serializable {
             }
             if (object instanceof PersonDto) {
                 PersonDto o = (PersonDto) object;
-                return getStringKey(o.getID());
+                return o.getID();
             } else {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), PersonDto.class.getName()});
                 return null;

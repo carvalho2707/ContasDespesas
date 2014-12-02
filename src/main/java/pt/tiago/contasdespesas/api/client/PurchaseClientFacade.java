@@ -67,48 +67,48 @@ public class PurchaseClientFacade {
         }
     }
 
-    public List<PurchaseDto> findByName(String name, int person, int category, int year) {
+    public List<PurchaseDto> findByName(String name, String person, String category, int year) {
         List<PurchaseDto> lista = new ArrayList<PurchaseDto>();
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Purchase");
             BasicDBObject basicObj = new BasicDBObject();
-            if (!name.isEmpty() && person != 0 && category != 0) {
+            if (!name.isEmpty() && !person.isEmpty() && !category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
                 obj.add(new BasicDBObject("ItemName", name));
                 obj.add(new BasicDBObject("PersonID", person));
                 obj.add(new BasicDBObject("CategoryID", category));
                 obj.add(new BasicDBObject("Year", year));
                 basicObj.put("$and", obj);
-            } else if (!name.isEmpty() && person != 0 && category == 0) {
+            } else if (!name.isEmpty() && !person.isEmpty() && category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
                 obj.add(new BasicDBObject("ItemName", name));
                 obj.add(new BasicDBObject("PersonID", person));
                 obj.add(new BasicDBObject("Year", year));
                 basicObj.put("$and", obj);
-            } else if (!name.isEmpty() && person == 0 && category != 0) {
+            } else if (!name.isEmpty() && person.isEmpty() && !category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
                 obj.add(new BasicDBObject("ItemName", name));
                 obj.add(new BasicDBObject("CategoryID", category));
                 obj.add(new BasicDBObject("Year", year));
                 basicObj.put("$and", obj);
-            } else if (!name.isEmpty() && person == 0 && category == 0) {
+            } else if (!name.isEmpty() && person.isEmpty() && category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
                 obj.add(new BasicDBObject("ItemName", name));
                 obj.add(new BasicDBObject("Year", year));
                 basicObj.put("$and", obj);
-            } else if (name.isEmpty() && person != 0 && category != 0) {
+            } else if (name.isEmpty() && !person.isEmpty() && !category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
                 obj.add(new BasicDBObject("PersonID", person));
                 obj.add(new BasicDBObject("CategoryID", category));
                 obj.add(new BasicDBObject("Year", year));
                 basicObj.put("$and", obj);
-            } else if (name.isEmpty() && person != 0 && category == 0) {
+            } else if (name.isEmpty() && !person.isEmpty() && category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
                 obj.add(new BasicDBObject("PersonID", person));
                 obj.add(new BasicDBObject("Year", year));
                 basicObj.put("$and", obj);
-            } else if (name.isEmpty() && person == 0 && category != 0) {
+            } else if (name.isEmpty() && person.isEmpty() && !category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
                 obj.add(new BasicDBObject("CategoryID", category));
                 obj.add(new BasicDBObject("Year", year));
@@ -326,7 +326,7 @@ public class PurchaseClientFacade {
         }
     }
 
-    public double findTotalYear(int ano, int subCategoryID, int categoryID) {
+    public double findTotalYear(int ano, String subCategoryID, String categoryID) {
         double total = 0.0;
         try {
             createConnectionMongoDB();
@@ -366,7 +366,7 @@ public class PurchaseClientFacade {
         return lista;
     }
 
-    public double findCategoryTotalByYear(int ano, int categoria) {
+    public double findCategoryTotalByYear(int ano, String categoria) {
         double total = 0.0;
         try {
             createConnectionMongoDB();
@@ -388,7 +388,7 @@ public class PurchaseClientFacade {
         return total;
     }
 
-    public double findPersonTotalByYear(int ano, int pessoa) {
+    public double findPersonTotalByYear(int ano, String pessoa) {
         double total = 0.0;
         try {
             createConnectionMongoDB();

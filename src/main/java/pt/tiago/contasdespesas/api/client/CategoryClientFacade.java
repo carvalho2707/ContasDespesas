@@ -63,12 +63,19 @@ public class CategoryClientFacade {
         }
     }
 
+    /**
+     * Find all Categories by name
+     * 
+     * @param name The name of the category to search
+     * 
+     * @return The list of categories
+     */
     public List<CategoryDto> findByName(String name) {
         List<CategoryDto> lista = new ArrayList<CategoryDto>();
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Category");
-            BasicDBObject basicObj = new BasicDBObject("name", java.util.regex.Pattern.compile(name));
+            BasicDBObject basicObj = new BasicDBObject("name",name);
             DBCursor cursor = collection.find(basicObj);
             while (cursor.hasNext()) {
                 categoryDto = new CategoryDto();
@@ -85,6 +92,11 @@ public class CategoryClientFacade {
         return lista;
     }
 
+    /**
+     * Find all Categories
+     * 
+     * @return The list of categories
+     */
     public List<CategoryDto> findAll() {
         List<CategoryDto> lista = new ArrayList<CategoryDto>();
         try {
@@ -139,6 +151,14 @@ public class CategoryClientFacade {
 //        }
 //        return lista;
 //    }
+    
+    /**
+     * The the SubCategories of one Category
+     * 
+     * @param id The Identificator of the Main Category
+     * 
+     * @return The list of sub categories of the given category
+     */
     public List<SubCategoryDto> findAllSubByCategoryID(String id) {
         List<SubCategoryDto> lista = new ArrayList<SubCategoryDto>();
         try {
@@ -240,9 +260,8 @@ public class CategoryClientFacade {
         String identificador = "";
         try {
             createConnectionMongoDB();
-            String nameEnclosed = name.replaceAll("\\s+", "%20");
             collection = db.getCollection("Category");
-            BasicDBObject basicObj = new BasicDBObject("name", java.util.regex.Pattern.compile(nameEnclosed));
+            BasicDBObject basicObj = new BasicDBObject("name", name);
             DBCursor cursor = collection.find(basicObj);
             while (cursor.hasNext()) {
                 identificador = String.valueOf(basicObj.getObjectId("_id"));
