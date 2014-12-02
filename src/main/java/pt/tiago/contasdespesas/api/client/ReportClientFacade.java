@@ -86,8 +86,9 @@ public class ReportClientFacade {
                 categoryByMonth = new PurchaseSumByMonthDto();
                 categoryByMonth.setID(String.valueOf(basicObj.getObjectId("_id")));
                 categoryByMonth.setName(basicObj.getString("name"));
-                categoryByMonth.setMonth(basicObj.getDate("DateOfPurchase"));
-                categoryByMonth.setTotal(basicObj.getDouble("DateOfPurchase"));
+                int dateTime = basicObj.getDate("DateOfPurchase").getMonth();
+                categoryByMonth.setMonth(dateTime);
+                categoryByMonth.setTotal(basicObj.getDouble("Sumatori"));
                 lista.add(categoryByMonth);
             }
             if (!lista.isEmpty()) {
@@ -118,7 +119,7 @@ public class ReportClientFacade {
             collection = db.getCollection("Person");
             BasicDBObject basicObj = new BasicDBObject();
             List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-            if (categoryID == -1) {
+            if (categoryID.isEmpty()) {
                 obj.add(new BasicDBObject("PersonID", identificador));
                 obj.add(new BasicDBObject("limit", limit));
                 basicObj.put("$and", obj);
@@ -132,9 +133,10 @@ public class ReportClientFacade {
             while (cursor.hasNext()) {
                 temp = new PurchaseSumByMonthDto();
                 temp.setID(String.valueOf(basicObj.getObjectId("_id")));
-                temp.setTotal(basicObj.getString("Sumatorio"));
-                temp.setMonth(basicObj.getString("Mes"));
-                purchase[pos] = temp;
+                temp.setTotal(basicObj.getDouble("Sumatorio"));
+                int dateTime = basicObj.getDate("DateOfPurchase").getMonth();
+                temp.setMonth(dateTime);
+                purchase[dateTime - 1] = temp;
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
@@ -158,9 +160,10 @@ public class ReportClientFacade {
                 DBObject obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 temp.setID(String.valueOf(basicObj.getObjectId("_id")));
-                temp.setYear(basicObj.getDate("Ano"));
+                int dateTime = basicObj.getDate("DateOfPurchase").getYear();
+                temp.setYear(dateTime);
                 temp.setTotal(basicObj.getDouble("surname"));
-                int pos = basicObj.getDate("Ano") - dataInicio;
+                int pos = dateTime - dataInicio;
                 purchase[pos] = temp;
             }
             closeConnectionMongoDB();
