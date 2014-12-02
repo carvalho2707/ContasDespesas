@@ -65,9 +65,9 @@ public class CategoryClientFacade {
 
     /**
      * Find all Categories by name
-     * 
+     *
      * @param name The name of the category to search
-     * 
+     *
      * @return The list of categories
      */
     public List<CategoryDto> findByName(String name) {
@@ -75,9 +75,12 @@ public class CategoryClientFacade {
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Category");
-            BasicDBObject basicObj = new BasicDBObject("name",name);
+            BasicDBObject basicObj = new BasicDBObject("name", name);
             DBCursor cursor = collection.find(basicObj);
+            DBObject obj;
             while (cursor.hasNext()) {
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 categoryDto = new CategoryDto();
                 categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 categoryDto.setName(basicObj.getString("name"));
@@ -94,7 +97,7 @@ public class CategoryClientFacade {
 
     /**
      * Find all Categories
-     * 
+     *
      * @return The list of categories
      */
     public List<CategoryDto> findAll() {
@@ -103,9 +106,11 @@ public class CategoryClientFacade {
             createConnectionMongoDB();
             collection = db.getCollection("Category");
             DBCursor cursor = collection.find();
+            DBObject obj;
+            BasicDBObject basicObj;
             while (cursor.hasNext()) {
-                DBObject obj = cursor.next();
-                BasicDBObject basicObj = (BasicDBObject) obj;
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 categoryDto = new CategoryDto();
                 categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 categoryDto.setName(basicObj.getString("name"));
@@ -119,44 +124,43 @@ public class CategoryClientFacade {
 
         return lista;
     }
-
     //TODO
-//    public List<SubCategoryDto> findAllSub() {
-//        List<SubCategoryDto> lista = new ArrayList<SubCategoryDto>();
-//        try {
-//            createConnectionMongoDB();
-//            query = conn
-//                    .prepareStatement("SELECT * FROM SubCategory S INNER JOIN Category C ON S.CategoryID = C.ID");
-//            System.out.println(query.toString());
-//            res = query.executeQuery();
-//            while (res.next()) {
-//                subCategoryDto = new SubCategoryDto();
-//                int id = res.getInt("S.ID");
-//                String name = res.getString("S.Name");
-//                String description = res.getString("S.Descricao");
-//                int categoryid = res.getInt("C.ID");
-//                String categoryName = res.getString("C.Name");
-//                String categoryDescription = res.getString("C.Descricao");
-//                subCategoryDto.setID(id);
-//                subCategoryDto.setName(name);
-//                subCategoryDto.setDescription(description);
-//                subCategoryDto.setCategoryID(categoryid);
-//                subCategoryDto.setCategoryName(categoryName);
-//                subCategoryDto.setCategoryDescription(categoryDescription);
-//                lista.add(subCategoryDto);
-//            }
-//            closeConnections();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return lista;
-//    }
-    
+    //    public List<SubCategoryDto> findAllSub() {
+    //        List<SubCategoryDto> lista = new ArrayList<SubCategoryDto>();
+    //        try {
+    //            createConnectionMongoDB();
+    //            query = conn
+    //                    .prepareStatement("SELECT * FROM SubCategory S INNER JOIN Category C ON S.CategoryID = C.ID");
+    //            System.out.println(query.toString());
+    //            res = query.executeQuery();
+    //            while (res.next()) {
+    //                subCategoryDto = new SubCategoryDto();
+    //                int id = res.getInt("S.ID");
+    //                String name = res.getString("S.Name");
+    //                String description = res.getString("S.Descricao");
+    //                int categoryid = res.getInt("C.ID");
+    //                String categoryName = res.getString("C.Name");
+    //                String categoryDescription = res.getString("C.Descricao");
+    //                subCategoryDto.setID(id);
+    //                subCategoryDto.setName(name);
+    //                subCategoryDto.setDescription(description);
+    //                subCategoryDto.setCategoryID(categoryid);
+    //                subCategoryDto.setCategoryName(categoryName);
+    //                subCategoryDto.setCategoryDescription(categoryDescription);
+    //                lista.add(subCategoryDto);
+    //            }
+    //            closeConnections();
+    //        } catch (Exception e) {
+    //            e.printStackTrace();
+    //        }
+    //        return lista;
+    //    }
+
     /**
      * The the SubCategories of one Category
-     * 
+     *
      * @param id The Identificator of the Main Category
-     * 
+     *
      * @return The list of sub categories of the given category
      */
     public List<SubCategoryDto> findAllSubByCategoryID(String id) {
@@ -164,14 +168,18 @@ public class CategoryClientFacade {
         try {
             createConnectionMongoDB();
             collection = db.getCollection("SubCategory");
-            BasicDBObject basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(id));
-            DBCursor cursor = collection.find(basicObj);
+            BasicDBObject basicObjSearch = new BasicDBObject("_id", java.util.regex.Pattern.compile(id));
+            DBCursor cursor = collection.find(basicObjSearch);
+            DBObject obj;
+            BasicDBObject basicObj;
             while (cursor.hasNext()) {
                 subCategoryDto = new SubCategoryDto();
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 subCategoryDto.setName(basicObj.getString("name"));
                 subCategoryDto.setDescription(basicObj.getString("description"));
-                subCategoryDto.setCategoryID(basicObj.getString("CategoryID"));
+                subCategoryDto.setCategoryID(basicObj.getString("categoryID"));
                 lista.add(subCategoryDto);
             }
             closeConnectionMongoDB();
@@ -187,8 +195,9 @@ public class CategoryClientFacade {
             collection = db.getCollection("Category");
             BasicDBObject basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(id));
             DBCursor cursor = collection.find(basicObj);
+            DBObject obj;
             while (cursor.hasNext()) {
-                DBObject obj = cursor.next();
+                obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 categoryDto = new CategoryDto();
                 categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
@@ -263,7 +272,10 @@ public class CategoryClientFacade {
             collection = db.getCollection("Category");
             BasicDBObject basicObj = new BasicDBObject("name", name);
             DBCursor cursor = collection.find(basicObj);
+            DBObject obj;
             while (cursor.hasNext()) {
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 identificador = String.valueOf(basicObj.getObjectId("_id"));
             }
             closeConnectionMongoDB();
@@ -279,9 +291,11 @@ public class CategoryClientFacade {
             createConnectionMongoDB();
             collection = db.getCollection("Category");
             DBCursor cursor = collection.find();
+            DBObject obj;
+            BasicDBObject basicObj;
             while (cursor.hasNext()) {
-                DBObject obj = cursor.next();
-                BasicDBObject basicObj = (BasicDBObject) obj;
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 String name = basicObj.getString("name");
                 lista.add(name);
             }

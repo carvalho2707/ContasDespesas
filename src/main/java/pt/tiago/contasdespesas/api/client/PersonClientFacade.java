@@ -81,7 +81,10 @@ public class PersonClientFacade implements Serializable {
                 basicObj.put("$and", obj);
             }
             DBCursor cursor = collection.find(basicObj);
+            DBObject obj;
             while (cursor.hasNext()) {
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 personDto = new PersonDto();
                 personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 personDto.setName(basicObj.getString("name"));
@@ -101,9 +104,11 @@ public class PersonClientFacade implements Serializable {
             createConnectionMongoDB();
             collection = db.getCollection("Person");
             DBCursor cursor = collection.find();
+            DBObject obj;
+            BasicDBObject basicObj;
             while (cursor.hasNext()) {
-                DBObject obj = cursor.next();
-                BasicDBObject basicObj = (BasicDBObject) obj;
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 personDto = new PersonDto();
                 personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 personDto.setName(basicObj.getString("name"));
@@ -123,8 +128,9 @@ public class PersonClientFacade implements Serializable {
             collection = db.getCollection("Person");
             BasicDBObject basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(id));
             DBCursor cursor = collection.find(basicObj);
+            DBObject obj;
             while (cursor.hasNext()) {
-                DBObject obj = cursor.next();
+                obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 personDto = new PersonDto();
                 personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
@@ -186,7 +192,10 @@ public class PersonClientFacade implements Serializable {
             collection = db.getCollection("Person");
             BasicDBObject basicObj = new BasicDBObject("name", java.util.regex.Pattern.compile(nameEnclosed));
             DBCursor cursor = collection.find(basicObj);
+            DBObject obj;
             while (cursor.hasNext()) {
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 identificador = String.valueOf(basicObj.getObjectId("_id"));
             }
             closeConnectionMongoDB();

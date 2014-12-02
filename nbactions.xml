@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
         <action>
-            <actionName>CUSTOM-LunaBuild</actionName>
-            <displayName>LunaBuild</displayName>
+            <actionName>CUSTOM-LocalMySqlBuild</actionName>
+            <displayName>MySqlLocalBuild</displayName>
             <goals>
                 <goal>clean</goal>
                 <goal>install</goal>
             </goals>
             <activatedProfiles>
-                <activatedProfile>LUNA</activatedProfile>
-            </activatedProfiles>
-        </action>
-        <action>
-            <actionName>CUSTOM-LocalBuild</actionName>
-            <displayName>LocalBuild</displayName>
-            <goals>
-                <goal>clean</goal>
-                <goal>install</goal>
-            </goals>
-            <activatedProfiles>
-                <activatedProfile>LOCAL</activatedProfile>
+                <activatedProfile>LOCALMySql</activatedProfile>
             </activatedProfiles>
         </action>
     </actions>

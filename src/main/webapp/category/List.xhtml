@@ -63,8 +63,8 @@
                                                     <f:facet name="header">
                                                         <h:outputText value="#{bundle.TotalSpent}"/>
                                                     </f:facet>
-                                                    <h:outputText value="#{document.categoryDto.total} €" pattern="#0.00" class="categoryHeader" rendered="#{document.categoryDto != null}" />
-                                                    <h:outputText value="#{document.subCategoryDto.total} €" pattern="#0.00" rendered="#{document.subCategoryDto != null}" />
+                                                    <h:outputText value="#{document.categoryDto.total} €" class="categoryHeader" rendered="#{document.categoryDto != null}" />
+                                                    <h:outputText value="#{document.subCategoryDto.total} €" rendered="#{document.subCategoryDto != null}" />
                                                 </p:column> 
                                             </p:treeTable>
                                         </p:panel>

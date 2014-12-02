@@ -80,9 +80,11 @@ public class ReportClientFacade {
             createConnectionMongoDB();
             collection = db.getCollection("Category");
             DBCursor cursor = collection.find();
+            DBObject obj;
+            BasicDBObject basicObj;
             while (cursor.hasNext()) {
-                DBObject obj = cursor.next();
-                BasicDBObject basicObj = (BasicDBObject) obj;
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 categoryByMonth = new PurchaseSumByMonthDto();
                 categoryByMonth.setID(String.valueOf(basicObj.getObjectId("_id")));
                 categoryByMonth.setName(basicObj.getString("name"));
@@ -91,23 +93,25 @@ public class ReportClientFacade {
                 categoryByMonth.setTotal(basicObj.getDouble("Sumatori"));
                 lista.add(categoryByMonth);
             }
+            closeConnectionMongoDB();
             if (!lista.isEmpty()) {
                 for (PurchaseSumByMonthDto categoria : lista) {
                     createConnectionMongoDB();
                     collection = db.getCollection("Category");
-                    BasicDBObject basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(categoria.getID()));
+                    basicObj = new BasicDBObject("_id", java.util.regex.Pattern.compile(categoria.getID()));
                     cursor = collection.find(basicObj);
                     while (cursor.hasNext()) {
+                        obj = cursor.next();
+                        basicObj = (BasicDBObject) obj;
                         String nome = basicObj.getString("Name");
                         categoria.setName(nome);
                     }
+                    closeConnectionMongoDB();
                 }
             }
-            closeConnectionMongoDB();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return lista;
     }
 
@@ -118,19 +122,22 @@ public class ReportClientFacade {
             createConnectionMongoDB();
             collection = db.getCollection("Person");
             BasicDBObject basicObj = new BasicDBObject();
-            List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+            List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
             if (categoryID.isEmpty()) {
-                obj.add(new BasicDBObject("PersonID", identificador));
-                obj.add(new BasicDBObject("limit", limit));
-                basicObj.put("$and", obj);
+                objFilter.add(new BasicDBObject("PersonID", identificador));
+                objFilter.add(new BasicDBObject("limit", limit));
+                basicObj.put("$and", objFilter);
             } else {
-                obj.add(new BasicDBObject("PersonID", identificador));
-                obj.add(new BasicDBObject("CategoryID", categoryID));
-                obj.add(new BasicDBObject("limit", limit));
-                basicObj.put("$and", obj);
+                objFilter.add(new BasicDBObject("PersonID", identificador));
+                objFilter.add(new BasicDBObject("CategoryID", categoryID));
+                objFilter.add(new BasicDBObject("limit", limit));
+                basicObj.put("$and", objFilter);
             }
             DBCursor cursor = collection.find(basicObj);
+            DBObject obj;
             while (cursor.hasNext()) {
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 temp = new PurchaseSumByMonthDto();
                 temp.setID(String.valueOf(basicObj.getObjectId("_id")));
                 temp.setTotal(basicObj.getDouble("Sumatorio"));
@@ -155,9 +162,10 @@ public class ReportClientFacade {
             collection = db.getCollection("Purchase");
             BasicDBObject basicObj = new BasicDBObject("PersonID", identificador);
             DBCursor cursor = collection.find(basicObj);
+            DBObject obj;
             while (cursor.hasNext()) {
                 temp = new PurchaseSumByYearDto();
-                DBObject obj = cursor.next();
+                obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 temp.setID(String.valueOf(basicObj.getObjectId("_id")));
                 int dateTime = basicObj.getDate("DateOfPurchase").getYear();
@@ -180,9 +188,11 @@ public class ReportClientFacade {
             createConnectionMongoDB();
             collection = db.getCollection("Purchase");
             DBCursor cursor = collection.find();
+            DBObject obj;
+            BasicDBObject basicObj;
             while (cursor.hasNext()) {
-                DBObject obj = cursor.next();
-                BasicDBObject basicObj = (BasicDBObject) obj;
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
                 pos = basicObj.getInt("DateOfPurchase");
             }
             closeConnectionMongoDB();
