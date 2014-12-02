@@ -7,14 +7,12 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.util.JSON;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategoryDto;
 import pt.tiago.contasdespesas.dto.PersonDto;
@@ -175,7 +173,7 @@ public class PurchaseClientFacade {
                         personDto.setSurname(basicObj.getString("surname"));
                         purchase.setPerson(personDto);
                     }
-                     closeConnectionMongoDB();
+                    closeConnectionMongoDB();
                 }
             }
         } catch (Exception e) {
@@ -277,7 +275,8 @@ public class PurchaseClientFacade {
                 purchaseDto.setItemName(basicObj.getString("itemName"));
                 purchaseDto.setDateOfPurchase(basicObj.getDate("dateOfPurchase"));
                 purchaseDto.setPersonID(basicObj.getString("personID"));
-                purchaseDto.setCategoryID(basicObj.getString("CctegoryID"));
+                purchaseDto.setCategoryID(basicObj.getString("categoryID"));
+                purchaseDto.setSubCategoryID(basicObj.getString("subCategoryID"));
                 purchaseDto.setPrice(basicObj.getDouble("price"));
             }
             closeConnectionMongoDB();
@@ -290,16 +289,19 @@ public class PurchaseClientFacade {
     public void create(PurchaseDto dto) {
         try {
             createConnectionMongoDB();
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonObject = mapper.writeValueAsString(dto);
-            DBObject dbObject = (DBObject) JSON.parse(jsonObject);
+            BasicDBObject doc = new BasicDBObject()
+                    .append("itenName", dto.getItemName())
+                    .append("dateOfPurchase", dto.getDateOfPurchase())
+                    .append("price", dto.getPrice())
+                    .append("categoryID", dto.getCategoryID())
+                    .append("subCategoryID", dto.getSubCategoryID())
+                    .append("personID", dto.getPersonID());
             collection = db.getCollection("Purchase");
-            collection.insert(dbObject);
+            collection.insert(doc);
             closeConnectionMongoDB();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public void remove(PurchaseDto dto) {
@@ -339,7 +341,7 @@ public class PurchaseClientFacade {
             BasicDBObject basicObj = new BasicDBObject();
             List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
             objFilter.add(new BasicDBObject("dateOfPurchase", ano));
-            objFilter.add(new BasicDBObject("personID", subCategoryID));
+            objFilter.add(new BasicDBObject("subCategoryID", subCategoryID));
             objFilter.add(new BasicDBObject("categoryID", categoryID));
             basicObj.put("$and", objFilter);
             DBCursor cursor = collection.find(basicObj);
@@ -388,8 +390,8 @@ public class PurchaseClientFacade {
             collection = db.getCollection("Purchase");
             BasicDBObject basicObj = new BasicDBObject();
             List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
-            objFilter.add(new BasicDBObject("CategoryID", categoria));
-            objFilter.add(new BasicDBObject("DateOfPurchase", ano));
+            objFilter.add(new BasicDBObject("categoryID", categoria));
+            objFilter.add(new BasicDBObject("dateOfPurchase", ano));
             basicObj.put("$and", objFilter);
             DBCursor cursor = collection.find();
             DBObject obj;
@@ -413,8 +415,8 @@ public class PurchaseClientFacade {
             collection = db.getCollection("Purchase");
             BasicDBObject basicObj = new BasicDBObject();
             List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
-            objFilter.add(new BasicDBObject("PersonID", pessoa));
-            objFilter.add(new BasicDBObject("DateOfPurchase", ano));
+            objFilter.add(new BasicDBObject("personID", pessoa));
+            objFilter.add(new BasicDBObject("dateOfPurchase", ano));
             basicObj.put("$and", objFilter);
             DBCursor cursor = collection.find();
             DBObject obj;

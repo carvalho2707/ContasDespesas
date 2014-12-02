@@ -23,7 +23,7 @@
                                            itemValue="#{categoria.ID}"
                                            itemLabel="#{categoria.name}"/>
                         </p:selectOneMenu>
-                        <p:outputLabel value="#{bundle.CategoryName}:" for="subCategory" />
+                        <p:outputLabel value="#{bundle.SubCategoryName}:" for="subCategory" />
                         <p:selectOneMenu id="subCategory" value="#{purchaseController.selected.subCategoryID}" required="true" requiredMessage="#{bundle.The} '#{bundle.SubCategoryName}' #{bundle.FieldIsRequired}">
                             <f:selectItems value="#{categoryController.itemsSubAvailableSelectOne}"
                                            var="subcategoria"
