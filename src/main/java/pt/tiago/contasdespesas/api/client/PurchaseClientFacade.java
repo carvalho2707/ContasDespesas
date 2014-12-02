@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategoryDto;
 import pt.tiago.contasdespesas.dto.PersonDto;
@@ -118,11 +119,15 @@ public class PurchaseClientFacade {
                 DBObject obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 purchaseDto = new PurchaseDto();
+                purchaseDto.setObjID(basicObj.getObjectId("_id"));
                 purchaseDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 purchaseDto.setItemName(basicObj.getString("itemName"));
                 purchaseDto.setCategoryID(basicObj.getString("categoryID"));
+                purchaseDto.setCategoryObjID(basicObj.getObjectId("categoryID"));
                 purchaseDto.setPersonID(basicObj.getString("personID"));
+                purchaseDto.setPersonObjID(basicObj.getObjectId("personID"));
                 purchaseDto.setSubCategoryID(basicObj.getString("subCategoryID"));
+                purchaseDto.setSubCategoryObjID(basicObj.getObjectId("subCategoryID"));
                 purchaseDto.setPrice(basicObj.getDouble("price"));
                 purchaseDto.setDateOfPurchase(basicObj.getDate("dateOfPurchase"));
                 lista.add(purchaseDto);
@@ -139,6 +144,7 @@ public class PurchaseClientFacade {
                         DBObject obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
                         categoryDto = new CategoryDto();
+                        categoryDto.setObjID(basicObj.getObjectId("_id"));
                         categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         categoryDto.setName(basicObj.getString("name"));
                         categoryDto.setDescription(basicObj.getString("description"));
@@ -153,10 +159,12 @@ public class PurchaseClientFacade {
                         DBObject obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
                         subCategoryDto = new SubCategoryDto();
+                        subCategoryDto.setObjID(basicObj.getObjectId("_id"));
                         subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         subCategoryDto.setName(basicObj.getString("name"));
                         subCategoryDto.setDescription(basicObj.getString("description"));
                         subCategoryDto.setCategoryID(basicObj.getString("categoryID"));
+                        subCategoryDto.setCategoryObjID(basicObj.getObjectId("categoryID"));
                         purchase.setSubCategory(subCategoryDto);
                     }
                     closeConnectionMongoDB();
@@ -168,6 +176,7 @@ public class PurchaseClientFacade {
                         DBObject obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
                         personDto = new PersonDto();
+                        personDto.setObjID(basicObj.getObjectId("_id"));
                         personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         personDto.setName(basicObj.getString("name"));
                         personDto.setSurname(basicObj.getString("surname"));
@@ -195,9 +204,11 @@ public class PurchaseClientFacade {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 purchaseDto = new PurchaseDto();
+                purchaseDto.setObjID(basicObj.getObjectId("_id"));
                 purchaseDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 purchaseDto.setItemName(basicObj.getString("itemName"));
                 purchaseDto.setCategoryID(basicObj.getString("categoryID"));
+                purchaseDto.setCategoryObjID(basicObj.getObjectId("_id"));
                 purchaseDto.setPersonID(basicObj.getString("personID"));
                 purchaseDto.setSubCategoryID(basicObj.getString("subCategoryID"));
                 purchaseDto.setPrice(basicObj.getDouble("price"));
@@ -216,6 +227,7 @@ public class PurchaseClientFacade {
                         obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
                         categoryDto = new CategoryDto();
+                        categoryDto.setObjID(basicObj.getObjectId("_id"));
                         categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         categoryDto.setName(basicObj.getString("name"));
                         categoryDto.setDescription(basicObj.getString("description"));
@@ -230,6 +242,7 @@ public class PurchaseClientFacade {
                         obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
                         subCategoryDto = new SubCategoryDto();
+                        subCategoryDto.setObjID(basicObj.getObjectId("_id"));
                         subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         subCategoryDto.setName(basicObj.getString("name"));
                         subCategoryDto.setDescription(basicObj.getString("description"));
@@ -245,6 +258,7 @@ public class PurchaseClientFacade {
                         obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
                         personDto = new PersonDto();
+                        personDto.setObjID(basicObj.getObjectId("_id"));
                         personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         personDto.setName(basicObj.getString("name"));
                         personDto.setSurname(basicObj.getString("surname"));
@@ -271,7 +285,8 @@ public class PurchaseClientFacade {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 purchaseDto = new PurchaseDto();
-                categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                purchaseDto.setObjID(basicObj.getObjectId("_id"));
+                purchaseDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 purchaseDto.setItemName(basicObj.getString("itemName"));
                 purchaseDto.setDateOfPurchase(basicObj.getDate("dateOfPurchase"));
                 purchaseDto.setPersonID(basicObj.getString("personID"));
@@ -289,13 +304,16 @@ public class PurchaseClientFacade {
     public void create(PurchaseDto dto) {
         try {
             createConnectionMongoDB();
+            ObjectId objPerson = new ObjectId(dto.getPersonID());
+            ObjectId objCategory = new ObjectId(dto.getCategoryID());
+            ObjectId objSubCategory = new ObjectId(dto.getSubCategoryID());
             BasicDBObject doc = new BasicDBObject()
                     .append("itenName", dto.getItemName())
                     .append("dateOfPurchase", dto.getDateOfPurchase())
                     .append("price", dto.getPrice())
-                    .append("categoryID", dto.getCategoryID())
-                    .append("subCategoryID", dto.getSubCategoryID())
-                    .append("personID", dto.getPersonID());
+                    .append("categoryID", objCategory)
+                    .append("subCategoryID", objSubCategory)
+                    .append("personID", objPerson);
             collection = db.getCollection("Purchase");
             collection.insert(doc);
             closeConnectionMongoDB();

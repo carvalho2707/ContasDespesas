@@ -84,6 +84,7 @@ public class PersonClientFacade implements Serializable {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 personDto = new PersonDto();
+                personDto.setObjID(basicObj.getObjectId("_id"));
                 personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 personDto.setName(basicObj.getString("name"));
                 personDto.setSurname(basicObj.getString("surname"));
@@ -108,6 +109,7 @@ public class PersonClientFacade implements Serializable {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 personDto = new PersonDto();
+                personDto.setObjID(basicObj.getObjectId("_id"));
                 personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 personDto.setName(basicObj.getString("name"));
                 personDto.setSurname(basicObj.getString("surname"));
@@ -131,6 +133,7 @@ public class PersonClientFacade implements Serializable {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 personDto = new PersonDto();
+                personDto.setObjID(basicObj.getObjectId("_id"));
                 personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 personDto.setName(basicObj.getString("name"));
                 personDto.setSurname("surname");

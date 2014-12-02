@@ -2,6 +2,7 @@ package pt.tiago.contasdespesas.dto;
 
 import java.io.Serializable;
 import java.util.List;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -11,10 +12,19 @@ public class PersonDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String ID;
+    private ObjectId objID;
     private String Name;
     private String Surname;
     private List<PurchaseDto> purchases;
 
+    public ObjectId getObjID() {
+        return objID;
+    }
+
+    public void setObjID(ObjectId objID) {
+        this.objID = objID;
+    }
+    
     public String getSurname() {
         return Surname;
     }

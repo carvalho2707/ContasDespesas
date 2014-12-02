@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategoryDto;
 import pt.tiago.contasdespesas.dto.SubCategoryDto;
@@ -142,6 +143,7 @@ public class CategoryClientFacade {
                 subCategoryDto.setName(basicObj.getString("name"));
                 subCategoryDto.setDescription(basicObj.getString("description"));
                 subCategoryDto.setDescription("description");
+                subCategoryDto.setCategoryObjID(basicObj.getObjectId("categoryID"));
                 subCategoryDto.setCategoryName("not supported");
                 subCategoryDto.setCategoryDescription("not supported");
                 lista.add(subCategoryDto);
@@ -228,10 +230,11 @@ public class CategoryClientFacade {
         try {
             createConnectionMongoDB();
             collection = db.getCollection("SubCategory");
+            ObjectId obj = new ObjectId(dto.getCategoryID());
             BasicDBObject doc = new BasicDBObject()
                     .append("name", dto.getName())
-                    .append("description", dto.getDescription());
-            //.append("categoryObjID",new ObjectId(String.valueOf(dto.getCategoryObjID())));
+                    .append("description", dto.getDescription())
+                    .append("categoryID", obj);
             collection.insert(doc);
             closeConnectionMongoDB();
         } catch (Exception e) {
