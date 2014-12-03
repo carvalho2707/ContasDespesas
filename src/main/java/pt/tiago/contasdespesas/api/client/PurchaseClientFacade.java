@@ -382,23 +382,27 @@ public class PurchaseClientFacade {
         }
     }
 
-    public double findTotalYear(int ano, String subCategoryID, String categoryID) {
+    public double findTotalYear(int year, String subCategoryID, String categoryID) {
         double total = 0.0;
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Purchase");
             BasicDBObject basicObj = new BasicDBObject();
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, 0, 0);
+            Calendar cal2 = Calendar.getInstance();
+            cal2.set(year, 11, 31);
             List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
-            objFilter.add(new BasicDBObject("dateOfPurchase", ano));
-            objFilter.add(new BasicDBObject("subCategoryID", subCategoryID));
-            objFilter.add(new BasicDBObject("categoryID", categoryID));
+            objFilter.add(new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime())));
+            objFilter.add(new BasicDBObject("subCategoryID", new ObjectId(subCategoryID)));
+            objFilter.add(new BasicDBObject("categoryID", new ObjectId(categoryID)));
             basicObj.put("$and", objFilter);
             DBCursor cursor = collection.find(basicObj);
             DBObject obj;
             while (cursor.hasNext()) {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
-                total = basicObj.getDouble("Sumatorio");
+                total += basicObj.getDouble("price");
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
@@ -432,51 +436,64 @@ public class PurchaseClientFacade {
         return lista;
     }
 
-    public double findCategoryTotalByYear(int ano, String categoria) {
+    /**
+     * Find the value spend with one category
+     * 
+     * @param year The year to search
+     * @param categoria The id of the category to search
+     * @return 
+     */
+    public double findCategoryTotalByYear(int year, String categoria) {
         double total = 0.0;
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Purchase");
             BasicDBObject basicObj = new BasicDBObject();
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, 0, 0);
+            Calendar cal2 = Calendar.getInstance();
+            cal2.set(year, 11, 31);
             List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
             objFilter.add(new BasicDBObject("categoryID", categoria));
-            objFilter.add(new BasicDBObject("dateOfPurchase", ano));
+            objFilter.add(new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime())));
             basicObj.put("$and", objFilter);
             DBCursor cursor = collection.find();
             DBObject obj;
             while (cursor.hasNext()) {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
-                total = basicObj.getDouble("Sumatorio");
+                total += basicObj.getDouble("price");
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            total = 0.0f;
             Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return total;
     }
 
-    public double findPersonTotalByYear(int ano, String pessoa) {
+    public double findPersonTotalByYear(int year, String pessoa) {
         double total = 0.0;
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Purchase");
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, 0, 0);
+            Calendar cal2 = Calendar.getInstance();
+            cal2.set(year, 11, 31);
             BasicDBObject basicObj = new BasicDBObject();
             List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
             objFilter.add(new BasicDBObject("personID", pessoa));
-            objFilter.add(new BasicDBObject("dateOfPurchase", ano));
+            objFilter.add(new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime())));
             basicObj.put("$and", objFilter);
             DBCursor cursor = collection.find();
             DBObject obj;
             while (cursor.hasNext()) {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
-                total = basicObj.getDouble("Sumatorio");
+                total += basicObj.getDouble("price");
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            total = 0.0f;
             Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return total;
