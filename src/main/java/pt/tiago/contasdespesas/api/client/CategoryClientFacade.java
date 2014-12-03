@@ -167,19 +167,24 @@ public class CategoryClientFacade {
         try {
             createConnectionMongoDB();
             collection = db.getCollection("SubCategory");
-            BasicDBObject basicObjSearch = new BasicDBObject("_id", id);
-            DBCursor cursor = collection.find(basicObjSearch);
+            BasicDBObject field = new BasicDBObject();
+            ObjectId identificator = new ObjectId(id);
+            field.put("categoryID", identificator);    
+            DBCursor cursor = collection.find(field);
             DBObject obj;
             BasicDBObject basicObj;
+            BasicDBObject aux;
+            //falta verificar o campo
             while (cursor.hasNext()) {
                 subCategoryDto = new SubCategoryDto();
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
-                categoryDto.setObjID(basicObj.getObjectId("_id"));
+                subCategoryDto.setObjID(basicObj.getObjectId("_id"));
                 subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 subCategoryDto.setName(basicObj.getString("name"));
                 subCategoryDto.setDescription(basicObj.getString("description"));
-                subCategoryDto.setCategoryID(basicObj.getString("categoryID"));
+                subCategoryDto.setCategoryID(String.valueOf(basicObj.getObjectId("categoryID")));
+                subCategoryDto.setCategoryObjID(basicObj.getObjectId("categoryID"));
                 lista.add(subCategoryDto);
             }
             closeConnectionMongoDB();
