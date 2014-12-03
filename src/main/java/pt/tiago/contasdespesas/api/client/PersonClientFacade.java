@@ -20,7 +20,6 @@ import pt.tiago.contasdespesas.dto.PersonDto;
  *
  * @author Tiago Carvalho
  */
-@SuppressWarnings("CallToPrintStackTrace")
 @Component
 public class PersonClientFacade implements Serializable {
 
@@ -92,7 +91,7 @@ public class PersonClientFacade implements Serializable {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return lista;
     }
@@ -117,7 +116,7 @@ public class PersonClientFacade implements Serializable {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return lista;
     }
@@ -140,7 +139,7 @@ public class PersonClientFacade implements Serializable {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return personDto;
     }
@@ -155,7 +154,7 @@ public class PersonClientFacade implements Serializable {
             collection.insert(doc);
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
@@ -166,7 +165,7 @@ public class PersonClientFacade implements Serializable {
             collection.remove(new BasicDBObject().append("_id", dto.getID()));
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
@@ -181,7 +180,7 @@ public class PersonClientFacade implements Serializable {
             collection.update(searchQuery, newDocument);
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
@@ -201,7 +200,7 @@ public class PersonClientFacade implements Serializable {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return (identificador.equals("")) ? identificador : "";
     }

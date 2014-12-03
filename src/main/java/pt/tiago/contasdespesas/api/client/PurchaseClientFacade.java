@@ -24,7 +24,6 @@ import pt.tiago.contasdespesas.dto.SubCategoryDto;
  *
  * @author Tiago Carvalho
  */
-@SuppressWarnings("CallToPrintStackTrace")
 @Component
 public class PurchaseClientFacade {
 
@@ -186,7 +185,7 @@ public class PurchaseClientFacade {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
 
         return lista;
@@ -268,7 +267,7 @@ public class PurchaseClientFacade {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
 
         return lista;
@@ -296,7 +295,7 @@ public class PurchaseClientFacade {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return purchaseDto;
     }
@@ -318,7 +317,7 @@ public class PurchaseClientFacade {
             collection.insert(doc);
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
@@ -329,7 +328,7 @@ public class PurchaseClientFacade {
             collection.remove(new BasicDBObject().append("_id", dto.getID()));
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
@@ -347,7 +346,7 @@ public class PurchaseClientFacade {
             collection.update(searchQuery, newDocument);
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
@@ -371,7 +370,7 @@ public class PurchaseClientFacade {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return total;
     }
@@ -396,7 +395,7 @@ public class PurchaseClientFacade {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return lista;
     }
@@ -421,7 +420,7 @@ public class PurchaseClientFacade {
             closeConnectionMongoDB();
         } catch (Exception e) {
             total = 0.0f;
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return total;
     }
@@ -446,7 +445,7 @@ public class PurchaseClientFacade {
             closeConnectionMongoDB();
         } catch (Exception e) {
             total = 0.0f;
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return total;
     }

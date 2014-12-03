@@ -25,7 +25,6 @@ import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
  *
  * @author Tiago Carvalho
  */
-@SuppressWarnings("CallToPrintStackTrace")
 @Component
 public class ReportClientFacade {
 
@@ -110,7 +109,7 @@ public class ReportClientFacade {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return lista;
     }
@@ -147,7 +146,7 @@ public class ReportClientFacade {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
 
         return purchase;
@@ -176,7 +175,7 @@ public class ReportClientFacade {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
 
         return purchase;
@@ -197,7 +196,7 @@ public class ReportClientFacade {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return pos;
     }
@@ -222,7 +221,7 @@ public class ReportClientFacade {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return purchase;
     }
@@ -249,7 +248,7 @@ public class ReportClientFacade {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return purchase;
     }
@@ -276,7 +275,7 @@ public class ReportClientFacade {
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
         return purchase;
     }
