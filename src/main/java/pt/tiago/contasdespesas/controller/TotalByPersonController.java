@@ -210,7 +210,6 @@ public class TotalByPersonController implements Serializable {
                 }
             }
         }
-
         double max = 20.0;
         for (PersonDto person : pessoas) {
             PurchaseSumByMonthDto[] lista = getFacade().findTotalPersonByNameByMonth(person.getID(), idCategoria, limitEscolhido);

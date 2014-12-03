@@ -83,19 +83,16 @@ public class ReportClientFacade {
     public PurchaseSumByMonthDto[] findTotalPersonByNameByMonth(String identificador, String categoryID, int limit) {
         createConnectionMongoDB();
         PurchaseSumByMonthDto[] purchase = new PurchaseSumByMonthDto[12];
-        PurchaseSumByMonthDto temp;
-        collection = db.getCollection("Person");
+        collection = db.getCollection("Purchase");
         BasicDBObject basicObj = new BasicDBObject();
         List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
-        ObjectId objPerson = new ObjectId(identificador);
         if (categoryID.isEmpty()) {
-            objFilter.add(new BasicDBObject("personID", objPerson));
+            objFilter.add(new BasicDBObject("personID", new ObjectId(identificador)));
             objFilter.add(new BasicDBObject("price", new BasicDBObject("$lte", limit)));
             basicObj.put("$and", objFilter);
         } else {
-            ObjectId objCategory = new ObjectId(categoryID);
-            objFilter.add(new BasicDBObject("personID", objPerson));
-            objFilter.add(new BasicDBObject("categoryID", objCategory));
+            objFilter.add(new BasicDBObject("personID", new ObjectId(identificador)));
+            objFilter.add(new BasicDBObject("categoryID", new ObjectId(categoryID)));
             objFilter.add(new BasicDBObject("price", new BasicDBObject("$lte", limit)));
             basicObj.put("$and", objFilter);
         }
@@ -108,8 +105,14 @@ public class ReportClientFacade {
             cal.setTime(basicObj.getDate("dateOfPurchase"));
             int month = cal.get(Calendar.MONTH);
             double total = basicObj.getDouble("price");
-            purchase[month].setMonth(month);
-            purchase[month].setTotal(purchase[month].getTotal() + total);
+            if (purchase[month] == null) {
+                purchase[month] = new PurchaseSumByMonthDto();
+                purchase[month].setMonth(month);
+                purchase[month].setTotal(total);
+            } else {
+                purchase[month].setMonth(month);
+                purchase[month].setTotal(purchase[month].getTotal() + total);
+            }
         }
         closeConnectionMongoDB();
         return purchase;
