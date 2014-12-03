@@ -84,7 +84,7 @@ public class PurchaseClientFacade {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
                 objIdPerson = new ObjectId(person);
                 objIdCategory = new ObjectId(category);
-                obj.add(new BasicDBObject("itemName", name));
+                obj.add(new BasicDBObject("itemName", java.util.regex.Pattern.compile(name)));
                 obj.add(new BasicDBObject("personID", objIdPerson));
                 obj.add(new BasicDBObject("categoryID", objIdCategory));
                 obj.add(query);
@@ -92,20 +92,20 @@ public class PurchaseClientFacade {
             } else if (!name.isEmpty() && !person.isEmpty() && category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
                 objIdPerson = new ObjectId(person);
-                obj.add(new BasicDBObject("itemName", name));
+                obj.add(new BasicDBObject("itemName", java.util.regex.Pattern.compile(name)));
                 obj.add(new BasicDBObject("personID", objIdPerson));
                 obj.add(query);
                 basicObj.put("$and", obj);
             } else if (!name.isEmpty() && person.isEmpty() && !category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
                 objIdCategory = new ObjectId(category);
-                obj.add(new BasicDBObject("itemName", name));
+                obj.add(new BasicDBObject("itemName", java.util.regex.Pattern.compile(name)));
                 obj.add(new BasicDBObject("categoryID", objIdCategory));
                 obj.add(query);
                 basicObj.put("$and", obj);
             } else if (!name.isEmpty() && person.isEmpty() && category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-                obj.add(new BasicDBObject("itemName", name));
+                obj.add(new BasicDBObject("itemName", java.util.regex.Pattern.compile(name)));
                 obj.add(query);
                 basicObj.put("$and", obj);
             } else if (name.isEmpty() && !person.isEmpty() && !category.isEmpty()) {
@@ -454,7 +454,7 @@ public class PurchaseClientFacade {
             Calendar cal2 = Calendar.getInstance();
             cal2.set(year, 11, 31);
             List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
-            objFilter.add(new BasicDBObject("categoryID", categoria));
+            objFilter.add(new BasicDBObject("categoryID", new ObjectId(categoria)));
             objFilter.add(new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime())));
             basicObj.put("$and", objFilter);
             DBCursor cursor = collection.find();
@@ -482,10 +482,10 @@ public class PurchaseClientFacade {
             cal2.set(year, 11, 31);
             BasicDBObject basicObj = new BasicDBObject();
             List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
-            objFilter.add(new BasicDBObject("personID", pessoa));
+            objFilter.add(new BasicDBObject("personID", new ObjectId(pessoa)));
             objFilter.add(new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime())));
             basicObj.put("$and", objFilter);
-            DBCursor cursor = collection.find();
+            DBCursor cursor = collection.find(basicObj);
             DBObject obj;
             while (cursor.hasNext()) {
                 obj = cursor.next();

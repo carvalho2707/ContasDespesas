@@ -74,8 +74,8 @@ public class PersonClientFacade implements Serializable {
                 basicObj.append("surname", java.util.regex.Pattern.compile(surname));
             } else if (!name.isEmpty() && !surname.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-                obj.add(new BasicDBObject("name", name));
-                obj.add(new BasicDBObject("surname", surname));
+                obj.add(new BasicDBObject("name", java.util.regex.Pattern.compile(name)));
+                obj.add(new BasicDBObject("surname", java.util.regex.Pattern.compile(surname)));
                 basicObj.put("$and", obj);
             }
             DBCursor cursor = collection.find(basicObj);
@@ -191,7 +191,7 @@ public class PersonClientFacade implements Serializable {
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Person");
-            BasicDBObject basicObj = new BasicDBObject("name", java.util.regex.Pattern.compile(name));
+            BasicDBObject basicObj = new BasicDBObject("name", name);
             DBCursor cursor = collection.find(basicObj);
             DBObject obj;
             while (cursor.hasNext()) {

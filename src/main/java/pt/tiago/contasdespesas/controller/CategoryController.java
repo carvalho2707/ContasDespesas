@@ -196,6 +196,11 @@ public class CategoryController implements Serializable {
     }
 
     public void filteredCategoryItems() {
+        selected = null;
+        selectedDocument = null;
+        selectedSub = null;
+        lineTotalYearModel = null;
+        categoryItems = null;
         List<CategoryDto> temp;
         double total = 0.0;
         int ano = Calendar.getInstance().get(Calendar.YEAR);

@@ -127,6 +127,8 @@ public class PersonController implements Serializable {
     }
 
     public void filteredItems() {
+        selected = null;
+        lineTotalYearModel = null;
         if (!name.isEmpty() || !surname.isEmpty()) {
             items = getFacade().findByName(name, surname);
         } else {

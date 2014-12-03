@@ -79,7 +79,7 @@ public class CategoryClientFacade {
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Category");
-            BasicDBObject basicObj = new BasicDBObject("name", name);
+            BasicDBObject basicObj = new BasicDBObject("name", java.util.regex.Pattern.compile(name));
             DBCursor cursor = collection.find(basicObj);
             DBObject obj;
             while (cursor.hasNext()) {
