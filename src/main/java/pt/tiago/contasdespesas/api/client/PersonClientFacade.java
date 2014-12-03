@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.PersonDto;
 
@@ -125,7 +126,8 @@ public class PersonClientFacade implements Serializable {
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Person");
-            BasicDBObject basicObj = new BasicDBObject("_id", id);
+            ObjectId objID = new ObjectId(id);
+            BasicDBObject basicObj = new BasicDBObject("_id", objID);
             DBCursor cursor = collection.find(basicObj);
             DBObject obj;
             while (cursor.hasNext()) {

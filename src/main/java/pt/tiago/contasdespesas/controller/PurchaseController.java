@@ -126,6 +126,7 @@ public class PurchaseController implements Serializable {
         person = "";
         entry = false;
         items = null;
+        selected = null;
     }
 
     public List<PurchaseDto> getItems() {

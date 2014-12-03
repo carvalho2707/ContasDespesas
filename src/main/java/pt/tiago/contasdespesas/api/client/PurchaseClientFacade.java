@@ -75,9 +75,9 @@ public class PurchaseClientFacade {
             ObjectId objIdPerson;
             ObjectId objIdCategory;
             Calendar cal = Calendar.getInstance();
-            cal.set(year, 0, 0, 0, 0, 0);
+            cal.set(year, 0, 0);
             Calendar cal2 = Calendar.getInstance();
-            cal2.set(year, 11, 11, 31, 23, 59);
+            cal2.set(year, 11, 31);
             BasicDBObject query = new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime()));
             DBObject obj2;
             if (!name.isEmpty() && !person.isEmpty() && !category.isEmpty()) {
@@ -217,9 +217,9 @@ public class PurchaseClientFacade {
         try {
             createConnectionMongoDB();
             Calendar cal = Calendar.getInstance();
-            cal.set(year, 0, 0, 0, 0, 0);
+            cal.set(year, 0, 0);
             Calendar cal2 = Calendar.getInstance();
-            cal2.set(year, 11, 11, 31, 23, 59);
+            cal2.set(year, 11, 31);
             BasicDBObject query = new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime()));
             collection = db.getCollection("Purchase");
             DBCursor cursor = collection.find(query);
