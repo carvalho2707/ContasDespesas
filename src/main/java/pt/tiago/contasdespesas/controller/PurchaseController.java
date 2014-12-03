@@ -50,7 +50,7 @@ public class PurchaseController implements Serializable {
     public PurchaseController() {
 
     }
-    
+
     public List<Integer> getAnos() {
         anos = purchaseFacade.findYears();
         return anos;
@@ -59,7 +59,7 @@ public class PurchaseController implements Serializable {
     public void setAnos(List<Integer> anos) {
         this.anos = anos;
     }
-    
+
     public String getAnoEscolhido() {
         if (anoEscolhido.isEmpty()) {
             Calendar now = Calendar.getInstance();   // Gets the current date and time.
@@ -136,9 +136,9 @@ public class PurchaseController implements Serializable {
     }
 
     public void filteredItems() {
+        String categoryID = "";
+        String personID = "";
         if (!name.isEmpty() || !person.isEmpty() || !category.isEmpty()) {
-            String categoryID = "";
-            String personID = "";
             if (!category.isEmpty()) {
                 categoryID = categoryFacade.findIDByName(category);
             }

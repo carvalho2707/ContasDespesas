@@ -188,9 +188,8 @@ public class PersonClientFacade implements Serializable {
         String identificador = "";
         try {
             createConnectionMongoDB();
-            String nameEnclosed = name.replaceAll("\\s+", "%20");
             collection = db.getCollection("Person");
-            BasicDBObject basicObj = new BasicDBObject("name", java.util.regex.Pattern.compile(nameEnclosed));
+            BasicDBObject basicObj = new BasicDBObject("name", java.util.regex.Pattern.compile(name));
             DBCursor cursor = collection.find(basicObj);
             DBObject obj;
             while (cursor.hasNext()) {
@@ -202,7 +201,7 @@ public class PersonClientFacade implements Serializable {
         } catch (Exception e) {
             Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
-        return (identificador.equals("")) ? identificador : "";
+        return (!identificador.isEmpty()) ? identificador : "NOTFOUNDERRORDONTSHOW";
     }
 
 }

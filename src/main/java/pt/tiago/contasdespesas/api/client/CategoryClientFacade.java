@@ -287,7 +287,7 @@ public class CategoryClientFacade {
         } catch (Exception e) {
             Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
-        return (identificador.equals("")) ? identificador : "";
+        return (!identificador.isEmpty()) ? identificador : "NOTFOUNDERRORDONTSHOW";
     }
 
     public List<String> findAllNames() {
