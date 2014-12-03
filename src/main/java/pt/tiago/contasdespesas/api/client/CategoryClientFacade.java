@@ -35,6 +35,9 @@ public class CategoryClientFacade {
     private DBCollection collection;
     private String uri;
 
+    /**
+     * Close the connection to MongoDB
+     */
     private void closeConnectionMongoDB() {
         client.close();
         db = null;
@@ -43,6 +46,9 @@ public class CategoryClientFacade {
         clientURI = null;
     }
 
+    /**
+     * Create the connection to MongoDB
+     */
     private void createConnectionMongoDB() {
         StringBuilder str = new StringBuilder();
         str.append("mongodb://");
@@ -125,6 +131,11 @@ public class CategoryClientFacade {
         return lista;
     }
 
+    /**
+     * Find all the sub categories
+     * 
+     * @return List of all subcategories in the DB
+     */
     public List<SubCategoryDto> findAllSub() {
         List<SubCategoryDto> lista = new ArrayList<SubCategoryDto>();
         try {
@@ -191,6 +202,12 @@ public class CategoryClientFacade {
         return lista;
     }
 
+    /**
+     * Find the element identified by id
+     * 
+     * @param id Identificator of the object
+     * @return The Object
+     */
     public CategoryDto findByID(String id) {
         try {
             createConnectionMongoDB();
@@ -215,6 +232,10 @@ public class CategoryClientFacade {
         return categoryDto;
     }
 
+    /**
+     *  Create and send one category object to the DB
+     * @param dto The object to send
+     */
     public void create(CategoryDto dto) {
         try {
             createConnectionMongoDB();
@@ -229,6 +250,10 @@ public class CategoryClientFacade {
         }
     }
 
+    /**
+     * Create and send one subcategory object to the DB
+     * @param dto The object to send
+     */
     public void createSub(SubCategoryDto dto) {
         try {
             createConnectionMongoDB();
@@ -245,6 +270,10 @@ public class CategoryClientFacade {
         }
     }
 
+    /**
+     * Remove one category from DB
+     * @param dto Object to remove
+     */
     public void remove(CategoryDto dto) {
         try {
             createConnectionMongoDB();
@@ -256,6 +285,10 @@ public class CategoryClientFacade {
         }
     }
 
+    /**
+     * Edit one category
+     * @param dto The object to be edited
+     */
     public void edit(CategoryDto dto) {
         try {
             createConnectionMongoDB();
@@ -271,6 +304,12 @@ public class CategoryClientFacade {
         }
     }
 
+    /**
+     * Find the ID of Object by Name
+     * 
+     * @param name
+     * @return The ID
+     */
     public String findIDByName(String name) {
         String identificador = "";
         try {
@@ -291,6 +330,11 @@ public class CategoryClientFacade {
         return (!identificador.isEmpty()) ? identificador : "NOTFOUNDERRORDONTSHOW";
     }
 
+    /**
+     * Fin all categories names
+     * 
+     * @return List with all names as String
+     */
     public List<String> findAllNames() {
         List<String> lista = new ArrayList<String>();
         try {

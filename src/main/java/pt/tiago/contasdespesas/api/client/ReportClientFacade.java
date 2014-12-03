@@ -8,12 +8,9 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bson.types.ObjectId;
@@ -29,8 +26,6 @@ import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
 @Component
 public class ReportClientFacade {
 
-    private PurchaseSumByMonthDto categoryByMonth = null;
-    private int[] mes = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
     private final static String user = "tiago";
     private static final String pass = "tiago";
     private static final String dbName = "contasdespesas";
@@ -39,14 +34,6 @@ public class ReportClientFacade {
     private DB db;
     private DBCollection collection;
     private String uri;
-
-    public int[] getMes() {
-        return this.mes;
-    }
-
-    public void setMes(int[] mes) {
-        this.mes = mes;
-    }
 
     /**
      * Close the connection to mongoDB
@@ -81,13 +68,12 @@ public class ReportClientFacade {
     }
 
     /**
-     * Query 1 : SELECT SUM(Price) AS Sumatorio, MONTH(DateOfPurchase) AS Mes
-     * FROM Purchase WHERE PersonID = ? AND Price <= ? GROUP BY
-     * MONTH(DateOfPurchase)
+     * Query 1 : SELECT SUM(Price) , MONTH(DateOfPurchase) FROM Purchase WHERE
+     * PersonID = ? AND Price <= ? GROUP BY MONTH(DateOfPurchase)
      *
-     * Query 2 : SELECT SUM(Price) AS Sumatorio, MONTH(DateOfPurchase) AS Mes
-     * FROM Purchase WHERE PersonID = ? AND CategoryID = ? AND Price <= ? GROUP
-     * BY MONTH(DateOfPurchase)
+     * Query 2 : SELECT SUM(Price) , MONTH(DateOfPurchase) FROM Purchase WHERE
+     * PersonID = ? AND CategoryID = ? AND Price <= ? GROUP BY
+     * MONTH(DateOfPurchase)
      *
      * @param identificador
      * @param categoryID
@@ -131,9 +117,9 @@ public class ReportClientFacade {
 
     /**
      *
-     * Query : SELECT MIN(YEAR(DateOfPurchase)) AS inicial FROM Purchase
+     * Query : SELECT MIN(YEAR(DateOfPurchase)) FROM Purchase
      *
-     * @return
+     * @return the first year with purchases
      */
     public int findMinYear() {
         int pos = 0;
@@ -158,8 +144,8 @@ public class ReportClientFacade {
 
     /**
      *
-     * Query : SELECT SUM(Price) AS Sumatorio, PersonID AS pessoa FROM Purchase
-     * WHERE YEAR(DateOfPurchase) = ? AND Price <= ? GROUP BY PersonID
+     * Query : SELECT SUM(Price) , PersonID FROM Purchase WHERE
+     * YEAR(DateOfPurchase) = ? AND Price <= ? GROUP BY PersonID
      *
      * @param year the year of the purchases
      * @param limit the max value for purchases to search
@@ -187,14 +173,14 @@ public class ReportClientFacade {
                 basicObj = (BasicDBObject) obj2;
                 String id = String.valueOf(basicObj.getObjectId("personID"));
                 boolean condition = false;
-                for(PurchaseSumByYearDto listPurchases : purchase){
-                    if(listPurchases.getID().equals(id)){
+                for (PurchaseSumByYearDto listPurchases : purchase) {
+                    if (listPurchases.getID().equals(id)) {
                         condition = true;
                         double price = basicObj.getDouble("price");
                         listPurchases.setTotal(price + listPurchases.getTotal());
                     }
                 }
-                if(condition == false){
+                if (condition == false) {
                     temp = new PurchaseSumByYearDto();
                     temp.setID(String.valueOf(basicObj.getObjectId("personID")));
                     temp.setObjID(basicObj.getObjectId("personID"));
@@ -210,7 +196,16 @@ public class ReportClientFacade {
         return purchase;
     }
 
-    public List<CategorySumByYearDto> findTotalCategorySumByYear(int ano, int limit) {
+    /**
+     * SELECT SUM(Price) , CategoryID FROM Purchase WHERE YEAR(DateOfPurchase) =
+     * ? AND Price <= ? GROUP BY CategoryID"
+     *
+     *
+     * @param year the year of the purchases
+     * @param limit the max value for purchases to search
+     * @return list of the categories purchases
+     */
+    public List<CategorySumByYearDto> findTotalCategorySumByYear(int year, int limit) {
         List<CategorySumByYearDto> purchase = new ArrayList<CategorySumByYearDto>();
         CategorySumByYearDto temp;
         try {
@@ -218,17 +213,34 @@ public class ReportClientFacade {
             collection = db.getCollection("Purchase");
             BasicDBObject basicObj = new BasicDBObject();
             List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-            obj.add(new BasicDBObject("DateOfPurchase", ano));
-            obj.add(new BasicDBObject("$lt", limit));
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, 0, 0);
+            Calendar cal2 = Calendar.getInstance();
+            cal2.set(year, 11, 31);
+            obj.add(new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime())));
+            obj.add(new BasicDBObject("price", new BasicDBObject("$lte", limit)));
             basicObj.put("$and", obj);
             DBCursor cursor = collection.find(basicObj);
             while (cursor.hasNext()) {
-                temp = new CategorySumByYearDto();
                 DBObject obj2 = cursor.next();
                 basicObj = (BasicDBObject) obj2;
-                temp.setID(String.valueOf(basicObj.getObjectId("_id")));
-                temp.setTotal(basicObj.getDouble("Sumatorio"));
-                purchase.add(temp);
+                String id = String.valueOf(basicObj.getObjectId("categoryID"));
+                boolean condition = false;
+                for (CategorySumByYearDto listPurchases : purchase) {
+                    if (listPurchases.getID().equals(id)) {
+                        condition = true;
+                        double price = basicObj.getDouble("price");
+                        listPurchases.setTotal(price + listPurchases.getTotal());
+                    }
+                }
+                if (condition == false) {
+                    temp = new CategorySumByYearDto();
+                    temp.setID(String.valueOf(basicObj.getObjectId("categoryID")));
+                    temp.setObjID(basicObj.getObjectId("categoryID"));
+                    temp.setTotal(basicObj.getDouble("price"));
+                    purchase.add(temp);
+                }
+                condition = false;
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
