@@ -86,7 +86,6 @@ public class CategoryClientFacade {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 categoryDto = new CategoryDto();
-                categoryDto.setObjID(basicObj.getObjectId("_id"));
                 categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 categoryDto.setName(basicObj.getString("name"));
                 categoryDto.setDescription(basicObj.getString("description"));
@@ -117,7 +116,6 @@ public class CategoryClientFacade {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 categoryDto = new CategoryDto();
-                categoryDto.setObjID(basicObj.getObjectId("_id"));
                 categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 categoryDto.setName(basicObj.getString("name"));
                 categoryDto.setDescription("description");
@@ -148,12 +146,10 @@ public class CategoryClientFacade {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 subCategoryDto = new SubCategoryDto();
-                subCategoryDto.setObjID(basicObj.getObjectId("_id"));
                 subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 subCategoryDto.setName(basicObj.getString("name"));
                 subCategoryDto.setDescription(basicObj.getString("description"));
                 subCategoryDto.setDescription("description");
-                subCategoryDto.setCategoryObjID(basicObj.getObjectId("categoryID"));
                 subCategoryDto.setCategoryName("not supported");
                 subCategoryDto.setCategoryDescription("not supported");
                 lista.add(subCategoryDto);
@@ -187,12 +183,10 @@ public class CategoryClientFacade {
                 subCategoryDto = new SubCategoryDto();
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
-                subCategoryDto.setObjID(basicObj.getObjectId("_id"));
                 subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 subCategoryDto.setName(basicObj.getString("name"));
                 subCategoryDto.setDescription(basicObj.getString("description"));
                 subCategoryDto.setCategoryID(String.valueOf(basicObj.getObjectId("categoryID")));
-                subCategoryDto.setCategoryObjID(basicObj.getObjectId("categoryID"));
                 lista.add(subCategoryDto);
             }
             closeConnectionMongoDB();
@@ -220,7 +214,6 @@ public class CategoryClientFacade {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 categoryDto = new CategoryDto();
-                categoryDto.setObjID(basicObj.getObjectId("_id"));
                 categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 categoryDto.setName(basicObj.getString("name"));
                 categoryDto.setDescription("description");

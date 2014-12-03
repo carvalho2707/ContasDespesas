@@ -134,15 +134,11 @@ public class PurchaseClientFacade {
                 DBObject obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 purchaseDto = new PurchaseDto();
-                purchaseDto.setObjID(basicObj.getObjectId("_id"));
                 purchaseDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 purchaseDto.setItemName(basicObj.getString("itemName"));
                 purchaseDto.setCategoryID(basicObj.getString("categoryID"));
-                purchaseDto.setCategoryObjID(basicObj.getObjectId("categoryID"));
                 purchaseDto.setPersonID(basicObj.getString("personID"));
-                purchaseDto.setPersonObjID(basicObj.getObjectId("personID"));
                 purchaseDto.setSubCategoryID(basicObj.getString("subCategoryID"));
-                purchaseDto.setSubCategoryObjID(basicObj.getObjectId("subCategoryID"));
                 purchaseDto.setPrice(basicObj.getDouble("price"));
                 purchaseDto.setDateOfPurchase(basicObj.getDate("dateOfPurchase"));
                 lista.add(purchaseDto);
@@ -161,7 +157,6 @@ public class PurchaseClientFacade {
                         obj2 = cursor.next();
                         basicObj = (BasicDBObject) obj2;
                         categoryDto = new CategoryDto();
-                        categoryDto.setObjID(basicObj.getObjectId("_id"));
                         categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         categoryDto.setName(basicObj.getString("name"));
                         categoryDto.setDescription(basicObj.getString("description"));
@@ -178,7 +173,6 @@ public class PurchaseClientFacade {
                         obj2 = cursor.next();
                         basicObj = (BasicDBObject) obj2;
                         subCategoryDto = new SubCategoryDto();
-                        subCategoryDto.setObjID(basicObj.getObjectId("_id"));
                         subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         subCategoryDto.setName(basicObj.getString("name"));
                         subCategoryDto.setDescription(basicObj.getString("description"));
@@ -196,7 +190,6 @@ public class PurchaseClientFacade {
                         obj2 = cursor.next();
                         basicObj = (BasicDBObject) obj2;
                         personDto = new PersonDto();
-                        personDto.setObjID(basicObj.getObjectId("_id"));
                         personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         personDto.setName(basicObj.getString("name"));
                         personDto.setSurname(basicObj.getString("surname"));
@@ -229,11 +222,9 @@ public class PurchaseClientFacade {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 purchaseDto = new PurchaseDto();
-                purchaseDto.setObjID(basicObj.getObjectId("_id"));
                 purchaseDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 purchaseDto.setItemName(basicObj.getString("itemName"));
                 purchaseDto.setCategoryID(basicObj.getString("categoryID"));
-                purchaseDto.setCategoryObjID(basicObj.getObjectId("_id"));
                 purchaseDto.setPersonID(basicObj.getString("personID"));
                 purchaseDto.setSubCategoryID(basicObj.getString("subCategoryID"));
                 purchaseDto.setPrice(basicObj.getDouble("price"));
@@ -254,7 +245,6 @@ public class PurchaseClientFacade {
                         obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
                         categoryDto = new CategoryDto();
-                        categoryDto.setObjID(basicObj.getObjectId("_id"));
                         categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         categoryDto.setName(basicObj.getString("name"));
                         categoryDto.setDescription(basicObj.getString("description"));
@@ -271,7 +261,6 @@ public class PurchaseClientFacade {
                         obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
                         subCategoryDto = new SubCategoryDto();
-                        subCategoryDto.setObjID(basicObj.getObjectId("_id"));
                         subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         subCategoryDto.setName(basicObj.getString("name"));
                         subCategoryDto.setDescription(basicObj.getString("description"));
@@ -289,7 +278,6 @@ public class PurchaseClientFacade {
                         obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
                         personDto = new PersonDto();
-                        personDto.setObjID(basicObj.getObjectId("_id"));
                         personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         personDto.setName(basicObj.getString("name"));
                         personDto.setSurname(basicObj.getString("surname"));
@@ -316,7 +304,6 @@ public class PurchaseClientFacade {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
                 purchaseDto = new PurchaseDto();
-                purchaseDto.setObjID(basicObj.getObjectId("_id"));
                 purchaseDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 purchaseDto.setItemName(basicObj.getString("itemName"));
                 purchaseDto.setDateOfPurchase(basicObj.getDate("dateOfPurchase"));

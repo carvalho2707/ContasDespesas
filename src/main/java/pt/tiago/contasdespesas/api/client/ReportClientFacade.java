@@ -186,7 +186,6 @@ public class ReportClientFacade {
                 if (condition == false) {
                     temp = new PurchaseSumByYearDto();
                     temp.setID(String.valueOf(basicObj.getObjectId("personID")));
-                    temp.setObjID(basicObj.getObjectId("personID"));
                     temp.setTotal(basicObj.getDouble("price"));
                     purchase.add(temp);
                 }
@@ -239,7 +238,6 @@ public class ReportClientFacade {
                 if (condition == false) {
                     temp = new CategorySumByYearDto();
                     temp.setID(String.valueOf(basicObj.getObjectId("categoryID")));
-                    temp.setObjID(basicObj.getObjectId("categoryID"));
                     temp.setTotal(basicObj.getDouble("price"));
                     purchase.add(temp);
                 }

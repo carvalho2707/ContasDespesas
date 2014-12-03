@@ -1,7 +1,6 @@
 package pt.tiago.contasdespesas.dto;
 
 import java.io.Serializable;
-import org.bson.types.ObjectId;
 
 /**
  *
@@ -11,18 +10,9 @@ public class CategorySumByYearDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String ID;
-    private ObjectId objID;
     private String Name;
     private double Total;
     private int year;
-
-    public ObjectId getObjID() {
-        return objID;
-    }
-
-    public void setObjID(ObjectId objID) {
-        this.objID = objID;
-    }
     
     public String getID() {
         return ID;

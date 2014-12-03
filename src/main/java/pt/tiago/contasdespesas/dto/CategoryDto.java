@@ -2,7 +2,6 @@ package pt.tiago.contasdespesas.dto;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import org.bson.types.ObjectId;
 
 /**
  *
@@ -12,19 +11,10 @@ public class CategoryDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String ID;
-    private ObjectId objID;
     private String Name;
     private String Description;
     private double Total;
     private double[] TotalByMonth;
-
-    public ObjectId getObjID() {
-        return objID;
-    }
-
-    public void setObjID(ObjectId objID) {
-        this.objID = objID;
-    }
     
     public double[] getTotalByMonth() {
         return this.TotalByMonth;
