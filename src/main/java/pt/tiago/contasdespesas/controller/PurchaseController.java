@@ -203,6 +203,9 @@ public class PurchaseController implements Serializable {
             setEmbeddableKeys();
             try {
                 if (persistAction == PersistAction.CREATE) {
+                    selected.setCategoryName(categoryFacade.findByID(selected.getCategoryID()).getName());
+                    selected.setPersonName(personFacade.findByID(selected.getPersonID()).getName());
+                    selected.setSubCategoryName(categoryFacade.findSubByID(selected.getSubCategoryID()).getName());
                     getFacade().create(selected);
                 } else if (persistAction == PersistAction.DELETE) {
                     getFacade().remove(selected);

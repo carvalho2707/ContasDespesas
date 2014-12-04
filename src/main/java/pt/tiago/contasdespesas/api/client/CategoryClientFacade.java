@@ -210,6 +210,36 @@ public class CategoryClientFacade {
         }
         return categoryDto;
     }
+    
+    /**
+     * Find the element identified by id
+     * 
+     * @param id Identificator of the object
+     * @return The Object
+     */
+    public SubCategoryDto findSubByID(String id) {
+        SubCategoryDto subCategoryDto = null;
+        try {
+            createConnectionMongoDB();
+            collection = db.getCollection("SubCategory");
+            ObjectId objID = new ObjectId(id);
+            BasicDBObject basicObj = new BasicDBObject("_id", objID);
+            DBCursor cursor = collection.find(basicObj);
+            DBObject obj;
+            while (cursor.hasNext()) {
+                obj = cursor.next();
+                basicObj = (BasicDBObject) obj;
+                subCategoryDto = new SubCategoryDto();
+                subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
+                subCategoryDto.setName(basicObj.getString("name"));
+                subCategoryDto.setDescription(basicObj.getString("description"));
+            }
+            closeConnectionMongoDB();
+        } catch (Exception e) {
+            Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return subCategoryDto;
+    }
 
     /**
      *  Create and send one category object to the DB

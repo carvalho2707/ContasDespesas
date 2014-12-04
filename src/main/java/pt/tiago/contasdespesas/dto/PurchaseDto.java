@@ -18,9 +18,36 @@ public class PurchaseDto implements Serializable {
     private SubCategoryDto subCategory;
     private Date DateOfPurchase;
     private String categoryID;
+    private String categoryName;
     private String subCategoryID;
+    private String subCategoryName;
     private String personID;
+    private String personName;
 
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getSubCategoryName() {
+        return subCategoryName;
+    }
+
+    public void setSubCategoryName(String subCategoryName) {
+        this.subCategoryName = subCategoryName;
+    }
+
+    public String getPersonName() {
+        return personName;
+    }
+
+    public void setPersonName(String personName) {
+        this.personName = personName;
+    }
+    
     public SubCategoryDto getSubCategory() {
         return subCategory;
     }
@@ -103,6 +130,7 @@ public class PurchaseDto implements Serializable {
 
     @Override
     public String toString() {
-        return "PurchaseDto{" + "ID=" + ID + ", ItemName=" + ItemName + ", Price=" + Price + ", person=" + person + ", category=" + category + ", DateOfPurchase=" + DateOfPurchase + ", categoryID=" + categoryID + ", subCategoryID=" + subCategoryID + ", personID=" + personID + '}';
+        return "PurchaseDto{" + "ID=" + ID + ", ItemName=" + ItemName + ", Price=" + Price + ", person=" + person + ", category=" + category + ", subCategory=" + subCategory + ", DateOfPurchase=" + DateOfPurchase + ", categoryID=" + categoryID + ", categoryName=" + categoryName + ", subCategoryID=" + subCategoryID + ", subCategoryName=" + subCategoryName + ", personID=" + personID + ", personName=" + personName + '}';
     }
+
 }

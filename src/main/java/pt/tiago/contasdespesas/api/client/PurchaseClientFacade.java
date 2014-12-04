@@ -17,10 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
-import pt.tiago.contasdespesas.dto.CategoryDto;
-import pt.tiago.contasdespesas.dto.PersonDto;
 import pt.tiago.contasdespesas.dto.PurchaseDto;
-import pt.tiago.contasdespesas.dto.SubCategoryDto;
 
 /**
  *
@@ -88,55 +85,12 @@ public class PurchaseClientFacade {
                 purchaseDto.setSubCategoryID(basicObj.getString("subCategoryID"));
                 purchaseDto.setPrice(basicObj.getDouble("price"));
                 purchaseDto.setDateOfPurchase(basicObj.getDate("dateOfPurchase"));
+                purchaseDto.setCategoryName(basicObj.getString("categoryName"));
+                purchaseDto.setPersonName(basicObj.getString("personName"));
+                purchaseDto.setSubCategoryName(basicObj.getString("subCategoryName"));
                 lista.add(purchaseDto);
             }
             closeConnectionMongoDB();
-            if (!lista.isEmpty()) {
-                createConnectionMongoDB();
-                for (PurchaseDto purchase : lista) {
-                    collection = db.getCollection("Category");
-                    BasicDBObject field = new BasicDBObject();
-                    field.put("_id", new ObjectId(purchase.getCategoryID()));
-                    cursor = collection.find(field);
-                    while (cursor.hasNext()) {
-                        obj2 = cursor.next();
-                        basicObj = (BasicDBObject) obj2;
-                        CategoryDto categoryDto = new CategoryDto();
-                        categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
-                        categoryDto.setName(basicObj.getString("name"));
-                        categoryDto.setDescription(basicObj.getString("description"));
-                        purchase.setCategory(categoryDto);
-                    }
-                    collection = db.getCollection("SubCategory");
-                    field = new BasicDBObject();
-                    field.put("_id", new ObjectId(purchase.getSubCategoryID()));
-                    cursor = collection.find(field);
-                    while (cursor.hasNext()) {
-                        obj2 = cursor.next();
-                        basicObj = (BasicDBObject) obj2;
-                        SubCategoryDto subCategoryDto = new SubCategoryDto();
-                        subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
-                        subCategoryDto.setName(basicObj.getString("name"));
-                        subCategoryDto.setDescription(basicObj.getString("description"));
-                        subCategoryDto.setCategoryID(basicObj.getString("CategoryID"));
-                        purchase.setSubCategory(subCategoryDto);
-                    }
-                    collection = db.getCollection("Person");
-                    field = new BasicDBObject();
-                    field.put("_id", new ObjectId(purchase.getPersonID()));
-                    cursor = collection.find(field);
-                    while (cursor.hasNext()) {
-                        obj2 = cursor.next();
-                        basicObj = (BasicDBObject) obj2;
-                        PersonDto personDto = new PersonDto();
-                        personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
-                        personDto.setName(basicObj.getString("name"));
-                        personDto.setSurname(basicObj.getString("surname"));
-                        purchase.setPerson(personDto);
-                    }
-                }
-                closeConnectionMongoDB();
-            }
         } catch (Exception e) {
             Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -167,55 +121,12 @@ public class PurchaseClientFacade {
                 purchaseDto.setSubCategoryID(basicObj.getString("subCategoryID"));
                 purchaseDto.setPrice(basicObj.getDouble("price"));
                 purchaseDto.setDateOfPurchase(basicObj.getDate("dateOfPurchase"));
+                purchaseDto.setCategoryName(basicObj.getString("categoryName"));
+                purchaseDto.setPersonName(basicObj.getString("personName"));
+                purchaseDto.setSubCategoryName(basicObj.getString("subCategoryName"));
                 lista.add(purchaseDto);
             }
             closeConnectionMongoDB();
-            if (!lista.isEmpty()) {
-                createConnectionMongoDB();
-                for (PurchaseDto purchase : lista) {
-                    collection = db.getCollection("Category");
-                    BasicDBObject field = new BasicDBObject();
-                    field.put("_id", new ObjectId(purchase.getCategoryID()));
-                    cursor = collection.find(field);
-                    while (cursor.hasNext()) {
-                        obj = cursor.next();
-                        basicObj = (BasicDBObject) obj;
-                        CategoryDto categoryDto = new CategoryDto();
-                        categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
-                        categoryDto.setName(basicObj.getString("name"));
-                        categoryDto.setDescription(basicObj.getString("description"));
-                        purchase.setCategory(categoryDto);
-                    }
-                    collection = db.getCollection("SubCategory");
-                    field = new BasicDBObject();
-                    field.put("_id", new ObjectId(purchase.getSubCategoryID()));
-                    cursor = collection.find(field);
-                    while (cursor.hasNext()) {
-                        obj = cursor.next();
-                        basicObj = (BasicDBObject) obj;
-                        SubCategoryDto subCategoryDto = new SubCategoryDto();
-                        subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
-                        subCategoryDto.setName(basicObj.getString("name"));
-                        subCategoryDto.setDescription(basicObj.getString("description"));
-                        subCategoryDto.setCategoryID(basicObj.getString("categoryID"));
-                        purchase.setSubCategory(subCategoryDto);
-                    }
-                    collection = db.getCollection("Person");
-                    field = new BasicDBObject();
-                    field.put("_id", new ObjectId(purchase.getPersonID()));
-                    cursor = collection.find(field);
-                    while (cursor.hasNext()) {
-                        obj = cursor.next();
-                        basicObj = (BasicDBObject) obj;
-                        PersonDto personDto = new PersonDto();
-                        personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
-                        personDto.setName(basicObj.getString("name"));
-                        personDto.setSurname(basicObj.getString("surname"));
-                        purchase.setPerson(personDto);
-                    }
-                }
-                closeConnectionMongoDB();
-            }
         } catch (Exception e) {
             Logger.getLogger(CategoryClientFacade.class
                     .getName()).log(Level.SEVERE, null, e);
@@ -242,6 +153,9 @@ public class PurchaseClientFacade {
                 purchaseDto.setCategoryID(basicObj.getString("categoryID"));
                 purchaseDto.setSubCategoryID(basicObj.getString("subCategoryID"));
                 purchaseDto.setPrice(basicObj.getDouble("price"));
+                purchaseDto.setCategoryName(basicObj.getString("categoryName"));
+                purchaseDto.setPersonName(basicObj.getString("personName"));
+                purchaseDto.setSubCategoryName(basicObj.getString("subCategoryName"));
             }
             closeConnectionMongoDB();
 
@@ -261,7 +175,10 @@ public class PurchaseClientFacade {
                     .append("price", dto.getPrice())
                     .append("categoryID", new ObjectId(dto.getCategoryID()))
                     .append("subCategoryID", new ObjectId(dto.getSubCategoryID()))
-                    .append("personID", new ObjectId(dto.getPersonID()));
+                    .append("personID", new ObjectId(dto.getPersonID()))
+                    .append("personName", dto.getPersonName())
+                    .append("categoryName",dto.getCategoryName())
+                    .append("subCategoryName",dto.getSubCategoryName());
             collection = db.getCollection("Purchase");
             collection.insert(doc);
             closeConnectionMongoDB();
@@ -295,6 +212,9 @@ public class PurchaseClientFacade {
             newDocument.put("personID", dto.getPersonID());
             newDocument.put("price", dto.getPrice());
             newDocument.put("subCategoryID", dto.getSubCategoryID());
+            newDocument.put("personName", dto.getPersonName());
+            newDocument.put("categoryName", dto.getCategoryName());
+            newDocument.put("subCategoryName", dto.getSubCategoryName());
             BasicDBObject searchQuery = new BasicDBObject().append("_id", dto.getID());
             collection.update(searchQuery, newDocument);
             closeConnectionMongoDB();
