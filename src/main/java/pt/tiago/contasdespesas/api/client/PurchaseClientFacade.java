@@ -211,8 +211,7 @@ public class PurchaseClientFacade {
                     createConnectionMongoDB();
                     collection = db.getCollection("Category");
                     BasicDBObject field = new BasicDBObject();
-                    ObjectId identificator = new ObjectId(purchase.getCategoryID());
-                    field.put("_id", identificator);
+                    field.put("_id", new ObjectId(purchase.getCategoryID()));
                     cursor = collection.find(field);
                     while (cursor.hasNext()) {
                         obj = cursor.next();
@@ -227,8 +226,7 @@ public class PurchaseClientFacade {
                     createConnectionMongoDB();
                     collection = db.getCollection("SubCategory");
                     field = new BasicDBObject();
-                    identificator = new ObjectId(purchase.getSubCategoryID());
-                    field.put("_id", identificator);
+                    field.put("_id", new ObjectId(purchase.getSubCategoryID()));
                     cursor = collection.find(field);
                     while (cursor.hasNext()) {
                         obj = cursor.next();
@@ -244,8 +242,7 @@ public class PurchaseClientFacade {
                     createConnectionMongoDB();
                     collection = db.getCollection("Person");
                     field = new BasicDBObject();
-                    identificator = new ObjectId(purchase.getPersonID());
-                    field.put("_id", identificator);
+                    field.put("_id", new ObjectId(purchase.getPersonID()));
                     cursor = collection.find(field);
                     while (cursor.hasNext()) {
                         obj = cursor.next();
@@ -262,7 +259,6 @@ public class PurchaseClientFacade {
         } catch (Exception e) {
             Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
-
         return lista;
     }
 
@@ -296,16 +292,13 @@ public class PurchaseClientFacade {
     public void create(PurchaseDto dto) {
         try {
             createConnectionMongoDB();
-            ObjectId objPerson = new ObjectId(dto.getPersonID());
-            ObjectId objCategory = new ObjectId(dto.getCategoryID());
-            ObjectId objSubCategory = new ObjectId(dto.getSubCategoryID());
             BasicDBObject doc = new BasicDBObject()
                     .append("itemName", dto.getItemName())
                     .append("dateOfPurchase", dto.getDateOfPurchase())
                     .append("price", dto.getPrice())
-                    .append("categoryID", objCategory)
-                    .append("subCategoryID", objSubCategory)
-                    .append("personID", objPerson);
+                    .append("categoryID", new ObjectId(dto.getCategoryID()))
+                    .append("subCategoryID", new ObjectId(dto.getSubCategoryID()))
+                    .append("personID", new ObjectId(dto.getPersonID()));
             collection = db.getCollection("Purchase");
             collection.insert(doc);
             closeConnectionMongoDB();
