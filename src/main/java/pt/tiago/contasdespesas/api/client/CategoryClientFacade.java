@@ -105,7 +105,7 @@ public class CategoryClientFacade {
                 CategoryDto categoryDto = new CategoryDto();
                 categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 categoryDto.setName(basicObj.getString("name"));
-                categoryDto.setDescription("description");
+                categoryDto.setDescription(basicObj.getString("description"));
                 lista.add(categoryDto);
             }
             closeConnectionMongoDB();
