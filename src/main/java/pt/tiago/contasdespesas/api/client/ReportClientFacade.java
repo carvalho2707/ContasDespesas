@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bson.types.ObjectId;
@@ -26,14 +27,12 @@ import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
 @Component
 public class ReportClientFacade {
 
-    private final static String user = "tiago";
-    private static final String pass = "tiago";
-    private static final String dbName = "contasdespesas";
+    
     private MongoClientURI clientURI;
     private MongoClient client;
     private DB db;
     private DBCollection collection;
-    private String uri;
+    private static final String uri = ResourceBundle.getBundle("/Services").getString("db.uri");
 
     /**
      * Close the connection to mongoDB
@@ -42,7 +41,6 @@ public class ReportClientFacade {
         client.close();
         db = null;
         collection = null;
-        uri = null;
         clientURI = null;
     }
 
@@ -50,14 +48,6 @@ public class ReportClientFacade {
      * Create the connection to mongoDB
      */
     private void createConnectionMongoDB() {
-        StringBuilder str = new StringBuilder();
-        str.append("mongodb://");
-        str.append(user);
-        str.append(":");
-        str.append(pass);
-        str.append("@ds055690.mongolab.com:55690/");
-        str.append(dbName);
-        uri = str.toString();
         try {
             clientURI = new MongoClientURI(uri);
             client = new MongoClient(clientURI);

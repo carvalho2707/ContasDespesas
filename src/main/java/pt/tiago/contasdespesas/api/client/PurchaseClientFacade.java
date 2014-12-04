@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bson.types.ObjectId;
@@ -27,36 +28,20 @@ import pt.tiago.contasdespesas.dto.SubCategoryDto;
 @Component
 public class PurchaseClientFacade {
 
-    private PurchaseDto purchaseDto = null;
-    private CategoryDto categoryDto = null;
-    private SubCategoryDto subCategoryDto = null;
-    private PersonDto personDto = null;
-    private final static String user = "tiago";
-    private static final String pass = "tiago";
-    private static final String dbName = "contasdespesas";
     private MongoClientURI clientURI;
     private MongoClient client;
     private DB db;
     private DBCollection collection;
-    private String uri;
+    private static final String uri = ResourceBundle.getBundle("/Services").getString("db.uri");
 
     private void closeConnectionMongoDB() {
         client.close();
         db = null;
         collection = null;
-        uri = null;
         clientURI = null;
     }
 
     private void createConnectionMongoDB() {
-        StringBuilder str = new StringBuilder();
-        str.append("mongodb://");
-        str.append(user);
-        str.append(":");
-        str.append(pass);
-        str.append("@ds055690.mongolab.com:55690/");
-        str.append(dbName);
-        uri = str.toString();
         try {
             clientURI = new MongoClientURI(uri);
             client = new MongoClient(clientURI);
@@ -72,8 +57,6 @@ public class PurchaseClientFacade {
             createConnectionMongoDB();
             collection = db.getCollection("Purchase");
             BasicDBObject basicObj = new BasicDBObject();
-            ObjectId objIdPerson;
-            ObjectId objIdCategory;
             Calendar cal = Calendar.getInstance();
             cal.set(year, 0, 0);
             Calendar cal2 = Calendar.getInstance();
@@ -82,25 +65,21 @@ public class PurchaseClientFacade {
             DBObject obj2;
             if (!name.isEmpty() && !person.isEmpty() && !category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-                objIdPerson = new ObjectId(person);
-                objIdCategory = new ObjectId(category);
                 obj.add(new BasicDBObject("itemName", java.util.regex.Pattern.compile(name)));
-                obj.add(new BasicDBObject("personID", objIdPerson));
-                obj.add(new BasicDBObject("categoryID", objIdCategory));
+                obj.add(new BasicDBObject("personID", new ObjectId(person)));
+                obj.add(new BasicDBObject("categoryID", new ObjectId(category)));
                 obj.add(query);
                 basicObj.put("$and", obj);
             } else if (!name.isEmpty() && !person.isEmpty() && category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-                objIdPerson = new ObjectId(person);
                 obj.add(new BasicDBObject("itemName", java.util.regex.Pattern.compile(name)));
-                obj.add(new BasicDBObject("personID", objIdPerson));
+                obj.add(new BasicDBObject("personID", new ObjectId(person)));
                 obj.add(query);
                 basicObj.put("$and", obj);
             } else if (!name.isEmpty() && person.isEmpty() && !category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-                objIdCategory = new ObjectId(category);
                 obj.add(new BasicDBObject("itemName", java.util.regex.Pattern.compile(name)));
-                obj.add(new BasicDBObject("categoryID", objIdCategory));
+                obj.add(new BasicDBObject("categoryID", new ObjectId(category)));
                 obj.add(query);
                 basicObj.put("$and", obj);
             } else if (!name.isEmpty() && person.isEmpty() && category.isEmpty()) {
@@ -110,22 +89,18 @@ public class PurchaseClientFacade {
                 basicObj.put("$and", obj);
             } else if (name.isEmpty() && !person.isEmpty() && !category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-                objIdPerson = new ObjectId(person);
-                objIdCategory = new ObjectId(category);
-                obj.add(new BasicDBObject("personID", objIdPerson));
-                obj.add(new BasicDBObject("categoryID", objIdCategory));
+                obj.add(new BasicDBObject("personID", new ObjectId(person)));
+                obj.add(new BasicDBObject("categoryID", new ObjectId(category)));
                 obj.add(query);
                 basicObj.put("$and", obj);
             } else if (name.isEmpty() && !person.isEmpty() && category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-                objIdPerson = new ObjectId(person);
-                obj.add(new BasicDBObject("personID", objIdPerson));
+                obj.add(new BasicDBObject("personID", new ObjectId(person)));
                 obj.add(query);
                 basicObj.put("$and", obj);
             } else if (name.isEmpty() && person.isEmpty() && !category.isEmpty()) {
                 List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-                objIdCategory = new ObjectId(category);
-                obj.add(new BasicDBObject("categoryID", objIdCategory));
+                obj.add(new BasicDBObject("categoryID", new ObjectId(category)));
                 obj.add(query);
                 basicObj.put("$and", obj);
             }
@@ -133,7 +108,7 @@ public class PurchaseClientFacade {
             while (cursor.hasNext()) {
                 DBObject obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
-                purchaseDto = new PurchaseDto();
+                PurchaseDto purchaseDto = new PurchaseDto();
                 purchaseDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 purchaseDto.setItemName(basicObj.getString("itemName"));
                 purchaseDto.setCategoryID(basicObj.getString("categoryID"));
@@ -151,12 +126,11 @@ public class PurchaseClientFacade {
                     BasicDBObject field = new BasicDBObject();
                     ObjectId identificator = new ObjectId(purchase.getCategoryID());
                     field.put("_id", identificator);
-                    //pode ser mudado para findone mas dps tem de se mudar obj
                     cursor = collection.find(field);
                     while (cursor.hasNext()) {
                         obj2 = cursor.next();
                         basicObj = (BasicDBObject) obj2;
-                        categoryDto = new CategoryDto();
+                        CategoryDto categoryDto = new CategoryDto();
                         categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         categoryDto.setName(basicObj.getString("name"));
                         categoryDto.setDescription(basicObj.getString("description"));
@@ -172,7 +146,7 @@ public class PurchaseClientFacade {
                     while (cursor.hasNext()) {
                         obj2 = cursor.next();
                         basicObj = (BasicDBObject) obj2;
-                        subCategoryDto = new SubCategoryDto();
+                        SubCategoryDto subCategoryDto = new SubCategoryDto();
                         subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         subCategoryDto.setName(basicObj.getString("name"));
                         subCategoryDto.setDescription(basicObj.getString("description"));
@@ -189,7 +163,7 @@ public class PurchaseClientFacade {
                     while (cursor.hasNext()) {
                         obj2 = cursor.next();
                         basicObj = (BasicDBObject) obj2;
-                        personDto = new PersonDto();
+                        PersonDto personDto = new PersonDto();
                         personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         personDto.setName(basicObj.getString("name"));
                         personDto.setSurname(basicObj.getString("surname"));
@@ -221,7 +195,7 @@ public class PurchaseClientFacade {
             while (cursor.hasNext()) {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
-                purchaseDto = new PurchaseDto();
+                PurchaseDto purchaseDto = new PurchaseDto();
                 purchaseDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 purchaseDto.setItemName(basicObj.getString("itemName"));
                 purchaseDto.setCategoryID(basicObj.getString("categoryID"));
@@ -239,12 +213,11 @@ public class PurchaseClientFacade {
                     BasicDBObject field = new BasicDBObject();
                     ObjectId identificator = new ObjectId(purchase.getCategoryID());
                     field.put("_id", identificator);
-                    //pode ser mudado para findone mas dps tem de se mudar obj
                     cursor = collection.find(field);
                     while (cursor.hasNext()) {
                         obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
-                        categoryDto = new CategoryDto();
+                        CategoryDto categoryDto = new CategoryDto();
                         categoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         categoryDto.setName(basicObj.getString("name"));
                         categoryDto.setDescription(basicObj.getString("description"));
@@ -260,11 +233,11 @@ public class PurchaseClientFacade {
                     while (cursor.hasNext()) {
                         obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
-                        subCategoryDto = new SubCategoryDto();
+                        SubCategoryDto subCategoryDto = new SubCategoryDto();
                         subCategoryDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         subCategoryDto.setName(basicObj.getString("name"));
                         subCategoryDto.setDescription(basicObj.getString("description"));
-                        subCategoryDto.setCategoryID(basicObj.getString("CategoryID"));
+                        subCategoryDto.setCategoryID(basicObj.getString("categoryID"));
                         purchase.setSubCategory(subCategoryDto);
                     }
                     closeConnectionMongoDB();
@@ -277,7 +250,7 @@ public class PurchaseClientFacade {
                     while (cursor.hasNext()) {
                         obj = cursor.next();
                         basicObj = (BasicDBObject) obj;
-                        personDto = new PersonDto();
+                        PersonDto personDto = new PersonDto();
                         personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                         personDto.setName(basicObj.getString("name"));
                         personDto.setSurname(basicObj.getString("surname"));
@@ -294,6 +267,7 @@ public class PurchaseClientFacade {
     }
 
     public PurchaseDto findByID(String id) {
+        PurchaseDto purchaseDto = null;
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Purchase");
@@ -425,10 +399,10 @@ public class PurchaseClientFacade {
 
     /**
      * Find the value spend with one category
-     * 
+     *
      * @param year The year to search
      * @param categoria The id of the category to search
-     * @return 
+     * @return
      */
     public double findCategoryTotalByYear(int year, String categoria) {
         double total = 0.0;

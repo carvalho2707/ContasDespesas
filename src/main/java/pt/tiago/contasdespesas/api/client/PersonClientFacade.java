@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bson.types.ObjectId;
@@ -25,34 +26,20 @@ import pt.tiago.contasdespesas.dto.PersonDto;
 public class PersonClientFacade implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private PersonDto personDto = null;
-
-    private final static String user = "tiago";
-    private static final String pass = "tiago";
-    private static final String dbName = "contasdespesas";
+    private static final String uri = ResourceBundle.getBundle("/Services").getString("db.uri");
     private MongoClientURI clientURI;
     private MongoClient client;
     private DB db;
     private DBCollection collection;
-    private String uri;
 
     private void closeConnectionMongoDB() {
         client.close();
         db = null;
         collection = null;
-        uri = null;
         clientURI = null;
     }
 
     private void createConnectionMongoDB() {
-        StringBuilder str = new StringBuilder();
-        str.append("mongodb://");
-        str.append(user);
-        str.append(":");
-        str.append(pass);
-        str.append("@ds055690.mongolab.com:55690/");
-        str.append(dbName);
-        uri = str.toString();
         try {
             clientURI = new MongoClientURI(uri);
             client = new MongoClient(clientURI);
@@ -83,7 +70,7 @@ public class PersonClientFacade implements Serializable {
             while (cursor.hasNext()) {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
-                personDto = new PersonDto();
+                PersonDto personDto = new PersonDto();
                 personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 personDto.setName(basicObj.getString("name"));
                 personDto.setSurname(basicObj.getString("surname"));
@@ -107,7 +94,7 @@ public class PersonClientFacade implements Serializable {
             while (cursor.hasNext()) {
                 obj = cursor.next();
                 basicObj = (BasicDBObject) obj;
-                personDto = new PersonDto();
+                PersonDto personDto = new PersonDto();
                 personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 personDto.setName(basicObj.getString("name"));
                 personDto.setSurname(basicObj.getString("surname"));
@@ -121,6 +108,7 @@ public class PersonClientFacade implements Serializable {
     }
 
     public PersonDto findByID(String id) {
+        PersonDto personDto = null;
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Person");
@@ -134,7 +122,7 @@ public class PersonClientFacade implements Serializable {
                 personDto = new PersonDto();
                 personDto.setID(String.valueOf(basicObj.getObjectId("_id")));
                 personDto.setName(basicObj.getString("name"));
-                personDto.setSurname("surname");
+                personDto.setSurname(basicObj.getString("surname"));
             }
             closeConnectionMongoDB();
         } catch (Exception e) {

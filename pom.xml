@@ -17,6 +17,7 @@
                 <db.userName>root</db.userName>
                 <db.password>tiago</db.password>
                 <db.driver>com.mysql.jdbc.Driver</db.driver>
+                <db.uri>mongodb://tiago:tiago@ds055690.mongolab.com:55690/contasdespesas</db.uri>
             </properties>
         </profile>
     </profiles>
