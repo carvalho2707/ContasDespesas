@@ -10,16 +10,14 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
-import pt.tiago.contasdespesas.dto.CategorySumByYearDto;
-import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
 
 /**
  *
@@ -137,48 +135,41 @@ public class ReportClientFacade {
      * @param limit the max value for purchases to search
      * @return list of the person purchases
      */
-    public List<PurchaseSumByYearDto> findTotalPersonByNameByYear(int year, int limit) {
-        //each element of list will contain one person with purchases
-        List<PurchaseSumByYearDto> purchase = new ArrayList<PurchaseSumByYearDto>();
-        PurchaseSumByYearDto temp;
+    public Map<String, Double> findTotalPersonByNameByYear(int year, int limit) {
+        Map<String, Double> map = new HashMap<String, Double>();
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Purchase");
-            BasicDBObject basicObj = new BasicDBObject();
-            List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+            DBObject dbobj;
             Calendar cal = Calendar.getInstance();
             cal.set(year, 0, 0);
             Calendar cal2 = Calendar.getInstance();
             cal2.set(year, 11, 31);
-            obj.add(new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime())));
-            obj.add(new BasicDBObject("price", new BasicDBObject("$lte", limit)));
-            basicObj.put("$and", obj);
-            DBCursor cursor = collection.find(basicObj);
-            while (cursor.hasNext()) {
-                DBObject obj2 = cursor.next();
-                basicObj = (BasicDBObject) obj2;
-                String id = String.valueOf(basicObj.getObjectId("personID"));
-                boolean condition = false;
-                for (PurchaseSumByYearDto listPurchases : purchase) {
-                    if (listPurchases.getID().equals(id)) {
-                        condition = true;
-                        double price = basicObj.getDouble("price");
-                        listPurchases.setTotal(price + listPurchases.getTotal());
-                    }
-                }
-                if (condition == false) {
-                    temp = new PurchaseSumByYearDto();
-                    temp.setID(String.valueOf(basicObj.getObjectId("personID")));
-                    temp.setTotal(basicObj.getDouble("price"));
-                    purchase.add(temp);
-                }
-                condition = false;
+            BasicDBObject priceObj = new BasicDBObject("price", new BasicDBObject("$lte", 2000));
+            BasicDBObject dateObj = new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime()));
+            BasicDBList and = new BasicDBList();
+            and.add(priceObj);
+            and.add(dateObj);
+            DBObject andCriteria = new BasicDBObject("$and", and);
+            DBObject matchCriteria = new BasicDBObject("$match", andCriteria);
+            BasicDBObject group = new BasicDBObject(
+                    "$group", new BasicDBObject("_id", "$personID").append(
+                            "total", new BasicDBObject("$sum", "$price")
+                    )
+            );
+            AggregationOutput output = collection.aggregate(matchCriteria, group);
+            for (DBObject result : output.results()) {
+                double total = ((BasicDBObject) result).getDouble("total");
+                dbobj = result;
+                BasicDBObject basicObj2 = (BasicDBObject) dbobj.get("_id");
+                String personID = basicObj2.getString("_id");
+                map.put(personID, total);
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
             Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
-        return purchase;
+        return map;
     }
 
     /**
@@ -190,47 +181,41 @@ public class ReportClientFacade {
      * @param limit the max value for purchases to search
      * @return list of the categories purchases
      */
-    public List<CategorySumByYearDto> findTotalCategorySumByYear(int year, int limit) {
-        List<CategorySumByYearDto> purchase = new ArrayList<CategorySumByYearDto>();
-        CategorySumByYearDto temp;
+    public Map<String, Double> findTotalCategorySumByYear(int year, int limit) {
+        Map<String, Double> map = new HashMap<String, Double>();
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Purchase");
-            BasicDBObject basicObj = new BasicDBObject();
-            List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+            DBObject dbobj;
             Calendar cal = Calendar.getInstance();
             cal.set(year, 0, 0);
             Calendar cal2 = Calendar.getInstance();
             cal2.set(year, 11, 31);
-            obj.add(new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime())));
-            obj.add(new BasicDBObject("price", new BasicDBObject("$lte", limit)));
-            basicObj.put("$and", obj);
-            DBCursor cursor = collection.find(basicObj);
-            while (cursor.hasNext()) {
-                DBObject obj2 = cursor.next();
-                basicObj = (BasicDBObject) obj2;
-                String id = String.valueOf(basicObj.getObjectId("categoryID"));
-                boolean condition = false;
-                for (CategorySumByYearDto listPurchases : purchase) {
-                    if (listPurchases.getID().equals(id)) {
-                        condition = true;
-                        double price = basicObj.getDouble("price");
-                        listPurchases.setTotal(price + listPurchases.getTotal());
-                    }
-                }
-                if (condition == false) {
-                    temp = new CategorySumByYearDto();
-                    temp.setID(String.valueOf(basicObj.getObjectId("categoryID")));
-                    temp.setTotal(basicObj.getDouble("price"));
-                    purchase.add(temp);
-                }
-                condition = false;
+            BasicDBObject priceObj = new BasicDBObject("price", new BasicDBObject("$lte", 2000));
+            BasicDBObject dateObj = new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime()));
+            BasicDBList and = new BasicDBList();
+            and.add(priceObj);
+            and.add(dateObj);
+            DBObject andCriteria = new BasicDBObject("$and", and);
+            DBObject matchCriteria = new BasicDBObject("$match", andCriteria);
+            BasicDBObject group = new BasicDBObject(
+                    "$group", new BasicDBObject("_id", "$categorynID").append(
+                            "total", new BasicDBObject("$sum", "$price")
+                    )
+            );
+            AggregationOutput output = collection.aggregate(matchCriteria, group);
+            for (DBObject result : output.results()) {
+                double total = ((BasicDBObject) result).getDouble("total");
+                dbobj = result;
+                BasicDBObject basicObj2 = (BasicDBObject) dbobj.get("_id");
+                String categoryID = basicObj2.getString("_id");
+                map.put(categoryID, total);
             }
             closeConnectionMongoDB();
         } catch (Exception e) {
             Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
-        return purchase;
+        return map;
     }
 
 }

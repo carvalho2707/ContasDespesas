@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
@@ -18,9 +19,7 @@ import pt.tiago.contasdespesas.api.client.PersonClientFacade;
 import pt.tiago.contasdespesas.api.client.PurchaseClientFacade;
 import pt.tiago.contasdespesas.api.client.ReportClientFacade;
 import pt.tiago.contasdespesas.dto.CategoryDto;
-import pt.tiago.contasdespesas.dto.CategorySumByYearDto;
 import pt.tiago.contasdespesas.dto.PersonDto;
-import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
 
 /**
  *
@@ -215,7 +214,7 @@ public class TotalByPersonController implements Serializable {
             chartSeries = new ChartSeries();
             chartSeries.setLabel(person.getName());
             for (int i = 0; i < 12; i++) {
-                if (lista[i]  != 0) {
+                if (lista[i] != 0) {
                     double maxTemp = lista[i];
                     if (maxTemp > max) {
                         max = maxTemp;
@@ -232,12 +231,12 @@ public class TotalByPersonController implements Serializable {
 
     private void createPieModelYear() {
         pieModelYear = new PieChartModel();
-        List<PurchaseSumByYearDto> lista = getFacade().findTotalPersonByNameByYear(Integer.parseInt(anoEscolhido), limitEscolhido);
+        Map<String, Double> lista = getFacade().findTotalPersonByNameByYear(Integer.parseInt(anoEscolhido), limitEscolhido);
         if (!lista.isEmpty()) {
             String name;
-            for (PurchaseSumByYearDto dto : lista) {
-                name = personFacade.findByID(dto.getID()).getName();
-                pieModelYear.set(name + " - " + dto.getTotal() + " €", dto.getTotal());
+            for (Map.Entry<String, Double> entry : lista.entrySet()) {
+                name = personFacade.findByID(entry.getKey()).getName();
+                pieModelYear.set(name + " - " + entry.getValue() + " €", entry.getValue());
             }
             pieModelYear.setTitle(ResourceBundle.getBundle("/Bundle").getString("TotalByYearByPersonPie") + " - " + anoEscolhido);
             pieModelYear.setLegendPosition("e");
@@ -255,12 +254,12 @@ public class TotalByPersonController implements Serializable {
 
     private void createPieModelYearCategory() {
         pieModelYearCategory = new PieChartModel();
-        List<CategorySumByYearDto> lista = getFacade().findTotalCategorySumByYear(Integer.parseInt(anoEscolhido), limitEscolhido);
+        Map<String, Double> lista = getFacade().findTotalCategorySumByYear(Integer.parseInt(anoEscolhido), limitEscolhido);
         if (!lista.isEmpty()) {
             String name;
-            for (CategorySumByYearDto dto : lista) {
-                name = categoryFacade.findByID(dto.getID()).getName();
-                pieModelYearCategory.set(name + " - " + dto.getTotal() + " €", dto.getTotal());
+            for (Map.Entry<String, Double> entry : lista.entrySet()) {
+                name = categoryFacade.findByID(entry.getKey()).getName();
+                pieModelYearCategory.set(name + " - " + entry.getValue() + " €", entry.getValue());
             }
             pieModelYearCategory.setTitle(ResourceBundle.getBundle("/Bundle").getString("TotalByYearByCategoryPie") + " - " + anoEscolhido);
             pieModelYearCategory.setLegendPosition("e");
