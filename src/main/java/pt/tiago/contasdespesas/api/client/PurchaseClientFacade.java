@@ -177,8 +177,8 @@ public class PurchaseClientFacade {
                     .append("subCategoryID", new ObjectId(dto.getSubCategoryID()))
                     .append("personID", new ObjectId(dto.getPersonID()))
                     .append("personName", dto.getPersonName())
-                    .append("categoryName",dto.getCategoryName())
-                    .append("subCategoryName",dto.getSubCategoryName());
+                    .append("categoryName", dto.getCategoryName())
+                    .append("subCategoryName", dto.getSubCategoryName());
             collection = db.getCollection("Purchase");
             collection.insert(doc);
             closeConnectionMongoDB();
@@ -285,33 +285,31 @@ public class PurchaseClientFacade {
     /**
      * Find the value spend with one category
      *
+     * SELECT SUM(Price) AS total FROM Purchase WHERE categoryID = ? AND
+     * Year(DateOfPurchase) = ?
+     *
      * @param year The year to search
      * @param categoria The id of the category to search
-     * @return
+     * @return The amount spent
      */
     public double findCategoryTotalByYear(int year, String categoria) {
         double total = 0.0;
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Purchase");
-            BasicDBObject basicObj = new BasicDBObject();
             Calendar cal = Calendar.getInstance();
             cal.set(year, 0, 0);
             Calendar cal2 = Calendar.getInstance();
             cal2.set(year, 11, 31);
-            List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
-            objFilter.add(new BasicDBObject("categoryID", new ObjectId(categoria)));
-            objFilter.add(new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime())));
-            basicObj.put("$and", objFilter);
-            DBCursor cursor = collection.find();
-            DBObject obj;
-            while (cursor.hasNext()) {
-                obj = cursor.next();
-                basicObj = (BasicDBObject) obj;
-                total += basicObj.getDouble("price");
-            }
+            BasicDBObject cateObj = new BasicDBObject("categoryID", new ObjectId(categoria));
+            BasicDBObject dateObj = new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime()));
+            BasicDBObject match = new BasicDBObject("$match", cateObj);
+            match.put("$match", dateObj);
+            DBObject group = new BasicDBObject("$group", new BasicDBObject("_id", null).append("total", new BasicDBObject("$sum", "$price")));
+            AggregationOutput output = collection.aggregate(match, group);
+            BasicDBObject basicObj = (BasicDBObject) output.results();
+            total = basicObj.getDouble("total");
             closeConnectionMongoDB();
-
         } catch (Exception e) {
             Logger.getLogger(CategoryClientFacade.class
                     .getName()).log(Level.SEVERE, null, e);
@@ -319,7 +317,17 @@ public class PurchaseClientFacade {
         return total;
     }
 
-    public double findPersonTotalByYear(int year, String pessoa) {
+    /**
+     * Find the value spend with one person
+     *
+     * SELECT SUM(Price) as total FROM Purchase WHERE personID = ? AND
+     * Year(DateOfPurchase) = ?
+     *
+     * @param year The year to search
+     * @param person The id of the person to search
+     * @return The amount spent
+     */
+    public double findPersonTotalByYear(int year, String person) {
         double total = 0.0;
         try {
             createConnectionMongoDB();
@@ -328,18 +336,14 @@ public class PurchaseClientFacade {
             cal.set(year, 0, 0);
             Calendar cal2 = Calendar.getInstance();
             cal2.set(year, 11, 31);
-            BasicDBObject basicObj = new BasicDBObject();
-            List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
-            objFilter.add(new BasicDBObject("personID", new ObjectId(pessoa)));
-            objFilter.add(new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime())));
-            basicObj.put("$and", objFilter);
-            DBCursor cursor = collection.find(basicObj);
-            DBObject obj;
-            while (cursor.hasNext()) {
-                obj = cursor.next();
-                basicObj = (BasicDBObject) obj;
-                total += basicObj.getDouble("price");
-            }
+            BasicDBObject cateObj = new BasicDBObject("personID", new ObjectId(person));
+            BasicDBObject dateObj = new BasicDBObject("dateOfPurchase", new BasicDBObject("$gte", cal.getTime()).append("$lt", cal2.getTime()));
+            BasicDBObject match = new BasicDBObject("$match", cateObj);
+            match.put("$match", dateObj);
+            DBObject group = new BasicDBObject("$group", new BasicDBObject("_id", null).append("total", new BasicDBObject("$sum", "$price")));
+            AggregationOutput output = collection.aggregate(match, group);
+            BasicDBObject basicObj = (BasicDBObject) output.results();
+            total = basicObj.getDouble("total");
             closeConnectionMongoDB();
 
         } catch (Exception e) {
