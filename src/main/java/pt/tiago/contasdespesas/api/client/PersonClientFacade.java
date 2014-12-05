@@ -55,16 +55,13 @@ public class PersonClientFacade implements Serializable {
             createConnectionMongoDB();
             collection = db.getCollection("Person");
             BasicDBObject basicObj = new BasicDBObject();
-            if (!name.isEmpty() && surname.isEmpty()) {
-                basicObj.append("name", java.util.regex.Pattern.compile(name));
-            } else if (name.isEmpty() && !surname.isEmpty()) {
-                basicObj.append("surname", java.util.regex.Pattern.compile(surname));
-            } else if (!name.isEmpty() && !surname.isEmpty()) {
-                List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-                obj.add(new BasicDBObject("name", java.util.regex.Pattern.compile(name)));
-                obj.add(new BasicDBObject("surname", java.util.regex.Pattern.compile(surname)));
-                basicObj.put("$and", obj);
+            List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
+            if (!name.isEmpty()) {
+                objFilter.add(new BasicDBObject("name", java.util.regex.Pattern.compile(name)));
+            } else if (!surname.isEmpty()) {
+                objFilter.add(new BasicDBObject("surname", java.util.regex.Pattern.compile(surname)));
             }
+            basicObj.put("$and", objFilter);
             DBCursor cursor = collection.find(basicObj);
             DBObject obj;
             while (cursor.hasNext()) {
@@ -149,7 +146,7 @@ public class PersonClientFacade implements Serializable {
         try {
             createConnectionMongoDB();
             collection = db.getCollection("Person");
-            collection.remove(new BasicDBObject().append("_id", dto.getID()));
+            collection.remove(new BasicDBObject().append("_id", new ObjectId(dto.getID())));
             closeConnectionMongoDB();
         } catch (Exception e) {
             Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
@@ -163,7 +160,7 @@ public class PersonClientFacade implements Serializable {
             BasicDBObject newDocument = new BasicDBObject();
             newDocument.put("name", dto.getName());
             newDocument.put("surname", dto.getSurname());
-            BasicDBObject searchQuery = new BasicDBObject().append("_id", dto.getID());
+            BasicDBObject searchQuery = new BasicDBObject().append("_id", new ObjectId(dto.getID()));
             collection.update(searchQuery, newDocument);
             closeConnectionMongoDB();
         } catch (Exception e) {
