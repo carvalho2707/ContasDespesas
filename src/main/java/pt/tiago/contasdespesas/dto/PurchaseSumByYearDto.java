@@ -1,7 +1,6 @@
 package pt.tiago.contasdespesas.dto;
 
 import java.io.Serializable;
-import org.bson.types.ObjectId;
 
 /**
  *

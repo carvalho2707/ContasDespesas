@@ -1,5 +1,7 @@
 package pt.tiago.contasdespesas.api.client;
 
+import com.mongodb.AggregationOutput;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -17,7 +19,6 @@ import java.util.logging.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 import pt.tiago.contasdespesas.dto.CategorySumByYearDto;
-import pt.tiago.contasdespesas.dto.PurchaseSumByMonthDto;
 import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
 
 /**
@@ -27,7 +28,6 @@ import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
 @Component
 public class ReportClientFacade {
 
-    
     private MongoClientURI clientURI;
     private MongoClient client;
     private DB db;
@@ -65,44 +65,37 @@ public class ReportClientFacade {
      * PersonID = ? AND CategoryID = ? AND Price <= ? GROUP BY
      * MONTH(DateOfPurchase)
      *
-     * @param identificador
+     * @param personID
      * @param categoryID
      * @param limit
      * @return
      */
-    public PurchaseSumByMonthDto[] findTotalPersonByNameByMonth(String identificador, String categoryID, int limit) {
+    public double[] findTotalPersonByNameByMonth(String personID, String categoryID, int limit) {
         createConnectionMongoDB();
-        PurchaseSumByMonthDto[] purchase = new PurchaseSumByMonthDto[12];
+        double[] purchase = new double[12];
         collection = db.getCollection("Purchase");
-        BasicDBObject basicObj = new BasicDBObject();
-        List<BasicDBObject> objFilter = new ArrayList<BasicDBObject>();
-        if (categoryID.isEmpty()) {
-            objFilter.add(new BasicDBObject("personID", new ObjectId(identificador)));
-            objFilter.add(new BasicDBObject("price", new BasicDBObject("$lte", limit)));
-            basicObj.put("$and", objFilter);
-        } else {
-            objFilter.add(new BasicDBObject("personID", new ObjectId(identificador)));
-            objFilter.add(new BasicDBObject("categoryID", new ObjectId(categoryID)));
-            objFilter.add(new BasicDBObject("price", new BasicDBObject("$lte", limit)));
-            basicObj.put("$and", objFilter);
+        BasicDBList and = new BasicDBList();
+        if (!categoryID.isEmpty()) {
+            BasicDBObject cateObj = new BasicDBObject("categoryID", new ObjectId(categoryID));
+            and.add(cateObj);
         }
-        DBCursor cursor = collection.find(basicObj);
-        DBObject obj;
-        while (cursor.hasNext()) {
-            obj = cursor.next();
-            basicObj = (BasicDBObject) obj;
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(basicObj.getDate("dateOfPurchase"));
-            int month = cal.get(Calendar.MONTH);
-            double total = basicObj.getDouble("price");
-            if (purchase[month] == null) {
-                purchase[month] = new PurchaseSumByMonthDto();
-                purchase[month].setMonth(month);
-                purchase[month].setTotal(total);
-            } else {
-                purchase[month].setMonth(month);
-                purchase[month].setTotal(purchase[month].getTotal() + total);
-            }
+        BasicDBObject personObj = new BasicDBObject("personID", new ObjectId(personID));
+        and.add(personObj);
+        DBObject andCriteria = new BasicDBObject("$and", and);
+        DBObject matchCriteria = new BasicDBObject("$match", andCriteria);
+        DBObject group = new BasicDBObject(
+                "$group", new BasicDBObject("_id", null).append(
+                        "total", new BasicDBObject("$sum", "$price")
+                )
+        );
+        group.put("$group", new BasicDBObject("_id", new BasicDBObject("month", new BasicDBObject("$month", "$dateOfPurchase"))).append("total", new BasicDBObject("$sum", "$price")));
+        AggregationOutput output = collection.aggregate(matchCriteria, group);
+        for (DBObject result : output.results()) {
+            double total = ((BasicDBObject) result).getDouble("total");
+            DBObject basicObj = result;
+            BasicDBObject basicObj2 = (BasicDBObject) basicObj.get("_id");
+            int month = basicObj2.getInt("month") - 1;
+            purchase[month] += total;
         }
         closeConnectionMongoDB();
         return purchase;

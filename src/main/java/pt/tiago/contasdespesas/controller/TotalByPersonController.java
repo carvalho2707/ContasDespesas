@@ -19,7 +19,6 @@ import pt.tiago.contasdespesas.api.client.PurchaseClientFacade;
 import pt.tiago.contasdespesas.api.client.ReportClientFacade;
 import pt.tiago.contasdespesas.dto.CategoryDto;
 import pt.tiago.contasdespesas.dto.CategorySumByYearDto;
-import pt.tiago.contasdespesas.dto.PurchaseSumByMonthDto;
 import pt.tiago.contasdespesas.dto.PersonDto;
 import pt.tiago.contasdespesas.dto.PurchaseSumByYearDto;
 
@@ -212,18 +211,16 @@ public class TotalByPersonController implements Serializable {
         }
         double max = 20.0;
         for (PersonDto person : pessoas) {
-            PurchaseSumByMonthDto[] lista = getFacade().findTotalPersonByNameByMonth(person.getID(), idCategoria, limitEscolhido);
+            double[] lista = getFacade().findTotalPersonByNameByMonth(person.getID(), idCategoria, limitEscolhido);
             chartSeries = new ChartSeries();
             chartSeries.setLabel(person.getName());
             for (int i = 0; i < 12; i++) {
-                if (lista[i] != null) {
-                    double maxTemp = lista[i].getTotal();
+                if (lista[i]  != 0) {
+                    double maxTemp = lista[i];
                     if (maxTemp > max) {
                         max = maxTemp;
-
                     }
                     chartSeries.set(new DateFormatSymbols().getMonths()[i], maxTemp);
-
                 } else {
                     chartSeries.set(new DateFormatSymbols().getMonths()[i], 0);
                 }
