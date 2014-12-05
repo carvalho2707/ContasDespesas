@@ -56,23 +56,23 @@
                                             </f:facet>
                                             <h:outputText value="#{item.price}"/>
                                         </p:column>
-                                        <p:column sortBy="#{item.category.name}">
+                                        <p:column sortBy="#{item.categoryName}">
                                             <f:facet name="header">
                                                 <h:outputText value="#{bundle.CategoryName}"/>
                                             </f:facet>
-                                            <h:outputText value="#{item.category.name}"/>
+                                            <h:outputText value="#{item.categoryName}"/>
                                         </p:column>
-                                        <p:column sortBy="#{item.subCategory.name}">
+                                        <p:column sortBy="#{item.subCategoryName}">
                                             <f:facet name="header">
                                                 <h:outputText value="#{bundle.SubCategoryName}"/>
                                             </f:facet>
-                                            <h:outputText value="#{item.subCategory.name}"/>
+                                            <h:outputText value="#{item.subCategoryName}"/>
                                         </p:column>
-                                        <p:column sortBy="#{item.person.name}">
+                                        <p:column sortBy="#{item.personName}">
                                             <f:facet name="header">
                                                 <h:outputText value="#{bundle.PersonName}"/>
                                             </f:facet>
-                                            <h:outputText value="#{item.person.name}"/>
+                                            <h:outputText value="#{item.personName}"/>
                                         </p:column>
                                         <p:column sortBy="#{item.dateOfPurchase}">
                                             <f:facet name="header">
@@ -123,10 +123,10 @@
                                                                         </h:outputText>
                                                                     </p:column>
                                                                     <p:column>
-                                                                        <h:outputText value="#{purchaseController.selected.person.name}" />
+                                                                        <h:outputText value="#{purchaseController.selected.personName}" />
                                                                         <br/>
                                                                         <br/>
-                                                                        <h:outputText value="#{purchaseController.selected.category.name} - #{purchaseController.selected.subCategory.name} " />
+                                                                        <h:outputText value="#{purchaseController.selected.categoryName} - #{purchaseController.selected.subCategoryName} " />
                                                                     </p:column>
                                                                     <p:column>
                                                                         <p:graphicImage name="img/generic_photo.png" height="150" width="100" style="padding:1px; border:1px solid #909090; border-radius: 3px;"/>
