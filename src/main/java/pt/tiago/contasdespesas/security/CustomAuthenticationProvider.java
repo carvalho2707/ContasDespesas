@@ -40,6 +40,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider,
             throws AuthenticationException {
         String name = authentication.getName();
         String password = authentication.getCredentials().toString();
+        if(!name.equals("macarocas") || !password.equals("macarocas")){
+        	return null;
+        }
         peopleDetailsByNBFetch.setUserDetails(name, password);
         List<GrantedAuthority> grantedAuths = new ArrayList<GrantedAuthority>();
         return new UsernamePasswordAuthenticationToken(name, password,
