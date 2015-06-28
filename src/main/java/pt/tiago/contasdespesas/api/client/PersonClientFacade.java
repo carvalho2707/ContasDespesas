@@ -7,6 +7,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -14,8 +15,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
+
 import pt.tiago.contasdespesas.dto.PersonDto;
 
 /**
@@ -26,7 +29,7 @@ import pt.tiago.contasdespesas.dto.PersonDto;
 public class PersonClientFacade implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final String uri = ResourceBundle.getBundle("/Services").getString("db.uri");
+    private static final String uri = "mongodb://tiago:tiago@ds055690.mongolab.com:55690/contasdespesas";
     private MongoClientURI clientURI;
     private MongoClient client;
     private DB db;

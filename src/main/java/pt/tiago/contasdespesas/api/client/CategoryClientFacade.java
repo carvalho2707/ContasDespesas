@@ -29,7 +29,7 @@ public class CategoryClientFacade {
     private MongoClient client;
     private DB db;
     private DBCollection collection;
-    private static final String uri = ResourceBundle.getBundle("/Services").getString("db.uri");
+    private static final String uri = "mongodb://tiago:tiago@ds055690.mongolab.com:55690/contasdespesas";
 
     /**
      * Close the connection to MongoDB

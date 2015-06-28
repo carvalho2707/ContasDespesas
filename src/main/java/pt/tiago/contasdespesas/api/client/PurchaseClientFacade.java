@@ -8,6 +8,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,8 +16,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
+
 import pt.tiago.contasdespesas.dto.PurchaseDto;
 
 /**
@@ -30,7 +33,7 @@ public class PurchaseClientFacade {
     private MongoClient client;
     private DB db;
     private DBCollection collection;
-    private static final String uri = ResourceBundle.getBundle("/Services").getString("db.uri");
+    private static final String uri = "mongodb://tiago:tiago@ds055690.mongolab.com:55690/contasdespesas";
 
     private void closeConnectionMongoDB() {
         client.close();

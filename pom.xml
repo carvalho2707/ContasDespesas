@@ -9,19 +9,6 @@
 
     <name>ContasDespesas</name>
     
-    <profiles>
-        <profile>
-            <id>LOCALMySql</id>
-            <properties>
-                <db.urlDB>jdbc:mysql://localhost:3306/ContasDespesas</db.urlDB>
-                <db.userName>root</db.userName>
-                <db.password>tiago</db.password>
-                <db.driver>com.mysql.jdbc.Driver</db.driver>
-                <db.uri>mongodb://tiago:tiago@ds055690.mongolab.com:55690/contasdespesas</db.uri>
-            </properties>
-        </profile>
-    </profiles>
-
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
