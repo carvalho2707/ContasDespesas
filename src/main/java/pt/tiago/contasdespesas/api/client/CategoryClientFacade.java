@@ -82,7 +82,6 @@ public class CategoryClientFacade {
         } catch (Exception e) {
             Logger.getLogger(CategoryClientFacade.class.getName()).log(Level.SEVERE, null, e);
         }
-
         return lista;
     }
 
