@@ -1,1 +1,6 @@
 /target/
+.metadata
+.settings
+/lib/
+.claspath
+.project
